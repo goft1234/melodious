@@ -1,0 +1,10 @@
+$primary: #30855c;
+$secondary: #333;
+$success: #30855c ;
+// $jumbotron-bg :#e2ebf5;
+// $body-bg: #775ba4;
+// $body-color: yellow;
+
+// Then import Bootstrap and BootstrapVue SCSS files (order is important)
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+@import 'node_modules/bootstrap-vue/src/index.scss';
