@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import jQuery from 'jquery'
+import VueHtmlToPaper from 'vue-html-to-paper';
+
 window.$ = window.jQuery = jQuery;
 import 'bootstrap'
 import 'popper.js'
@@ -38,6 +40,24 @@ Vue.use(VueGoodTablePlugin);
 import Vuelidate from 'vuelidate'
 
 Vue.use(Vuelidate)
+
+const options = {
+  name: '_blank',
+  specs: [
+    'fullscreen=yes',
+    'titlebar=yes',
+    'scrollbars=yes'
+  ],
+  styles: [
+    'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
+    'https://unpkg.com/kidlat-css/css/kidlat.css'
+  ],
+  timeout: 1000, // default timeout before the print window appears
+  autoClose: true, // if false, the window will not close after printing
+  windowTitle: window.document.title, // override the window title
+}
+
+Vue.use(VueHtmlToPaper, options);
 
 
 Vue.component('Navbar', require('./components/Navbar.vue').default)

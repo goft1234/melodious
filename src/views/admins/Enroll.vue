@@ -1,5 +1,5 @@
 <template>
-  <div class="container jumbotron">
+  <div class="container jumbotron" id="printMe">
     <div class="accordion" role="tablist">
       <b-card no-body class="mb-1">
         <b-card-header header-tag="header" class="p-1" role="tab">
@@ -43,7 +43,7 @@
                       <option>นางสาว</option>
                       <option>นาง</option>
                     </select>
-                    <!-- <span>Selected: {{ profile.namePrefix }}</span> -->
+                    <!-- <span>courseSelected: {{ profile.namePrefix }}</span> -->
                   </div>
                 </div>
 
@@ -249,7 +249,7 @@
                 ที่อยู่ที่ติดต่อได้สะดวก
               </h5>
 
-              <div class="row mt-3">
+              <div class="row mt-3 p-3">
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label for="addressNumber" class="text-success"
@@ -612,7 +612,181 @@
         </b-card-header>
         <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
           <b-card-body>
-            <b-card-text>{{ text }}</b-card-text>
+            <div
+              class="mt-3 p-3"
+              style="background: #e9ecef"
+              v-for="(course, index) in courses"
+              :key="index"
+            >
+              <!-- <div class="text-danger mt-3 nav-item" style="border-radius:50%;backgreound:white">
+               <h4 class="text-danger text-right mt-1">
+                    X
+                  </h4>
+              </div> -->
+
+              <div class="mb-1 float-right">
+                <button
+                  type="button"
+                  @click="deleteItem(index)"
+                  class="btn btn-secondary btn-circle btn-lg"
+                >
+                  <i class="fas fa-times text-light"></i>
+                </button>
+              </div>
+              <br />
+              <br />
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="namePrefix" class="text-success"
+                      >วิชาเรียน</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.courseSelected"
+                    >
+                      <option disabled value="">เลือกวิชาที่เรียน</option>
+                      <option
+                        v-for="(item, index) in course.subjects"
+                        :key="index"
+                      >
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.courseSelected }}</span>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="nickName" class="text-success"
+                      >รูปแบบการเรียน</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.classTypeSelected"
+                    >
+                      <option disabled value="">เลือกรูปแบบการเรียน</option>
+                      <option
+                        v-for="(item, index) in course.classType"
+                        :key="index"
+                      >
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.classTypeSelected }}</span>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="namePrefix" class="text-success"
+                      >Level ที่ลงเรียน</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.levelSelected"
+                    >
+                      <option disabled value="">เลือกระดับที่เรียน</option>
+                      <option
+                        v-for="(item, index) in course.level"
+                        :key="index"
+                      >
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.levelSelected }}</span>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="nickName" class="text-success"
+                      >ราคา/คอร์ส</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.priceSelected"
+                    >
+                      <option disabled value="">เลือก ราคา/คอร์ส</option>
+                      <option
+                        v-for="(item, index) in course.price"
+                        :key="index"
+                      >
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.priceSelected }}</span>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="namePrefix" class="text-success"
+                      >ส่วนลด โปรโมชั่น</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.levelSelected"
+                    >
+                      <option disabled value="">เลือกส่วนลด โปรโมชั่น</option>
+                      <option
+                        v-for="(item, index) in course.level"
+                        :key="index"
+                      >
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.levelSelected }}</span>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="nickName" class="text-success"
+                      >อาจารย์รายวิชา</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.priceSelected"
+                    >
+                      <option disabled value="">เลือก อาจารย์รายวิชา</option>
+                      <option
+                        v-for="(item, index) in course.price"
+                        :key="index"
+                      >
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.priceSelected }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col text-center mt-3">
+                  <button
+                    v-on:click="printInvoice"
+                    class="btn btn-secondary px-5"
+                  >
+                    <i class="fas fa-print"></i> Print
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-right mt-3 mr-3">
+                <button v-on:click="addNewItem" class="btn btn-success">
+                  เพิ่มวิชาเรียน
+                </button>
+              </div>
+            </div>
           </b-card-body>
         </b-collapse>
       </b-card>
@@ -625,7 +799,7 @@
         </b-card-header>
         <b-collapse id="accordion-3" accordion="my-accordion" role="tabpanel">
           <b-card-body>
-            <b-card-text>{{ text }}</b-card-text>
+            <b-card-text></b-card-text>
           </b-card-body>
         </b-collapse>
       </b-card>
@@ -635,12 +809,38 @@
 
 <script>
 import { Alert } from "bootstrap";
-import { fb, functions } from "../../firebase.js";
+import { db, fb, functions } from "../../firebase.js";
 
 export default {
   name: "profile",
   data() {
     return {
+      courses: [
+        {
+          courseSelected: "",
+          classTypeSelected: "",
+          levelSelected: "",
+          priceSelected: "",
+          subjects: ["กีต้าร์", "เบส", "กลอง", "เปียโน"],
+          classType: [
+            "เดี่ยว",
+            "เดี่ยว 30 นาที",
+            "กลุ่ม",
+            "กลุ่ม 3 คนขึ้นไป",
+            "กลุ่ม 4 คนขึ้นไป",
+          ],
+          level: ["ระดับชั้นต้น", "ระดับชั้นกลาง", "ระดับชั้นสูง", "ครูพิเศษ"],
+          price: [
+            "3,600",
+            "5,000",
+            "5,400",
+            "7,800",
+            "8,400",
+            "8,700",
+            "9,300",
+          ],
+        },
+      ],
       options: {
         // https://momentjs.com/docs/#/displaying/
         format: "DD/MM/YYYY",
@@ -676,6 +876,12 @@ export default {
           faculty: "",
           major: "",
         },
+
+        items: [
+          { description: "Item name", quantity: 0, price: 0 },
+          { description: "Item name", quantity: 0, price: 0 },
+        ],
+
         workingProfile: "",
         role: { isProfile: true },
       },
@@ -683,6 +889,27 @@ export default {
     };
   },
   methods: {
+    printInvoice() {
+      // window.print();
+      this.$htmlToPaper('printMe');
+    },
+    addNewItem: function () {
+      this.courses.push({
+        subjects: ["กีต้าร์", "เบส", "กลอง", "เปียโน"],
+        classType: [
+          "เดี่ยว",
+          "เดี่ยว 30 นาที",
+          "กลุ่ม",
+          "กลุ่ม 3 คนขึ้นไป",
+          "กลุ่ม 4 คนขึ้นไป",
+        ],
+        level: ["ระดับชั้นต้น", "ระดับชั้นกลาง", "ระดับชั้นสูง", "ครูพิเศษ"],
+        price: ["3,600", "5,000", "5,400", "7,800", "8,400", "8,700", "9,300"],
+      });
+    },
+    deleteItem(index) {
+      this.courses.splice(index, 1);
+    },
     select(address) {
       this.profile.address.district = address.district;
       this.profile.address.amphoe = address.amphoe;
@@ -774,13 +1001,43 @@ export default {
       //     });
       //   });
     },
+    getcourses() {
+      db.collection("courses").onSnapshot((querySnapshot) => {
+        this.courses = [];
+        querySnapshot.forEach((doc) => {
+          let course = {
+            couseName: doc.data().couseName,
+            class: doc.data().class,
+            beginRate: doc.data().beginRate,
+            mediumRate: doc.data().mediumRate,
+            topRate: doc.data().topRate,
+            teacherRate: doc.data().teacherRate,
+            couseId: doc.id,
+          };
+          this.courses.push(course);
+        });
+      });
+    },
   },
 
   mounted() {
     window.scrollTo(0, 0);
   },
+
+  created() {
+    // this.getcourses();
+  },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
 </style>
