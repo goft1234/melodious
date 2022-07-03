@@ -106,7 +106,22 @@ export default {
       try {
         var user = await fb.auth().signInWithEmailAndPassword(this.email, this.password);
         if(user){
-          this.$router.replace('/admin/approve');
+          await fb.auth().onAuthStateChanged
+          var {claims} = await fb.auth().currentUser.getIdTokenResult()
+          // console.log(claims);
+          if(claims.isRegisted){
+            this.$router.replace('/profile');
+            // alert('isRegisted')
+          }
+          else if(claims.isProfile){
+            this.$router.replace('/pending');
+            // alert('isProfile')
+          }
+          else if(claims.isAdmin){
+            this.$router.replace('/admin/approve');
+            // alert('admin')
+          }
+          
         }
         // var user = await fb.auth().currentUser;
         // var doc = await db.collection("teacher").doc(user.uid).get();

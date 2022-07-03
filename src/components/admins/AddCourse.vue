@@ -3,10 +3,18 @@
     <div class="container-fluid jumbotron">
       <div class="">
         <h4 class="text-center text-success mb-4">หลักสูตรและค่าเรียน</h4>
-        <h5 class="d-inline-block text-success">รายวิชาเรียน</h5>
+        <!-- <h5 class="d-inline-block text-success">รายวิชาเรียน</h5> -->
         <button
           @click="addNew"
-          class="btn btn-success d-inline-block float-right px-5"
+          class="btn btn-secondary d-inline-block px-2"
+          data-toggle="modal"
+          data-target="#courseTemplate"
+        >
+          สร้างแม่แบบ
+        </button>
+        <button
+          @click="addNew"
+          class="btn btn-success d-inline-block float-right px-3"
           data-toggle="modal"
           data-target="#course"
         >
@@ -82,105 +90,143 @@
                     <i class="fas fa-music"></i>
                   </span>
                 </div>
-                <input
-                  type="text"
-                  v-model.trim="course.couseName"
-                  class="form-control"
-                  placeholder="กรอกวิชาเรียน/หลักสูตร"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="classType" class="text-success mt-2"
-                  >รูปแบบการเรียน</label
-                >
                 <select
                   class="form-control"
-                  id="classType"
-                  v-model="course.class"
+                  id="courseType"
+                  v-model="course.courseName"
                 >
-                  <option disabled>เลือกรูปแบบการเรียน</option>
-                  <option>เดี่ยว</option>
-                  <option>กลุ่ม</option>
-                  <option>เดี่ยว30นาที</option>
-                  <option>กลุ่ม 3 คนขึ้นไป</option>
-                  <option>กลุ่ม 4 คนขึ้นไป</option>
+                  <option disabled value="">เลือกวิชาเรียน</option>
+                  <option v-for="(item, index) in courseTemplate.courseName" :key="index">
+                    {{ item }}
+                  </option>
                 </select>
               </div>
 
-              <h6 class="float-left text-success mt-2">
-                อัตราค่าเรียน ชั้นต้น
-              </h6>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">
-                    <i class="fas fa-star-half-alt"></i>
-                  </span>
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >รูปแบบการเรียน</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fas fa-users"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="course.class"
+                  >
+                    <option disabled>เลือกรูปแบบการเรียน</option>
+                    <option v-for="(item, index) in courseTemplate.courseType" :key="index">
+                    {{ item }}
+                  </option>
+                  </select>
                 </div>
-                <input
-                  type="text"
-                  v-model.trim="course.beginRate"
-                  class="form-control"
-                  placeholder="อัตราค่าเรียน ชั้นต้น"
-                />
               </div>
 
-              <h6 class="float-left text-success mt-2">
-                อัตราค่าเรียน ชั้นกลาง
-              </h6>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">
-                    <i class="fas fa-star"></i>
-                  </span>
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >อัตราค่าเรียน ชั้นต้น</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fas fa-star-half-alt"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="course.beginRate"
+                  >
+                    <option disabled>เลือกเรทราคา</option>
+                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    {{ item }}
+                  </option>
+                  </select>
                 </div>
-                <input
-                  type="text"
-                  v-model.trim="course.mediumRate"
-                  class="form-control"
-                  placeholder="อัตราค่าเรียน ชั้นกลาง"
-                />
               </div>
 
-              <h6 class="float-left text-success mt-2">
-                อัตราค่าเรียน ชั้นสูง
-              </h6>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">
-                    <i class="fas fa-grin-stars"></i>
-                  </span>
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >อัตราค่าเรียน ชั้นกลาง</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fas fa-star"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="course.mediumRate"
+                  >
+                    <option disabled>เลือกเรทราคา</option>
+                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    {{ item }}
+                  </option>
+                  </select>
                 </div>
-                <input
-                  type="text"
-                  v-model.trim="course.topRate"
-                  class="form-control"
-                  placeholder="อัตราค่าเรียน ชั้นสูง"
-                />
               </div>
 
-              <h6 class="float-left text-success mt-2">
-                อัตราค่าเรียน ครูพิเศษ
-              </h6>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">
-                    <i class="fas fa-medal"></i>
-                  </span>
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >อัตราค่าเรียน ชั้นสูง</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fas fa-grin-stars"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="course.topRate"
+                  >
+                    <option disabled>เลือกเรทราคา</option>
+                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    {{ item }}
+                  </option>
+                  </select>
                 </div>
-                <input
-                  type="text"
-                  v-model.trim="course.teacherRate"
-                  class="form-control"
-                  placeholder="อัตราค่าเรียน ครูพิเศษ"
-                />
               </div>
+
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >อัตราค่าเรียน ครูพิเศษ</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fas fa-medal"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="course.teacherRate"
+                  >
+                    <option disabled>เลือกเรทราคา</option>
+                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    {{ item }}
+                  </option>
+                  </select>
+                </div>
+              </div>
+
             </form>
           </div>
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
               Close
             </button>
             <button
@@ -204,6 +250,237 @@
       </div>
     </div>
     <!--End The Modal -->
+
+    <!--Start The template Modal -->
+    <div class="modal fade" id="courseTemplate">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title text-secondary">สร้างแม่แบบ</h4>
+
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <form v-on:submit.prevent>
+              <!-- <h6 class="float-left text-success">ชื่อวิชาเรียน/หลักสูตร</h6> -->
+              <label for="product_link" class="text-primary">
+                ชื่อวิชาเรียน/หลักสูตร
+              </label>
+              <b-form-tags
+                v-model="courseTemplate.courseName"
+                no-outer-focus
+                tag-variant="success"
+                class="mb-4"
+              >
+                <template
+                  v-slot="{
+                    tags,
+                    inputAttrs,
+                    inputHandlers,
+                    tagVariant,
+                    addTag,
+                    removeTag,
+                  }"
+                >
+                  <b-input-group class="mb-2">
+                    <b-form-input
+                      v-bind="inputAttrs"
+                      v-on="inputHandlers"
+                      placeholder="กดปุ่มAdd หรือ กดEnter เพื่อเพิ่ม"
+                      class="form-control"
+                    ></b-form-input>
+                    <b-input-group-append>
+                      <b-button @click="addTag()" variant="success"
+                        >Add</b-button
+                      >
+                    </b-input-group-append>
+                  </b-input-group>
+                  <div class="d-inline-block" style="font-size: 1.3rem">
+                    <b-form-tag
+                      v-for="tag in tags"
+                      @remove="removeTag(tag)"
+                      :key="tag"
+                      :title="tag"
+                      :variant="tagVariant"
+                      class="mr-1"
+                      >{{ tag }}</b-form-tag
+                    >
+                  </div>
+                </template>
+              </b-form-tags>
+
+              <div class="form-group">
+                <label for="product_link" class="text-success">
+                  รูปแบบการเรียน
+                </label>
+                <b-form-tags
+                  v-model="courseTemplate.courseType"
+                  tag-variant="success"
+                  no-outer-focus
+                  class="mb-4"
+                >
+                  <template
+                    v-slot="{
+                      tags,
+                      inputAttrs,
+                      inputHandlers,
+                      tagVariant,
+                      addTag,
+                      removeTag,
+                    }"
+                  >
+                    <b-input-group class="mb-2">
+                      <b-form-input
+                        v-bind="inputAttrs"
+                        v-on="inputHandlers"
+                        placeholder="กดปุ่มAdd หรือ กดEnter เพื่อเพิ่ม"
+                        class="form-control"
+                      ></b-form-input>
+                      <b-input-group-append>
+                        <b-button @click="addTag()" variant="success"
+                          >Add</b-button
+                        >
+                      </b-input-group-append>
+                    </b-input-group>
+                    <div class="d-inline-block" style="font-size: 1.3rem">
+                      <b-form-tag
+                        v-for="tag in tags"
+                        @remove="removeTag(tag)"
+                        :key="tag"
+                        :title="tag"
+                        :variant="tagVariant"
+                        class="mr-1"
+                        >{{ tag }}</b-form-tag
+                      >
+                    </div>
+                  </template>
+                </b-form-tags>
+              </div>
+
+              <div class="form-group">
+                <label for="product_link" class="text-success">
+                  ระดับการเรียน
+                </label>
+                <b-form-tags
+                  v-model="courseTemplate.level"
+                  tag-variant="success"
+                  no-outer-focus
+                  class="mb-4"
+                >
+                  <template
+                    v-slot="{
+                      tags,
+                      inputAttrs,
+                      inputHandlers,
+                      tagVariant,
+                      addTag,
+                      removeTag,
+                    }"
+                  >
+                    <b-input-group class="mb-2">
+                      <b-form-input
+                        v-bind="inputAttrs"
+                        v-on="inputHandlers"
+                        placeholder="กดปุ่มAdd หรือ กดEnter เพื่อเพิ่ม"
+                        class="form-control"
+                      ></b-form-input>
+                      <b-input-group-append>
+                        <b-button @click="addTag()" variant="success"
+                          >Add</b-button
+                        >
+                      </b-input-group-append>
+                    </b-input-group>
+                    <div class="d-inline-block" style="font-size: 1.3rem">
+                      <b-form-tag
+                        v-for="tag in tags"
+                        @remove="removeTag(tag)"
+                        :key="tag"
+                        :title="tag"
+                        :variant="tagVariant"
+                        class="mr-1"
+                        >{{ tag }}</b-form-tag
+                      >
+                    </div>
+                  </template>
+                </b-form-tags>
+              </div>
+
+              <div class="form-group">
+                <label for="product_link" class="text-success">
+                  อัตราค่าเรียน
+                </label>
+                <b-form-tags
+                  v-model="courseTemplate.rate"
+                  tag-variant="success"
+                  no-outer-focus
+                  class="mb-4"
+                >
+                  <template
+                    v-slot="{
+                      tags,
+                      inputAttrs,
+                      inputHandlers,
+                      tagVariant,
+                      addTag,
+                      removeTag,
+                    }"
+                  >
+                    <b-input-group class="mb-2">
+                      <b-form-input
+                        v-bind="inputAttrs"
+                        v-on="inputHandlers"
+                        placeholder="กดปุ่มAdd หรือ กดEnter เพื่อเพิ่ม"
+                        class="form-control"
+                      ></b-form-input>
+                      <b-input-group-append>
+                        <b-button @click="addTag()" variant="success"
+                          >Add</b-button
+                        >
+                      </b-input-group-append>
+                    </b-input-group>
+                    <div class="d-inline-block" style="font-size: 1.3rem">
+                      <b-form-tag
+                        v-for="tag in tags"
+                        @remove="removeTag(tag)"
+                        :key="tag"
+                        :title="tag"
+                        :variant="tagVariant"
+                        class="mr-1"
+                        >{{ tag }}</b-form-tag
+                      >
+                    </div>
+                  </template>
+                </b-form-tags>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              @click="updateKeyword()"
+              type="button"
+              class="btn btn-success"
+            >
+              บันทึกข้อมูล
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--End The template Modal -->
   </div>
 </template>
 
@@ -217,7 +494,7 @@ export default {
       columns: [
         {
           label: "วิชา/หลักสูตร",
-          field: "couseName",
+          field: "courseName",
           type: "text",
         },
         {
@@ -258,10 +535,15 @@ export default {
       ],
 
       modal: null,
-
+      courseTemplate: {
+        courseName: [],
+        courseType: [],
+        level: [],
+        rate: [],
+      },
       courses: [],
       course: {
-        couseName: null,
+        courseName: null,
         class: null,
         beginRate: null,
         mediumRate: null,
@@ -271,6 +553,45 @@ export default {
     };
   },
   methods: {
+    getCoursetemplate() {
+      const userRef = db.collection("courseTemplate");
+      const unsub = userRef.onSnapshot(
+        (docSnapshot) => {
+          if (docSnapshot.empty) {
+            console.log("No matching documents.");
+            return;
+          }
+          docSnapshot.forEach((doc) => {
+            this.courseTemplate = doc.data();
+            // console.log(doc.id, "=>", doc.data());
+          });
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+    },
+
+    updateKeyword() {
+      db.collection("courseTemplate")
+        .doc("detail")
+        .set(this.courseTemplate)
+        .then(
+          () => {
+            Swal.fire({
+              title: "อัพเดทเรียบร้อย",
+              text: "อัพเดท template เรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            $("#courseTemplate").modal("hide");
+          },
+
+          { merge: true }
+        );
+    },
+
     deletecourse(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
@@ -288,8 +609,8 @@ export default {
             .delete()
             .then(() => {
               Swal.fire({
-                title: "ทำการลบสินค้าเรียบร้อย",
-                text: "ได้ทำการลบสินค้าเรียบร้อย",
+                title: "ทำการลบเรียบร้อย",
+                text: "ได้ทำการลบข้อมูลเรียบร้อย",
                 icon: "success",
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
@@ -307,7 +628,7 @@ export default {
 
     reset() {
       this.course = {
-        couseName: null,
+        courseName: null,
         class: null,
         beginRate: null,
         mediumRate: null,
@@ -344,8 +665,8 @@ export default {
       try {
         await db.collection("courses").add(this.course);
         Swal.fire({
-          title: "เรียบร้อย",
-          text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
+          title: "เพิ่มข้อมูลเรียบร้อย",
+          text: "ได้ทำการเพิ่มข้อมูลแล้วเรียบร้อย",
           icon: "success",
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
@@ -368,7 +689,7 @@ export default {
         this.courses = [];
         querySnapshot.forEach((doc) => {
           let course = {
-            couseName: doc.data().couseName,
+            courseName: doc.data().courseName,
             class: doc.data().class,
             beginRate: doc.data().beginRate,
             mediumRate: doc.data().mediumRate,
@@ -384,6 +705,7 @@ export default {
 
   mounted() {
     this.getcourses();
+    this.getCoursetemplate();
     window.scrollTo(0, 0);
   },
 };

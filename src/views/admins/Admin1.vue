@@ -166,7 +166,7 @@
 <script>
 import { functions, fb, db } from "../../firebase";
 import approvePage from "@/components/admins/Approve.vue";
-import EnrollPage from "@/views/admins/Enroll.vue";
+import EnrollPage from "@/components/admins/Enroll.vue";
 import AddProduct from "@/components/admins/AddProduct.vue";
 import AddCourse from "@/components/admins/AddCourse.vue";
 import TeacherData from "@/components/admins/TeacherData.vue";

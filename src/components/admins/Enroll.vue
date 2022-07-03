@@ -164,7 +164,7 @@
                       class="form-control"
                       placeholder="กรอกชื่อจริง"
                       id="firstName"
-                      v-model.trim="profile.firstName"
+                      v-model.trim="profile.parentFirstName"
                     />
                     <!-- <span> : {{ profile.firstName }}</span> -->
                   </div>
@@ -177,7 +177,7 @@
                       class="form-control"
                       placeholder="กรอกนามสกุล"
                       id="lastName"
-                      v-model.trim="profile.lastName"
+                      v-model.trim="profile.parentLastName"
                     />
                     <!-- <span> : {{ profile.lastName }}</span> -->
                   </div>
@@ -195,7 +195,7 @@
                       class="form-control"
                       placeholder="กรอกนามสกุล"
                       id="mobilephone"
-                      v-model.trim="profile.mobilephone"
+                      v-model.trim="profile.parentMobilephone"
                     />
                   </div>
                 </div>
@@ -207,7 +207,7 @@
                       class="form-control"
                       placeholder="กรอกอีเมล์มี @"
                       id="อีเมล์"
-                      v-model.trim="profile.email"
+                      v-model.trim="profile.parentEmail"
                     />
                     <!-- <span> : {{ profile.email }}</span> -->
                   </div>
@@ -225,7 +225,7 @@
                       class="form-control"
                       placeholder="เกี่ยวข้องเป็น"
                       id="telephone"
-                      v-model.trim="profile.telephone"
+                      v-model.trim="profile.parentAbout"
                     />
                   </div>
                 </div>
@@ -249,7 +249,7 @@
                 ที่อยู่ที่ติดต่อได้สะดวก
               </h5>
 
-              <div class="row mt-3 p-3">
+              <div class="row mt-3">
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label for="addressNumber" class="text-success"
@@ -387,7 +387,7 @@
                     <input
                       type="email"
                       class="form-control"
-                      placeholder="กรอกชื่อมหาวิทยาลัย"
+                      placeholder="กรอกชื่อโรงเรียน / มหาวิทยาลัย"
                       id="email"
                       v-model="profile.graduated.university"
                     />
@@ -404,7 +404,7 @@
                     <input
                       type="email"
                       class="form-control"
-                      placeholder="กรอกคณะ / ระดับชั้น"
+                      placeholder="กรอก ระดับชั้น / คณะ"
                       id="email"
                       v-model="profile.graduated.faculty"
                     />
@@ -437,7 +437,7 @@
                   placeholder="กรอกข้อมูล เคย ไม่เคย วิชาที่เรียน ระยะเวลา  ระดับ โรงเรียน/สถานศึกษา เช่น
   -เรียนเปียโน ที่ โรงเรียนสอนดนตรี Melodious ปี 2563-2564         
   -เรียนกีต้าร์คลาสสิค ที่ โรงเรียนสอนดนตรี Melodious ปี 2564-ปัจจุบัน"
-                  v-model="profile.workingProfile"
+                  v-model="profile.studyProfile"
                 ></textarea>
               </div>
 
@@ -618,12 +618,6 @@
               v-for="(course, index) in courses"
               :key="index"
             >
-              <!-- <div class="text-danger mt-3 nav-item" style="border-radius:50%;backgreound:white">
-               <h4 class="text-danger text-right mt-1">
-                    X
-                  </h4>
-              </div> -->
-
               <div class="mb-1 float-right">
                 <button
                   type="button"
@@ -647,9 +641,10 @@
                       v-model="course.courseSelected"
                     >
                       <option disabled value="">เลือกวิชาที่เรียน</option>
+
                       <option
-                        v-for="(item, index) in course.subjects"
-                        :key="index"
+                        v-for="(item, subIndex) in course.courseName"
+                        :key="subIndex"
                       >
                         {{ item }}
                       </option>
@@ -670,7 +665,7 @@
                     >
                       <option disabled value="">เลือกรูปแบบการเรียน</option>
                       <option
-                        v-for="(item, index) in course.classType"
+                        v-for="(item, index) in course.courseType"
                         :key="index"
                       >
                         {{ item }}
@@ -713,10 +708,7 @@
                       v-model="course.priceSelected"
                     >
                       <option disabled value="">เลือก ราคา/คอร์ส</option>
-                      <option
-                        v-for="(item, index) in course.price"
-                        :key="index"
-                      >
+                      <option v-for="(item, index) in course.rate" :key="index">
                         {{ item }}
                       </option>
                     </select>
@@ -735,10 +727,7 @@
                       v-model="course.levelSelected"
                     >
                       <option disabled value="">เลือกส่วนลด โปรโมชั่น</option>
-                      <option
-                        v-for="(item, index) in course.level"
-                        :key="index"
-                      >
+                      <option v-for="(item, index) in course" :key="index">
                         {{ item }}
                       </option>
                     </select>
@@ -754,22 +743,19 @@
                     <select
                       class="form-control"
                       id="namePrefix"
-                      v-model="course.priceSelected"
+                      v-model="course.teacherSelected"
                     >
                       <option disabled value="">เลือก อาจารย์รายวิชา</option>
-                      <option
-                        v-for="(item, index) in course.price"
-                        :key="index"
-                      >
-                        {{ item }}
+                      <option v-for="(item, index) in tcDatas" :key="index">
+                        {{ item.nickName }}
                       </option>
                     </select>
-                    <span>courseSelected: {{ course.priceSelected }}</span>
+                    <span>courseSelected: {{ course.teacherSelected }}</span>
                   </div>
                 </div>
               </div>
 
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col text-center mt-3">
                   <button
                     v-on:click="printInvoice"
@@ -778,7 +764,7 @@
                     <i class="fas fa-print"></i> Print
                   </button>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="row">
               <div class="col text-right mt-3 mr-3">
@@ -787,6 +773,229 @@
                 </button>
               </div>
             </div>
+
+            <!-- invoice Start -->
+            <!-- <div class="col" id="InvPckPrint">
+              <div class="page" size="A4" style="page-break-after: always">
+                <table
+                  width="100%"
+                  style="margin:  0; border-bottom: 3px #000000 solid"
+                >
+                  <tr>
+                    <td
+                      class="text-center"
+                      style="
+                        font-weight: bolder;
+                        font-size: 1.5em;
+                        padding-top: 10px;
+                      "
+                    >
+                      
+                      MELODIOUS MUSIC SCHOOL
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-center">
+                      <p style="font-size:12px;">
+                        
+                        188/77-78 ชั้น 2 หมู่ 4 ต.บางพลีใหญ่ อ.บางพลี
+                        จ.สมุทรปราการ 10540
+                      </p>
+                      <p style="font-size:12px;">
+                        Tel.02 183 9700 , 087 022 0277 , 091 5588 700 Fax 02 183
+                        7492
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <tr>
+                    <td style="" colspan="4">
+                      <h5 class="text-center"><b>ใบลงทะเบียน / ต่อคอร์สเรียน</b></h5>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0"></td>
+                    <td colspan="2"></td>
+                    <td style="text-align: center"><b>วันที่:</b> {{dateNow}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0"></td>
+                    <td colspan="2"></td>
+                    <td style="text-align: center"><b>รหัสนักเรียน</b> MMS592</td>
+                  </tr>
+                  <tr>
+                    <td><b>ชื่อ-นามสกุล</b></td>
+                    <td style="padding: 6px 0">{{profile.firstName}} {{profile.lastName}}</td>
+                    <td><b>ชื่อเล่น</b></td>
+                    <td style="padding: 6px 0">{{profile.nickName}}</td>
+                  </tr>
+
+                  <tr>
+                    <td><b>วิชาที่เรียน</b></td>
+                    <td style="padding: 6px 0">Drum</td>
+                    <td ><b>อาจารย์ผู้สอน</b></td>
+                    <td style="padding: 6px 0">อ.บุรินทร์ ขวัญรัตน์ (ครูป๊อป)</td>
+                  </tr>
+
+                  <tr>
+                    <td><b>วันที่เลือกเรียน</b></td>
+                    <td style="padding: 6px 0">ศุกร์ 17:00-18:00</td>
+                    <td ><b>ชั้นเรียน</b></td>
+                    <td style="padding: 6px 0">เดี่ยว (ชั้นต้น)</td>
+                  </tr>
+
+                  <tr>
+                    <td><b>วันที่เริ่มเรียน</b></td>
+                    <td style="padding: 6px 6px">#NUM</td>
+                    <td ><b>วันที่เรียนจบ</b></td>
+                    <td style="padding: 6px 0">#NUM</td>
+                  </tr>
+
+                  <tr>
+                    <td></td>
+                    <td style="padding: 6px 0"></td>
+                    <td ><b>ได้ชำระเงินเป็นจำนวน</b></td>
+                    <td style="padding: 6px 0">10,820.00 บาท</td>
+                  </tr>
+
+                  <tr>
+                    <td></td>
+                    <td style="padding: 6px 0"></td>
+                    <td ><b>ใบเสร็จรับเงินเลขที่</b></td>
+                    <td style="padding: 6px 0">170/78</td>
+                  </tr>
+
+                  <tr>
+                    <td></td>
+                    <td style="padding: 6px 0"></td>
+                    <td ><b>ระยะเวลาเรียน</b></td>
+                    <td style="padding: 6px 0">1คอร์ส/3เดือน(12 ครั้ง)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 4px 0"><b>หมายเหตุ :</b></td>
+                    <td colspan="2">......................................................................................</td>
+                  </tr>
+                  <tr>
+                    <td colspan="4"><i style="font-size:10px;">***โรงเรียนขอสงวนสิทธิ์ไม่คืนค่าเรียน ในทุกกรณี ***</i></td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">ลงชื่อ...........................................เจ้าหน้าที่/ผู้ดำเนินการ</td>
+                  </tr>
+                </table>
+
+                <table
+                  width="100%"
+                  style="margin:  0; border-bottom: 3px #000000 solid"
+                >
+                  <tr>
+                    <td
+                      class="text-center"
+                      style="
+                        font-weight: bolder;
+                        font-size: 1.5em;
+                        padding-top: 30px;
+                      "
+                    >
+                      MELODIOUS MUSIC SCHOOL
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-center">
+                      <p style="font-size:12px;">
+                        188/77-78 ชั้น 2 หมู่ 4 ต.บางพลีใหญ่ อ.บางพลี
+                        จ.สมุทรปราการ 10540
+                      </p>
+                      <p style="font-size:12px;">
+                        Tel.02 183 9700 , 087 022 0277 , 091 5588 700 Fax 02 183
+                        7492
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <tr>
+                    <td style="" colspan="4">
+                      <h5 class="text-center"><b>ใบลงทะเบียน / ต่อคอร์สเรียน</b></h5>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0"></td>
+                    <td colspan="2"></td>
+                    <td style="text-align: center"><b>วันที่:</b> {{dateNow}}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0"></td>
+                    <td colspan="2"></td>
+                    <td style="text-align: center"><b>รหัสนักเรียน</b> MMS592</td>
+                  </tr>
+                  <tr>
+                    <td><b>ชื่อ-นามสกุล</b></td>
+                    <td style="padding: 6px 0">{{profile.firstName}} {{profile.lastName}}</td>
+                    <td><b>ชื่อเล่น</b></td>
+                    <td style="padding: 6px 0">เกมส์</td>
+                  </tr>
+
+                  <tr>
+                    <td><b>วิชาที่เรียน</b></td>
+                    <td style="padding: 6px 0">Drum</td>
+                    <td ><b>อาจารย์ผู้สอน</b></td>
+                    <td style="padding: 6px 0">อ.บุรินทร์ ขวัญรัตน์ (ครูป๊อป)</td>
+                  </tr>
+
+                  <tr>
+                    <td><b>วันที่เลือกเรียน</b></td>
+                    <td style="padding: 6px 0">ศุกร์ 17:00-18:00</td>
+                    <td ><b>ชั้นเรียน</b></td>
+                    <td style="padding: 6px 0">เดี่ยว (ชั้นต้น)</td>
+                  </tr>
+
+                  <tr>
+                    <td><b>วันที่เริ่มเรียน</b></td>
+                    <td style="padding: 6px 6px">#NUM</td>
+                    <td ><b>วันที่เรียนจบ</b></td>
+                    <td style="padding: 6px 0">#NUM</td>
+                  </tr>
+
+                  <tr>
+                    <td></td>
+                    <td style="padding: 6px 0"></td>
+                    <td ><b>ได้ชำระเงินเป็นจำนวน</b></td>
+                    <td style="padding: 6px 0">10,820.00 บาท</td>
+                  </tr>
+
+                  <tr>
+                    <td></td>
+                    <td style="padding: 6px 0"></td>
+                    <td ><b>ใบเสร็จรับเงินเลขที่</b></td>
+                    <td style="padding: 6px 0">170/78</td>
+                  </tr>
+
+                  <tr>
+                    <td></td>
+                    <td style="padding: 6px 0"></td>
+                    <td ><b>ระยะเวลาเรียน</b></td>
+                    <td style="padding: 6px 0">1คอร์ส/3เดือน(12 ครั้ง)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 4px 0"><b>หมายเหตุ :</b></td>
+                    <td colspan="2">......................................................................................</td>
+                  </tr>
+                  <tr>
+                    <td colspan="4"><i style="font-size:10px;">***โรงเรียนขอสงวนสิทธิ์ไม่คืนค่าเรียน ในทุกกรณี ***</i></td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">ลงชื่อรับทราบ......................................ผู้สมัคร/ผู้ปกครอง</td>
+                  </tr>
+                </table>
+
+                
+              </div>
+            </div> -->
           </b-card-body>
         </b-collapse>
       </b-card>
@@ -810,37 +1019,25 @@
 <script>
 import { Alert } from "bootstrap";
 import { db, fb, functions } from "../../firebase.js";
-
+import moment from "moment";
 export default {
   name: "profile",
   data() {
     return {
-      courses: [
-        {
-          courseSelected: "",
-          classTypeSelected: "",
-          levelSelected: "",
-          priceSelected: "",
-          subjects: ["กีต้าร์", "เบส", "กลอง", "เปียโน"],
-          classType: [
-            "เดี่ยว",
-            "เดี่ยว 30 นาที",
-            "กลุ่ม",
-            "กลุ่ม 3 คนขึ้นไป",
-            "กลุ่ม 4 คนขึ้นไป",
-          ],
-          level: ["ระดับชั้นต้น", "ระดับชั้นกลาง", "ระดับชั้นสูง", "ครูพิเศษ"],
-          price: [
-            "3,600",
-            "5,000",
-            "5,400",
-            "7,800",
-            "8,400",
-            "8,700",
-            "9,300",
-          ],
-        },
-      ],
+      // courseTemplate: {
+      //   courseName: [],
+      //   courseType: [],
+      //   level: [],
+      //   rate: [],
+      // },
+      cTemplate: {},
+      cType: {},
+      cLevel: {},
+      cRate: {},
+
+      courses: [],
+      tcDatas: [],
+
       options: {
         // https://momentjs.com/docs/#/displaying/
         format: "DD/MM/YYYY",
@@ -848,6 +1045,7 @@ export default {
         showClear: true,
         showClose: true,
       },
+      dateNow: moment(Date.now()).format("DD/MM/YYYY"),
       profile: {
         uid: "",
         namePrefix: "",
@@ -858,7 +1056,14 @@ export default {
         email: "",
         telephone: "",
         mobilephone: "",
-        profileType: "employee",
+        profileType: "student",
+
+        parentFirstName: "",
+        parentLastName: "",
+        parentEmail: "",
+        parentMobilephone: "",
+        parentAbout: "",
+
         address: {
           addressNumber: "",
           location: "",
@@ -877,39 +1082,73 @@ export default {
           major: "",
         },
 
-        items: [
-          { description: "Item name", quantity: 0, price: 0 },
-          { description: "Item name", quantity: 0, price: 0 },
-        ],
+        // items: [
+        //   { description: "Item name", quantity: 0, price: 0 },
+        //   { description: "Item name", quantity: 0, price: 0 },
+        // ],
 
-        workingProfile: "",
+        studyProfile: "",
         role: { isProfile: true },
       },
       // subjectDetail: [{ subject: "", ageRange: [], level: [], classType: [] }],
     };
   },
+
   methods: {
-    printInvoice() {
-      // window.print();
-      this.$htmlToPaper('printMe');
+    async getCourseTemplate() {
+      const doc = await db.collection("courseTemplate").doc("detail").get();
+      // if (doc.empty) {
+      //   console.log("No matching documents.");
+      //   return;
+      // }
+      this.cTemplate = doc.data().courseName;
+      this.cType = doc.data().courseType;
+      this.cLevel = doc.data().level;
+      this.cRate = doc.data().rate;
+      
+      this.getTeacherData();
+      this.addNewItem();
     },
-    addNewItem: function () {
-      this.courses.push({
-        subjects: ["กีต้าร์", "เบส", "กลอง", "เปียโน"],
-        classType: [
-          "เดี่ยว",
-          "เดี่ยว 30 นาที",
-          "กลุ่ม",
-          "กลุ่ม 3 คนขึ้นไป",
-          "กลุ่ม 4 คนขึ้นไป",
-        ],
-        level: ["ระดับชั้นต้น", "ระดับชั้นกลาง", "ระดับชั้นสูง", "ครูพิเศษ"],
-        price: ["3,600", "5,000", "5,400", "7,800", "8,400", "8,700", "9,300"],
+
+    async getTeacherData() {
+      const querySnapshot = await db.collection("teacherData").onSnapshot();
+
+      this.tcDatas = [];
+      querySnapshot.forEach((doc) => {
+        let tcData = {
+          tcId: doc.data().uid,
+          tcFirstname: doc.data().firstName,
+          tcLastname: doc.data().lastName,
+          tcNickname: doc.data().nickName,
+        };
+        this.tcDatas.push(tcData);
       });
     },
+
+    printInvoice() {
+      // window.print();
+      this.$htmlToPaper("InvPckPrint");
+    },
+
+    addNewItem() {
+      this.courses.push({
+        courseSelected: "",
+        classTypeSelected: "",
+        levelSelected: "",
+        priceSelected: "",
+        teacherSelected: "",
+        courseName: this.cTemplate,
+        courseType: this.cType,
+        level: this.cLevel,
+        rate: this.cRate,
+      });
+      // console.log(this.courses);
+    },
+
     deleteItem(index) {
       this.courses.splice(index, 1);
     },
+
     select(address) {
       this.profile.address.district = address.district;
       this.profile.address.amphoe = address.amphoe;
@@ -934,6 +1173,11 @@ export default {
         this.profile.birthday != "" &&
         this.profile.telephone != "" &&
         this.profile.mobilephone != "" &&
+        this.profile.parentFirstName != "" &&
+        this.profile.parentLastName != "" &&
+        this.profile.parentEmail != "" &&
+        this.profile.parentMobilephone != "" &&
+        this.profile.parentAbout != "" &&
         this.profile.address.addressNumber != "" &&
         this.profile.address.location != "" &&
         this.profile.address.soi != "" &&
@@ -946,7 +1190,7 @@ export default {
         this.profile.graduated.university != "" &&
         this.profile.graduated.faculty != "" &&
         this.profile.graduated.major != "" &&
-        this.profile.workingProfile != ""
+        this.profile.studyProfile != ""
       ) {
         this.addProfile();
       } else {
@@ -1001,23 +1245,23 @@ export default {
       //     });
       //   });
     },
-    getcourses() {
-      db.collection("courses").onSnapshot((querySnapshot) => {
-        this.courses = [];
-        querySnapshot.forEach((doc) => {
-          let course = {
-            couseName: doc.data().couseName,
-            class: doc.data().class,
-            beginRate: doc.data().beginRate,
-            mediumRate: doc.data().mediumRate,
-            topRate: doc.data().topRate,
-            teacherRate: doc.data().teacherRate,
-            couseId: doc.id,
-          };
-          this.courses.push(course);
-        });
-      });
-    },
+    // getcourses() {
+    //   db.collection("courses").onSnapshot((querySnapshot) => {
+    //     this.courses = [];
+    //     querySnapshot.forEach((doc) => {
+    //       let course = {
+    //         couseName: doc.data().couseName,
+    //         class: doc.data().class,
+    //         beginRate: doc.data().beginRate,
+    //         mediumRate: doc.data().mediumRate,
+    //         topRate: doc.data().topRate,
+    //         teacherRate: doc.data().teacherRate,
+    //         couseId: doc.id,
+    //       };
+    //       this.courses.push(course);
+    //     });
+    //   });
+    // },
   },
 
   mounted() {
@@ -1026,6 +1270,7 @@ export default {
 
   created() {
     // this.getcourses();
+    this.getCourseTemplate();
   },
 };
 </script>
@@ -1039,5 +1284,39 @@ export default {
   font-size: 12px;
   line-height: 1.428571429;
   border-radius: 15px;
+}
+.shipper-name {
+  border-top: 3px #000000 solid;
+}
+.text-center {
+  text-align: center;
+}
+table.table-border,
+table.table-border th,
+table.table-border td {
+  border-collapse: collapse;
+  border: 1px #000000 solid;
+}
+div.page {
+  background: white;
+  display: block;
+  margin: 0 auto;
+  // margin-bottom: 0.5 cm;
+  box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+}
+div.page[size="A4"] {
+  width: 21cm;
+  height: 29.7cm;
+  // height: 14.85cm;
+}
+@media print {
+  div.page {
+    margin: 0;
+    box-shadow: 0;
+  }
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
 }
 </style>

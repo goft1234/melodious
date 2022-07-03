@@ -71,7 +71,7 @@ const routes = [
       {
         path: 'enroll',
         name: 'enroll',
-        component: () => import('../views/admins/Enroll.vue')
+        component: () => import('../components/admins/Enroll.vue')
       }, 
       {
         path: 'course',
@@ -107,7 +107,7 @@ const router = new VueRouter({
 //         }
 //         else if (claims.isProfile) {
 //           if (to.path !== "/pending" )
-//             return next({ path: "/pending" });
+//             return next({ path: "/isProfile" });
 
 //         }
 //         else if (claims.isAdmin) {
