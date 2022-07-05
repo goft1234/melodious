@@ -1,6 +1,7 @@
 <template>
   <div id="teacher" class="shadow">
     <!-- <h5>อนุมัติผู้ใช้งานครู</h5> -->
+     <!-- <b-overlay :show="show" rounded="sm" :opacity="opacity"> -->
     <div class="container-fluid jumbotron">
       <div class="">
         <h4 class="text-center text-success mb-4">ข้อมูลครู</h4>
@@ -424,6 +425,7 @@
         </div>
       </div>
     </div>
+    <!-- </b-overlay> -->
   </div>
 </template>
 
@@ -433,6 +435,8 @@ export default {
   name: "",
   data() {
     return {
+       show: true,
+       opacity: 0.3,
       columns: [
         {
           label: "ชื่อ",
@@ -545,6 +549,24 @@ export default {
     },
 
     scheduleTable(user) {
+      var batch = db.batch();
+
+      // Set the value of 'NYC'
+var nycRef = db.collection("cities").doc("NYC");
+batch.set(nycRef, {name: "New York City"});
+
+// Update the population of 'SF'
+var sfRef = db.collection("cities").doc("SF");
+batch.update(sfRef, {"population": 1000000});
+
+// Delete the city 'LA'
+var laRef = db.collection("cities").doc("LA");
+batch.delete(laRef);
+
+// Commit the batch
+batch.commit().then(function () {
+   console.log('success');
+});
       // alert(uid.uid);
       // Swal.fire({
       //   title: "ยืนยันการอนุมัติ",

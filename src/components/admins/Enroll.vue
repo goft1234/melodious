@@ -747,12 +747,51 @@
                     >
                       <option disabled value="">เลือก อาจารย์รายวิชา</option>
                       <option v-for="(item, index) in tcDatas" :key="index">
-                        {{ item.nickName }}
+                       {{item.tcFirstname }}
                       </option>
                     </select>
                     <span>courseSelected: {{ course.teacherSelected }}</span>
                   </div>
                 </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="namePrefix" class="text-success"
+                      >วันที่เลือกเรียน</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.levelSelected"
+                    >
+                      <option disabled value="">วันที่เลือกเรียน</option>
+                      <option v-for="(item, index) in course" :key="index">
+                        {{ item }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.levelSelected }}</span>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="nickName" class="text-success"
+                      >เวลาที่เลือกเรียน</label
+                    >
+                    <select
+                      class="form-control"
+                      id="namePrefix"
+                      v-model="course.teacherSelected"
+                    >
+                      <option disabled value="">เลือก อาจารย์รายวิชา</option>
+                      <option v-for="(item, index) in tcDatas" :key="index">
+                       {{item.tcFirstname }}
+                      </option>
+                    </select>
+                    <span>courseSelected: {{ course.teacherSelected }}</span>
+                  </div>
+                </div>
+
               </div>
 
               <!-- <div class="row">
@@ -1105,21 +1144,20 @@ export default {
       this.cType = doc.data().courseType;
       this.cLevel = doc.data().level;
       this.cRate = doc.data().rate;
-      
-      this.getTeacherData();
+
       this.addNewItem();
     },
 
     async getTeacherData() {
-      const querySnapshot = await db.collection("teacherData").onSnapshot();
+      let querySnapshot = await db.collection("teacherData").get();
 
       this.tcDatas = [];
       querySnapshot.forEach((doc) => {
         let tcData = {
           tcId: doc.data().uid,
-          tcFirstname: doc.data().firstName,
-          tcLastname: doc.data().lastName,
-          tcNickname: doc.data().nickName,
+          tcFirstname: doc.data().fullName,
+          // tcLastname: doc.data().lastName,
+          // tcNickname: doc.data().nickName,
         };
         this.tcDatas.push(tcData);
       });
@@ -1271,6 +1309,7 @@ export default {
   created() {
     // this.getcourses();
     this.getCourseTemplate();
+    this.getTeacherData();
   },
 };
 </script>

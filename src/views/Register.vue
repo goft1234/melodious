@@ -4,16 +4,18 @@
     <div class="container-fluid mt-2">
       <div class="row">
         <div class="col-md-12 col-lg-3"></div>
+
         <div class="col-md-12 col-lg-6">
           <div class="row p-2">
             <div class="col-md-2"></div>
+
             <div class="col-md-8 jumbotron rounded">
               <h5 class="mb-5 text-success font-weight-bolder text-center">
                 สมัครสมาชิก
               </h5>
 
               <form v-on:submit.prevent>
-                <h6 class="float-left text-success">ที่อยู่อีเมล์</h6>
+                <h6 class="float-left text-success">ชื่อผู้ใช้</h6>
                 <div class="input-group mt-2">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
@@ -24,14 +26,17 @@
                     type="text"
                     v-model.trim="email"
                     class="form-control"
-                    placeholder="ระบุอีเมล์มี @"
+                    placeholder="สร้างชื่อผู้ใช้งาน"
                   />
                 </div>
 
                 <h6 class="float-left text-success mt-3">
                   รหัสผ่าน (หมายเลขโทรศัพท์)
                 </h6>
-                <div class="input-group mb-2" :class="{ 'form-group--error': $v.password.$error }">
+                <div
+                  class="input-group mb-2"
+                  :class="{ 'form-group--error': $v.password.$error }"
+                >
                   <div class="input-group-prepend">
                     <span class="input-group-text">
                       <i class="fas fa-lock"></i>
@@ -46,7 +51,7 @@
                   />
                 </div>
 
-                <div  v-if="!$v.password.minLength">
+                <div v-if="!$v.password.minLength">
                   <span class="text-danger">
                     กรอกรหัสผ่าน {{ $v.password.$params.minLength.min }} อักษร.
                   </span>
@@ -80,10 +85,11 @@
                   @click="onRegister"
                   class="btn btn-success btn-block mt-4"
                 >
+                 <!-- <b-spinner small label="Spinner" class="float-left" v-if="spinshow"></b-spinner> -->
                   ลงทะเบียน
                 </button>
               </form>
-              <hr>
+              <hr />
               <div class="text-success mt-3 nav-item">
                 <router-link to="/" class="nav-link text-center text-success"
                   ><h6 class="text-success mt-1">
@@ -92,9 +98,11 @@
                 >
               </div>
             </div>
+
             <div class="col-md-2"></div>
           </div>
         </div>
+
         <div class="col-md-12 col-lg-3"></div>
       </div>
     </div>
@@ -112,9 +120,11 @@ export default {
   components: {},
   data() {
     return {
+      show: true,
+      // spinshow:true,
       email: "",
-      password: "",
-      passwordConfirm: "",
+      password: null,
+      passwordConfirm: null,
       chkPass: null,
     };
   },
@@ -139,24 +149,25 @@ export default {
 
     async createUser() {
       try {
+        this.email = `${this.email}@gmail.com`;
         console.log(this.email);
-        var user = await fb
-          .auth()
-          .createUserWithEmailAndPassword(this.email, this.passwordConfirm);
+        // var user = await fb
+        //   .auth()
+        //   .createUserWithEmailAndPassword(this.email, this.passwordConfirm);
 
-        fb.auth()
-          .signOut()
-          .then((user) => {
-            this.$router.push("/");
-          });
-        console.log("signOut");
-        Swal.fire({
-          title: "ลงทะเบียนเรียบร้อยแล้ว",
-          text: "เข้าสู่ระบบด้วย 'อีเมล์' และ 'รหัสผ่าน' ที่ได้กำหนดไว้ ",
-          icon: "success",
-          confirmButtonColor: "#30855c",
-          confirmButtonText: "ตกลง",
-        });
+        // fb.auth()
+        //   .signOut()
+        //   .then((user) => {
+        //     this.$router.push("/");
+        //   });
+        // console.log("signOut");
+        // Swal.fire({
+        //   title: "ลงทะเบียนเรียบร้อยแล้ว",
+        //   text: "เข้าสู่ระบบด้วย 'อีเมล์' และ 'รหัสผ่าน' ที่ได้กำหนดไว้ ",
+        //   icon: "success",
+        //   confirmButtonColor: "#30855c",
+        //   confirmButtonText: "ตกลง",
+        // });
       } catch (error) {
         let errorCode = error.code;
         let errorMessage = error.message;

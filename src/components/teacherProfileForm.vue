@@ -479,8 +479,10 @@
         <div class="btn btn-success text-center px-5" @click="validateForm()">
           เพิ่มข้อมูล
         </div>
+        {{this.profile.fullName}}
       </div>
     </form>
+
   </div>
 </template>
 
@@ -498,12 +500,14 @@ export default {
         showClear: true,
         showClose: true,
       },
+
       profile: {
         uid: "",
         namePrefix: "",
         nickName: "",
         firstName: "",
         lastName: "",
+        fullName: null,
         birthday: null,
         email: "",
         telephone: "",
@@ -534,6 +538,7 @@ export default {
       // subjectDetail: [{ subject: "", ageRange: [], level: [], classType: [] }],
     };
   },
+  
   methods: {
     select(address) {
       this.profile.address.district = address.district;
@@ -589,6 +594,8 @@ export default {
 
     async addProfile() {
       console.log(this.profile.uid);
+      this.profile.fullName = `อ.${this.profile.firstName} ${this.profile.lastName} (ครู ${this.profile.nickName})` ;
+      // alert(this.profile.fullName)
       var addFunctions = functions.httpsCallable("TeacherData");
 
       addFunctions(this.profile)
