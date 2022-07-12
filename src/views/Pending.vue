@@ -45,13 +45,16 @@ import { fb } from "../firebase.js";
 export default {
   methods: {
     logout() {
+       this.$store.state.show = true;
       fb.auth()
         .signOut()
         .then(() => {
           this.$router.push("/");
+           this.$store.state.show = false;
         })
         .catch((err) => {
           console.log(err);
+           this.$store.state.show = false;
         });
     },
 

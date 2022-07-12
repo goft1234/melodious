@@ -2,13 +2,13 @@
   <div id="profile">
     <navbar></navbar>
     <!-- {{JSON.stringify(teacherProfile)}} -->
-    <div class="container my-2">
+    <div class="container">
       <div class="row ">
         <div class="col-lg-1"></div>
         <div class="col-lg-10 mb-5">
           <div class="jumbotron">
             <select
-                class="form-control mb-3"
+                class="form-control"
                 id="namePrefix"
                 v-model="profileType"
               >

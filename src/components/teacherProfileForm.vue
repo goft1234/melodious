@@ -1,14 +1,43 @@
 <template>
-  <div>
-    <h4 class="text-center text-success mb-3 font-weight-bold">
-      ข้อมูลและประวัติครูผู้สอน
-    </h4>
-    <p class="text-left text-danger my-3">
-      *** โปรดกรอกข้อมูลให้ครบทุกช่อง ***
-    </p>
+  <div class="container jumbotron">
+    <h4 class="text-center text-success mb-3">ข้อมูลและประวัติครู</h4>
+    <div class="row">
+      <div class="col-lg-12">
+        <div id="preview">
+          <img
+            v-if="profile.image"
+            :src="profile.image"
+            class="rounded-circle mx-auto d-block"
+            width="220"
+            height="220"
+            style="border: 5px solid white"
+          />
+        </div>
+        <div class="text-center">
+          <input
+            type="file"
+            class="mt-3 form-control-file bg-white p-1"
+            @change="onFileChange"
+          />
+          <button class="btn btn-success mt-3" @click="uploadImage()">
+            อัพโหลดรูปภาพ
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <h5 class="text-left text-success my-3 font-weight-bold">ข้อมูลส่วนตัว</h5>
-    <form v-on:submit.prevent>
+    <form v-on:submit.prevent v-if="detailOpen">
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="float-right">
+            <h6 class="text-success font-weight-bold">วันที่ {{ dateNow }}</h6>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="text-left text-success my-3 font-weight-bold">
+        ข้อมูลส่วนตัวครู
+      </h5>
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
@@ -23,7 +52,6 @@
               <option>นางสาว</option>
               <option>นาง</option>
             </select>
-            <!-- <span>Selected: {{ profile.namePrefix }}</span> -->
           </div>
         </div>
 
@@ -107,6 +135,7 @@
               placeholder="ไม่มีให้ใส่ - "
               id="telephone"
               v-model.trim="profile.telephone"
+              maxlength="10"
             />
           </div>
         </div>
@@ -116,9 +145,10 @@
             <input
               type="text"
               class="form-control"
-              placeholder="กรอกนามสกุล"
+              placeholder="กรอกเบอร์มือถือ"
               id="mobilephone"
               v-model.trim="profile.mobilephone"
+              maxlength="10"
             />
           </div>
         </div>
@@ -126,7 +156,7 @@
 
       <hr />
       <h5 class="text-left text-success my-3 font-weight-bold">
-        รายละเอียดที่อยู่
+        ที่อยู่ที่ติดต่อได้สะดวก
       </h5>
 
       <div class="row mt-3">
@@ -246,6 +276,7 @@
               v-model="profile.graduated.degree"
             >
               <option disabled value="">เลือกระดับการศึกษา</option>
+              <option>มัธยมศึกษา</option>
               <option>ปริญญาตรี</option>
               <option>ปริญญาโท</option>
               <option>ปริญญาเอก</option>
@@ -254,7 +285,7 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">มหาวิทยาลัย</label>
+            <label for="email" class="text-success">โรงเรียน / มหาวิทยาลัย</label>
             <input
               type="email"
               class="form-control"
@@ -269,7 +300,7 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">คณะ</label>
+            <label for="email" class="text-success">ระดับชั้น / คณะ</label>
             <input
               type="email"
               class="form-control"
@@ -281,7 +312,7 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">เอก/สาขาวิชา</label>
+            <label for="email" class="text-success">เอก / สาขาวิชา</label>
             <input
               type="email"
               class="form-control"
@@ -294,18 +325,17 @@
       </div>
 
       <hr />
-      
-          <div class="form-group">
-            <label for="email" class="text-success">วิชาที่สอน</label>
-            <input
-              type="email"
-              class="form-control"
-              placeholder="กรอกวิชาที่สอน เช่น กีต้าร์"
-              id="email"
-              v-model="profile.subject"
-            />
-          </div>
-        
+      <div class="form-group">
+        <label for="email" class="text-success">วิชาที่สอน</label>
+        <input
+          type="email"
+          class="form-control"
+          placeholder="กรอกวิชาที่สอน เช่น กีต้าร์"
+          id="email"
+          v-model="profile.subject"
+        />
+      </div>
+
       <h5 class="text-left text-success my-3 font-weight-bold">
         ประวัติการสอน
       </h5>
@@ -322,172 +352,18 @@
         ></textarea>
       </div>
 
-      <!-- <div
-        class="p-3 my-3"
-        style="background: #f0f2f5"
-        v-for="(item, index) in subjectDetail"
-        :key="index"
-        >
-        <div class="row">
-          <div class="col-md-12 col-lg-6">
-            <div class="form-group">
-              <label for="email" class="text-success">วิชาที่สอน</label>
-              <input
-                type="email"
-                class="form-control"
-                placeholder="กรอกวิชาที่สอน เช่น เปียโนPop"
-                id="email"
-                v-model="item.subject"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label class="form-check-label text-success mb-2"
-            >ช่วงอายุที่สอนได้</label
-          >
-          <br />
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="4-8"
-                v-model="item.ageRange"
-              />4-8
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="9-12"
-                v-model="item.ageRange"
-              />9-12
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="13-15"
-                v-model="item.ageRange"
-              />13-15
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="16-19"
-                v-model="item.ageRange"
-              />16-19
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="20-25"
-                v-model="item.ageRange"
-              />20-25
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label class="form-check-label text-success my-2"
-            >ระดับชั้นที่สอน</label
-          >
-          <br />
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="ระดับต้น"
-                v-model="item.level"
-              />ระดับต้น
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="ระดับกลาง"
-                v-model="item.level"
-              />ระดับกลาง
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="ระดับสูง"
-                v-model="item.level"
-              />ระดับสูง
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="ครูพิเศษ"
-                v-model="item.level"
-              />ครูพิเศษ
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label class="form-check-label text-success my-2">ประเภทการสอน</label>
-          <br />
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="เดี่ยว"
-                v-model="item.classType"
-              />เดี่ยว
-            </label>
-          </div>
-          <div class="form-check-inline mx-3">
-            <label class="form-check-label">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                value="กลุ่ม"
-                v-model="item.classType"
-              />กลุ่ม
-            </label>
-          </div>
-
-          
-          <p><br /></p>
-        </div>
-      </div> -->
       <div class="row justify-content-center">
-        <div class="btn btn-success text-center px-5" @click="validateForm()">
+        <div class="btn btn-success text-center px-5" @click="validateForm">
           เพิ่มข้อมูล
         </div>
-        {{this.profile.fullName}}
       </div>
     </form>
-
   </div>
 </template>
 
 <script>
 import { fb, functions } from "../firebase.js";
+import moment from "moment";
 
 export default {
   name: "profile",
@@ -501,8 +377,16 @@ export default {
         showClose: true,
       },
 
+      imageName: null,
+      dateNow: moment(Date.now()).format("LL"),
+      detailOpen: false,
+
       profile: {
         uid: "",
+        addProfileAt: null,
+        image:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuNfh5XEmL28p3fZftINhCjPR1g7V8IDWJ9-H58s0jyp4GMH_nWaRqFrRFu-6CJbaTdK0&usqp=CAU",
+
         namePrefix: "",
         nickName: "",
         firstName: "",
@@ -512,7 +396,7 @@ export default {
         email: "",
         telephone: "",
         mobilephone: "",
-        profileType: "teacher",
+
         address: {
           addressNumber: "",
           location: "",
@@ -530,15 +414,15 @@ export default {
           faculty: "",
           major: "",
         },
-        subject:'',
-        workingProfile: "",
-        role:{isProfile:true},
-      },
 
-      // subjectDetail: [{ subject: "", ageRange: [], level: [], classType: [] }],
+        subject: "",
+        workingProfile: "",
+        role: { isProfile: true },
+        profileType: "teacher",
+      },
     };
   },
-  
+
   methods: {
     select(address) {
       this.profile.address.district = address.district;
@@ -547,16 +431,56 @@ export default {
       this.profile.address.zipcode = address.zipcode;
     },
 
-    // addField(value, subjectDetail) {
-    //   subjectDetail.push({ value: "" });
-    // },
+    onFileChange(e) {
+      const file = e.target.files[0];
+      this.imageName = e.target.files[0];
+      this.profile.image = URL.createObjectURL(file);
+    },
 
-    // removeField(index, subjectDetail) {
-    //   subjectDetail.splice(index, 1);
-    // },
+    uploadImage() {
+      this.$store.state.show = true;
+      let file = this.imageName;
+      var storageRef = fb
+        .storage()
+        .ref("teacherImg/" + Math.random() + "_" + file.name);
+
+      let uploadTask = storageRef.put(file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          // Handle unsuccessful uploads
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        },
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            this.profile.image = downloadURL;
+            Swal.fire({
+              title: "SUCCESS",
+              text: "อัพโหลดรูปภาพเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            this.$store.state.show = false;
+            this.detailOpen = true;
+          });
+        }
+      );
+    },
 
     validateForm() {
       if (
+        this.profile.image != "" &&
+
         this.profile.namePrefix != "" &&
         this.profile.nickName != "" &&
         this.profile.firstName != "" &&
@@ -565,6 +489,7 @@ export default {
         this.profile.birthday != "" &&
         this.profile.telephone != "" &&
         this.profile.mobilephone != "" &&
+
         this.profile.address.addressNumber != "" &&
         this.profile.address.location != "" &&
         this.profile.address.soi != "" &&
@@ -572,13 +497,8 @@ export default {
         this.profile.address.district != "" &&
         this.profile.address.amphoe != "" &&
         this.profile.address.province != "" &&
-        this.profile.address.zipcode != "" &&
-        this.profile.graduated.degree != "" &&
-        this.profile.graduated.university != "" &&
-        this.profile.graduated.faculty != "" &&
-        this.profile.graduated.major != "" &&
-        this.profile.subject != "" &&
-        this.profile.workingProfile != ""
+        this.profile.address.zipcode != ""
+        
       ) {
         this.addProfile();
       } else {
@@ -593,27 +513,27 @@ export default {
     },
 
     async addProfile() {
-      console.log(this.profile.uid);
-      this.profile.fullName = `อ.${this.profile.firstName} ${this.profile.lastName} (ครู ${this.profile.nickName})` ;
-      // alert(this.profile.fullName)
-      var addFunctions = functions.httpsCallable("TeacherData");
+      this.$store.state.show = true;
+      this.profile.addProfileAt = Date.now();
+      this.profile.fullName = `${this.profile.firstName} ${this.profile.lastName} (ครู ${this.profile.nickName})`;
 
+      var addFunctions = functions.httpsCallable("TeacherData");
       addFunctions(this.profile)
-        .then((result) => {
-          // Swal.fire({
-          //   title: "บันทึกประวัติเรียบร้อย",
-          //   text: "กรุณารอ Admin อนุมัติการเข้าใช้ ",
-          //   icon: "success",
-          //   confirmButtonColor: "#30855c",
-          //   confirmButtonText: "ตกลง",
-          // });
-          // this.$router.push('/appending');
+        .then(() => {
+          Swal.fire({
+            title: "บันทึกประวัติเรียบร้อย",
+            text: "กรุณารอ Admin อนุมัติการเข้าใช้ ",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
 
           fb.auth()
             .signOut()
             .then((_) => {
               this.$router.push("/pending");
             });
+          this.$store.state.show = false;
         })
         .catch((error) => {
           Swal.fire({
@@ -623,6 +543,7 @@ export default {
             confirmButtonColor: "#FF0000",
             confirmButtonText: "ตกลง",
           });
+          this.$store.state.show = false;
         });
     },
   },

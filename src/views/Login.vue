@@ -4,6 +4,7 @@
     <div class="container-fluid mt-5">
       <div class="row">
         <div class="col-md-12 col-lg-3"></div>
+
         <div class="col-md-12 col-lg-6">
           <div class="row p-2">
             <div class="col-md-2"></div>
@@ -48,6 +49,7 @@
                     minlength="6"
                     class="form-control"
                     placeholder="รหัสผ่านเป็นหมายเลขโทรศัพท์"
+                    maxlength="10"
                   />
                 </div>
                 <button
@@ -78,9 +80,11 @@
                 >
               </div>
             </div>
+
             <div class="col-md-2"></div>
           </div>
         </div>
+
         <div class="col-md-12 col-lg-3"></div>
       </div>
     </div>
@@ -104,24 +108,25 @@ export default {
   methods: {
     async onLogin() {
       try {
-        var user = await fb.auth().signInWithEmailAndPassword(this.email, this.password);
-        if(user){
-          await fb.auth().onAuthStateChanged
-          var {claims} = await fb.auth().currentUser.getIdTokenResult()
+        this.$store.state.show = true;
+        var user = await fb
+          .auth()
+          .signInWithEmailAndPassword(this.email, this.password);
+        if (user) {
+          await fb.auth().onAuthStateChanged;
+          var { claims } = await fb.auth().currentUser.getIdTokenResult();
           // console.log(claims);
-          if(claims.isRegisted){
-            this.$router.replace('/profile');
+          if (claims.isRegisted) {
+            this.$router.replace("/profile");
             // alert('isRegisted')
-          }
-          else if(claims.isProfile){
-            this.$router.replace('/pending');
+          } else if (claims.isProfile) {
+            this.$router.replace("/pending");
             // alert('isProfile')
-          }
-          else if(claims.isAdmin){
-            this.$router.replace('/admin/approve');
+          } else if (claims.isAdmin) {
+            this.$router.replace("/admin/approve");
             // alert('admin')
           }
-          
+          this.$store.state.show = false;
         }
         // var user = await fb.auth().currentUser;
         // var doc = await db.collection("teacher").doc(user.uid).get();
@@ -137,26 +142,57 @@ export default {
         var errorMessage = error.message;
         if (errorCode === "auth/wrong-password") {
           Swal.fire({
-            title: "เบอร์โทร หรือ password ผิด",
-            text: "ทำการตรวจสอบเบอร์โทร หรือ password อีกครั้ง",
+            title: "email หรือ password ผิด",
+            text: "ทำการตรวจสอบ email หรือ password อีกครั้ง",
             icon: "error",
-            confirmButtonColor: "#30855c",
+            confirmButtonColor: "#FF0000",
             confirmButtonText: "ตกลง",
           });
         } else {
           Swal.fire({
-            title: "เบอร์โทร หรือ password ผิด",
-            text: "ทำการตรวจสอบเบอร์โทร หรือ password อีกครั้ง",
+            title: "email หรือ password ผิด",
+            text: "ทำการตรวจสอบ email หรือ password อีกครั้ง",
             icon: "error",
             confirmButtonColor: "#FF0000",
             confirmButtonText: "ตกลง",
           });
         }
+        this.$store.state.show = false;
+      }
+    },
+
+    async chkStatus() {
+      try {
+        this.$store.state.show = true;
+        let user = await fb.auth().onAuthStateChanged;
+        console.log(user);
+        if (user) {
+          let { claims } = await fb.auth().currentUser.getIdTokenResult();
+          console.log(claims);
+          if (claims.isRegisted) {
+            this.$router.replace("/profile");
+            // alert('isRegisted')
+          } else if (claims.isProfile) {
+            this.$router.replace("/pending");
+            // alert('isProfile')
+          } else if (claims.isAdmin) {
+            this.$router.replace("/admin/approve");
+            // alert('admin')
+          }
+          else{
+            this.$router.replace("/");
+          }
+          this.$store.state.show = false;
+        }
+      } catch (error) {
+        this.$router.replace("/");
+        this.$store.state.show = false;
       }
     },
   },
 
   mounted() {
+    // this.chkStatus();
     window.scrollTo(0, 0);
   },
 };

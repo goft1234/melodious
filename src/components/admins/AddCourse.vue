@@ -575,7 +575,7 @@ export default {
     updateKeyword() {
       db.collection("courseTemplate")
         .doc("detail")
-        .set(this.courseTemplate)
+        .set(this.courseTemplate,{ merge: true })
         .then(
           () => {
             Swal.fire({
@@ -588,7 +588,7 @@ export default {
             $("#courseTemplate").modal("hide");
           },
 
-          { merge: true }
+          // { merge: true }
         );
     },
 

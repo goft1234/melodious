@@ -1,11 +1,15 @@
 <template>
-<b-overlay :show="$store.state.show" opacity="0.3" rounded="lg">
   <div id="app">
-    
-    <router-view/>
-    
+    <b-overlay
+      :show="$store.state.show"
+      opacity="0"
+      variant="info"
+      rounded="lg"
+      spinner-variant="success"
+    >
+      <router-view />
+    </b-overlay>
   </div>
-  </b-overlay>
 </template>
 
 

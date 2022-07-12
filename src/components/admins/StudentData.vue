@@ -1,53 +1,71 @@
 <template>
   <div id="teacher" class="shadow">
     <!-- <h5>อนุมัติผู้ใช้งานครู</h5> -->
-    <vue-good-table
-      :columns="columns"
-      :rows="profiles"
-      :line-numbers="true"
-      styleClass="vgt-table striped bordered"
-      :search-options="{
-        enabled: true,
-        placeholder: 'ค้นหา',
-      }"
-      :pagination-options="{
-        enabled: true,
-      }"
-    >
-      <!-- props.row คือ profiles -->
-      <template slot="table-row" slot-scope="props">
-        <!-- <span v-if="props.column.field == 'role'">
+    <!-- <b-overlay :show="show" rounded="sm" :opacity="opacity"> -->
+    <div class="container-fluid jumbotron">
+      <div class="">
+        <h4 class="text-center text-success mb-4">ข้อมูลนักเรียน</h4>
+      </div>
+      <div class="mt-3 shadow">
+        <vue-good-table
+          :columns="columns"
+          :rows="profiles"
+          :line-numbers="true"
+          styleClass="vgt-table striped bordered"
+          :search-options="{
+            enabled: true,
+            placeholder: 'ค้นหา',
+          }"
+          :pagination-options="{
+            enabled: true,
+          }"
+        >
+          <!-- props.row คือ profiles -->
+          <template slot="table-row" slot-scope="props">
+            <!-- <span v-if="props.column.field == 'role'">
           <select @change="changeRole(props.row.uid, $event)" class="custom-select">
             <option :selected="props.row.role.isprofile" value="isprofile">profile</option>
             <option :selected="props.row.role.isAgent" value="isAgent">AGENT</option>
             <option :selected="props.row.role.isAdmin" value="isAdmin">ADMIN</option>
           </select>
       </span> -->
-        <span v-if="props.column.field == 'other'">
-          <div
-            class="btn btn-warning"
-            data-toggle="modal"
-            data-target="#profileModal"
-            @click="fullProfile(props.row)"
-          >
-            ดูข้อมูล
-          </div>
-        </span>
-        <span v-else-if="props.column.field == 'edit'">
-          <div class="btn btn-success" @click="approveteacher(props.row)">
-            อนุมัติ
-          </div>
-        </span>
-        <span v-else-if="props.column.field == 'delete'">
-          <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
-            ลบ
-          </div>
-        </span>
-        <!-- <span v-else>
+            <span v-if="props.column.field == 'otherprofile'">
+              <div
+                class="btn btn-warning"
+                data-toggle="modal"
+                data-target="#profileModal"
+                @click="fullProfile(props.row)"
+              >
+                ดูข้อมูล
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'addcourse'">
+              <div class="btn btn-success" @click="addcourse(props.row)">
+                เพิ่มคอร์ส
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'connect'">
+              <div class="btn btn-info" @click="connect(props.row)">
+                ต่อคอร์ส
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'data'">
+              <div class="btn btn-dark" @click="connect(props.row)">
+                ดูข้อมูล
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'delete'">
+              <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
+                ลบ
+              </div>
+            </span>
+            <!-- <span v-else>
         {{props.formattedRow[props.column.field]}}
       </span>       -->
-      </template>
-    </vue-good-table>
+          </template>
+        </vue-good-table>
+      </div>
+    </div>
 
     <!-- The Modal -->
     <div class="modal fade" id="profileModal">
@@ -56,7 +74,7 @@
           <!-- Modal Header -->
           <div class="modal-header">
             <h4 class="modal-title text-success text-center">
-              ข้อมูลและประวัติครูผู้สอน
+              ข้อมูลและประวัตินักเรียน
             </h4>
             <button type="button" class="close" data-dismiss="modal">
               &times;
@@ -65,24 +83,6 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <div class="row">
-              <div class="col-lg-12">
-                <div id="preview">
-                  <img
-                    v-if="profile.image"
-                    :src="profile.image"
-                    class="rounded-circle mx-auto d-block"
-                    width="220"
-                    height="220"
-                    style="border: 5px solid white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <h6 class="text-success text-right my-3">
-              วัน-เวลา ที่สมัคร {{ profile.addProfileAt }}
-            </h6>
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
@@ -204,6 +204,100 @@
                     disabled
                   />
                 </div>
+              </div>
+            </div>
+
+            <hr />
+            <h5 class="text-left text-success my-3 font-weight-bold">
+              ข้อมูลผู้ปกครอง
+            </h5>
+
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="firstName" class="text-success">ชื่อจริง</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="กรอกชื่อจริง"
+                    id="firstName"
+                    v-model.trim="profile.parentFirstName"
+                  />
+                  <!-- <span> : {{ profile.firstName }}</span> -->
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="lastName" class="text-success">นามสกุล</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="กรอกนามสกุล"
+                    id="lastName"
+                    v-model.trim="profile.parentLastName"
+                  />
+                  <!-- <span> : {{ profile.lastName }}</span> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="mobilephone" class="text-success"
+                    >โทรศัพท์มือถือ</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="กรอกนามสกุล"
+                    id="mobilephone"
+                    v-model.trim="profile.parentMobilephone"
+                    maxlength="10"
+                  />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="email" class="text-success">อีเมล์ </label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    placeholder="กรอกอีเมล์มี @"
+                    id="อีเมล์"
+                    v-model.trim="profile.parentEmail"
+                  />
+                  <!-- <span> : {{ profile.email }}</span> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="telephone" class="text-success"
+                    >เกี่ยวข้องเป็น</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="เกี่ยวข้องเป็น"
+                    id="telephone"
+                    v-model.trim="profile.parentAbout"
+                  />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <!-- <div class="form-group">
+            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="กรอกนามสกุล"
+              id="mobilephone"
+              v-model.trim="profile.mobilephone"
+            />
+          </div> -->
               </div>
             </div>
 
@@ -397,7 +491,7 @@
             <hr />
 
             <div class="form-group">
-              <label for="email" class="text-success">วิชาที่สอน</label>
+              <label for="email" class="text-success">วิชาที่เรียน</label>
               <input
                 type="email"
                 class="form-control"
@@ -409,7 +503,7 @@
             </div>
 
             <h5 class="text-left text-success my-3 font-weight-bold">
-              ประวัติการสอน
+              ประวัติการเรียน
             </h5>
             <div class="form-group">
               <textarea
@@ -435,18 +529,18 @@
         </div>
       </div>
     </div>
+    <!-- </b-overlay> -->
   </div>
 </template>
 
 <script>
-import { db, functions } from "../../firebase.js";
-import firebase from "firebase/app";
-import moment from "moment";
-
+import { db, functions, fb } from "../../firebase.js";
 export default {
   name: "",
   data() {
     return {
+      show: true,
+      opacity: 0.3,
       columns: [
         {
           label: "ชื่อ",
@@ -469,18 +563,28 @@ export default {
           type: "text",
         },
         {
-          label: "วิชา",
+          label: "สถานะ",
           field: "subject",
           type: "text",
         },
         {
-          label: "ข้อมูลอื่นๆ",
-          field: "other",
+          label: "เพิ่มเติม",
+          field: "otherprofile",
           type: "text",
         },
         {
-          label: "อนุมัติ",
-          field: "edit",
+          label: "เพิ่มคอร์ส",
+          field: "addcourse",
+          type: "text",
+        },
+        {
+          label: "ต่อคอร์ส",
+          field: "connect",
+          type: "text",
+        },
+        {
+          label: "ข้อมูลอื่นๆ",
+          field: "data",
           type: "text",
         },
         {
@@ -493,19 +597,15 @@ export default {
 
       profile: {
         uid: "",
-        addProfileAt: "",
-        image: null,
-
         namePrefix: "",
         nickName: "",
         firstName: "",
         lastName: "",
-        fullName: "",
         birthday: null,
         email: "",
         telephone: "",
         mobilephone: "",
-
+        profileType: "teacher",
         address: {
           addressNumber: "",
           location: "",
@@ -523,16 +623,14 @@ export default {
           faculty: "",
           major: "",
         },
-
         subject: "",
         workingProfile: "",
-        profileType: "teacher",
       },
     };
   },
 
   methods: {
-    deleteTeacher(uid) {
+    deleteTeacher(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
         text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -541,14 +639,13 @@ export default {
         confirmButtonColor: "#30855c",
         cancelButtonColor: "#d33",
         confirmButtonText: "ตกลง ลบข้อมูล",
-      })
-        .then((result) => {
-          if (result.value) {
-            this.$store.state.show = true;
-            var del = functions.httpsCallable("deleteTeacher");
-            var data = { uid: uid };
-
-            del(data).then(() => {
+      }).then((result) => {
+        if (result.value) {
+          // console.log(doc)
+          db.collection("teacherData")
+            .doc(doc)
+            .delete()
+            .then(() => {
               Swal.fire({
                 title: "ทำการลบเรียบร้อย",
                 text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
@@ -556,160 +653,75 @@ export default {
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
               });
-              this.$store.state.show = false;
             });
-          }
-        })
-        .catch((error) => {
-          console.log("Transaction failed: ", error);
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-            icon: "warning",
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: "ตกลง",
-          });
-          this.$store.state.show = false;
-        });
+        }
+      });
     },
-
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profile = profile;
     },
 
-    approveteacher(user) {
-      Swal.fire({
-        title: "ยืนยันการอนุมัติ",
-        text: "ยืนยันการอนุมัติ ครูผู้สอน",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#30855c",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "ยืนยัน",
-      }).then(async (result) => {
-        if (result.value) {
-          this.$store.state.show = true;
-          var templateRef = db.collection("courseTemplate").doc("detail");
-          let data = {
-            uid: user.uid,
-            fullName: user.fullName,
-          };
+    getStudentData() {
+      db.collection("studentData")
+        .orderBy("addProfileAt", "desc")
+        .onSnapshot((querySnapshot) => {
+          this.profiles = [];
+          querySnapshot.forEach((doc) => {
+            // if(!doc.data().role.isAdmin)
+            // {
+            console.log(doc.data());
+            let profile = {
+              uid: doc.id,
+              namePrefix: doc.data().namePrefix,
+              nickName: doc.data().nickName,
+              firstName: doc.data().firstName,
+              lastName: doc.data().lastName,
+              birthday: doc.data().birthday,
+              email: doc.data().email,
+              telephone: doc.data().telephone,
+              mobilephone: doc.data().mobilephone,
 
-          return db
-            .runTransaction((transaction) => {
-              // This code may get re-run multiple times if there are conflicts.
-              return transaction.get(templateRef).then(async (sfDoc) => {
-                if (!sfDoc.exists) {
-                  // throw "Document does not exist!";
-                  await templateRef.set({
-                    teacher: [],
-                    courseName: [],
-                    courseType: [],
-                    level: [],
-                    rate: [],
-                  });
-                  this.$store.state.show = false;
-                }
+              parentFirstName: doc.data().parentFirstName,
+              parentLastName: doc.data().parentLastName,
+              parentEmail: doc.data().parentEmail,
+              parentMobilephone: doc.data().parentMobilephone,
+              parentAbout: doc.data().parentAbout,
+              profileType: "student",
 
-                await templateRef.update({
-                  teacher: firebase.firestore.FieldValue.arrayUnion(data),
-                });
-                var addFunctions = functions.httpsCallable("ApproveTeacher");
-                await addFunctions(user);
-                this.$store.state.show = false;
-              });
-            })
-            .then(() => {
-              Swal.fire({
-                title: "อนุมัติผู้ใช้งานเรียบร้อย",
-                text: "สามารถค้นหาผู้ใช้ ได้ที่หน้าข้อมูลครูผู้สอน",
-                icon: "success",
-                confirmButtonColor: "#30855c",
-                confirmButtonText: "ตกลง",
-              });
-              this.$store.state.show = false;
-            })
-            .catch((error) => {
-              console.log("Transaction failed: ", error);
-              Swal.fire({
-                title: "เกิดข้อผิดพลาด",
-                text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-                icon: "warning",
-                confirmButtonColor: "#FF0000",
-                confirmButtonText: "ตกลง",
-              });
-              this.$store.state.show = false;
-            });
-        }
-      });
-    },
+              address: {
+                addressNumber: doc.data().address.addressNumber,
+                location: doc.data().address.location,
+                soi: doc.data().address.soi,
+                road: doc.data().address.road,
+                district: doc.data().address.district,
+                amphoe: doc.data().address.amphoe,
+                province: doc.data().address.province,
+                zipcode: doc.data().address.zipcode,
+              },
 
-    getTeacher() {
-      try {
-        this.$store.state.show = true;
-        db.collection("teacherData")
-          .where("role.isProfile", "==", true)
-          .orderBy("addProfileAt", "desc")
-          .onSnapshot((querySnapshot) => {
-            this.profiles = [];
-            querySnapshot.forEach((doc) => {
-              // if(!doc.data().role.isAdmin)
-              // {
-              // console.log(doc.data());
-              let profile = {
-                uid: doc.id,
-                addProfileAt: moment(doc.data().addProfileAt).format(
-                  "DD/MM/YYYY HH:mm:ss"
-                ),
-                image: doc.data().image,
-
-                namePrefix: doc.data().namePrefix,
-                nickName: doc.data().nickName,
-                firstName: doc.data().firstName,
-                lastName: doc.data().lastName,
-                fullName: doc.data().fullName,
-                birthday: doc.data().birthday,
-                email: doc.data().email,
-                telephone: doc.data().telephone,
-                mobilephone: doc.data().mobilephone,
-                profileType: "teacher",
-
-                address: {
-                  addressNumber: doc.data().address.addressNumber,
-                  location: doc.data().address.location,
-                  soi: doc.data().address.soi,
-                  road: doc.data().address.road,
-                  district: doc.data().address.district,
-                  amphoe: doc.data().address.amphoe,
-                  province: doc.data().address.province,
-                  zipcode: doc.data().address.zipcode,
-                },
-
-                graduated: {
-                  degree: doc.data().graduated.degree,
-                  university: doc.data().graduated.university,
-                  faculty: doc.data().graduated.faculty,
-                  major: doc.data().graduated.major,
-                },
-                subject: doc.data().subject,
-                workingProfile: doc.data().workingProfile,
-                commited: "ครู",
-              };
-              this.profiles.push(profile);
-            });
-            this.$store.state.show = false;
+              graduated: {
+                degree: doc.data().graduated.degree,
+                university: doc.data().graduated.university,
+                faculty: doc.data().graduated.faculty,
+                major: doc.data().graduated.major,
+              },
+              subject: doc.data().subject,
+              workingProfile: doc.data().workingProfile,
+              commited: "ครู",
+            };
+            this.profiles.push(profile);
           });
-      } catch (err) {
-        console.log(err);
-        this.$store.state.show = false;
-      }
+        });
     },
   },
 
   mounted() {
     window.scrollTo(0, 0);
-    this.getTeacher();
+  },
+
+  created() {
+    this.getStudentData();
   },
 };
 </script>

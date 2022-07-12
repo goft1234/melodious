@@ -61,6 +61,20 @@ exports.EmployeeData = functions.region(regionOpts).runWith(runtimeOpts).https.o
 
 });
 
+exports.StudentData = functions.region(regionOpts).runWith(runtimeOpts).https.onCall(async (data, context) => {
+
+  // if (!context.auth.token.isAdmin) return
+  try {
+    const customClaims = { isStudent: true };
+    var _ = await admin.auth().setCustomUserClaims(data.uid, customClaims)
+    return db.collection("studentData").doc(data.uid).set(data)
+  }
+  catch (error) {
+    console.log(error)
+  }
+
+});
+
 exports.ApproveTeacher = functions.region(regionOpts).runWith(runtimeOpts).https.onCall(async (data, context) => {
 
   // if (!context.auth.token.isAdmin) return
@@ -82,6 +96,32 @@ exports.ApproveEmployee = functions.region(regionOpts).runWith(runtimeOpts).http
     const customClaims = { isEmployee: true };
     var _ = await admin.auth().setCustomUserClaims(data.uid, customClaims)
     return db.collection("employeeData").doc(data.uid).update({role:customClaims})
+  }
+  catch (error) {
+    console.log(error)
+  }
+
+});
+
+exports.deleteTeacher = functions.region(regionOpts).runWith(runtimeOpts).https.onCall(async (data, context) => {
+
+  if (!context.auth.token.isAdmin) return
+  try {
+    var _ = await admin.auth().deleteUser(data.uid);
+    return db.collection("teacherData").doc(data.uid).delete();
+  }
+  catch (error) {
+    console.log(error)
+  }
+
+});
+
+exports.deleteEmployee = functions.region(regionOpts).runWith(runtimeOpts).https.onCall(async (data, context) => {
+
+  if (!context.auth.token.isAdmin) return
+  try {
+    var _ = await admin.auth().deleteUser(data.uid);
+    return db.collection("employeeData").doc(data.uid).delete();
   }
   catch (error) {
     console.log(error)

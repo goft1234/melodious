@@ -66,6 +66,24 @@
           <!-- Modal body -->
           <div class="modal-body">
             <div class="row">
+              <div class="col-lg-12">
+                <div id="preview">
+                  <img
+                    v-if="profile.image"
+                    :src="profile.image"
+                    class="rounded-circle mx-auto d-block"
+                    width="220"
+                    height="220"
+                    style="border: 5px solid white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h6 class="text-success text-right my-3">
+              วัน-เวลา ที่สมัคร {{ profile.addProfileAt }}
+            </h6>
+            <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
                   <label for="namePrefix" class="text-success">คำนำหน้า</label>
@@ -410,6 +428,8 @@
 
 <script>
 import { db, functions, fb } from "../../firebase.js";
+import moment from "moment";
+
 export default {
   name: "",
   data() {
@@ -460,6 +480,9 @@ export default {
 
       profile: {
         uid: "",
+        addProfileAt: "",
+        image: null,
+
         namePrefix: "",
         nickName: "",
         firstName: "",
@@ -468,7 +491,7 @@ export default {
         email: "",
         telephone: "",
         mobilephone: "",
-        profileType: "Employee",
+
         address: {
           addressNumber: "",
           location: "",
@@ -486,14 +509,15 @@ export default {
           faculty: "",
           major: "",
         },
-        // subject: "",
+
         workingProfile: "",
+        profileType: "Employee",
       },
     };
   },
 
   methods: {
-    deleteEmployee(doc) {
+    deleteEmployee(uid) {
       Swal.fire({
         title: "ต้องการลบ?",
         text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -502,13 +526,14 @@ export default {
         confirmButtonColor: "#30855c",
         cancelButtonColor: "#d33",
         confirmButtonText: "ตกลง ลบข้อมูล",
-      }).then((result) => {
-        if (result.value) {
-          // console.log(doc)
-          db.collection("EmployeeData")
-            .doc(doc)
-            .delete()
-            .then(() => {
+      })
+        .then((result) => {
+          if (result.value) {
+            this.$store.state.show = true;
+            var del = functions.httpsCallable("deleteEmployee");
+            var data = { uid: uid };
+
+            del(data).then(() => {
               Swal.fire({
                 title: "ทำการลบเรียบร้อย",
                 text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
@@ -516,10 +541,23 @@ export default {
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
               });
+              this.$store.state.show = false;
             });
-        }
-      });
+          }
+        })
+        .catch((error) => {
+          console.log("failed: ", error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        });
     },
+
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profile = profile;
@@ -536,6 +574,7 @@ export default {
         cancelButtonColor: "#d33",
         confirmButtonText: "ยืนยัน",
       }).then((result) => {
+        this.$store.state.show = true;
         if (result.value) {
           // alert(uid.uid)
           var addFunctions = functions.httpsCallable("ApproveEmployee");
@@ -549,7 +588,7 @@ export default {
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
               });
-              // this.$router.push('/appending');
+              this.$store.state.show = false;
             })
             .catch((error) => {
               Swal.fire({
@@ -559,60 +598,83 @@ export default {
                 confirmButtonColor: "#FF0000",
                 confirmButtonText: "ตกลง",
               });
+              this.$store.state.show = false;
             });
         }
       });
+    },
+
+    getEmployee() {
+      try {
+        this.$store.state.show = true;
+        db.collection("employeeData")
+          .where("role.isProfile", "==", true)
+          .orderBy("addProfileAt", "desc")
+          .onSnapshot((querySnapshot) => {
+            this.profiles = [];
+            querySnapshot.forEach((doc) => {
+              // if(!doc.data().role.isAdmin)
+              // {
+              console.log(doc.data());
+              let profile = {
+                uid: doc.id,
+                addProfileAt: moment(doc.data().addProfileAt).format(
+                  "DD/MM/YYYY HH:mm:ss"
+                ),
+                image: doc.data().image,
+
+                namePrefix: doc.data().namePrefix,
+                nickName: doc.data().nickName,
+                firstName: doc.data().firstName,
+                lastName: doc.data().lastName,
+                birthday: doc.data().birthday,
+                email: doc.data().email,
+                telephone: doc.data().telephone,
+                mobilephone: doc.data().mobilephone,
+                profileType: "Employee",
+
+                address: {
+                  addressNumber: doc.data().address.addressNumber,
+                  location: doc.data().address.location,
+                  soi: doc.data().address.soi,
+                  road: doc.data().address.road,
+                  district: doc.data().address.district,
+                  amphoe: doc.data().address.amphoe,
+                  province: doc.data().address.province,
+                  zipcode: doc.data().address.zipcode,
+                },
+
+                graduated: {
+                  degree: doc.data().graduated.degree,
+                  university: doc.data().graduated.university,
+                  faculty: doc.data().graduated.faculty,
+                  major: doc.data().graduated.major,
+                },
+                // subject: doc.data().subject,
+                workingProfile: doc.data().workingProfile,
+                commited: "พนักงาน",
+              };
+              this.profiles.push(profile);
+            });
+            this.$store.state.show = false;
+          });
+      } catch (err) {
+        console.log(err);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false;
+      }
     },
   },
 
   mounted() {
     window.scrollTo(0, 0);
-    db.collection("employeeData")
-      .where("role.isProfile", "==", true)
-      .onSnapshot((querySnapshot) => {
-        this.profiles = [];
-        querySnapshot.forEach((doc) => {
-          // if(!doc.data().role.isAdmin)
-          // {
-          console.log(doc.data());
-          let profile = {
-            uid: doc.id,
-            namePrefix: doc.data().namePrefix,
-            nickName: doc.data().nickName,
-            firstName: doc.data().firstName,
-            lastName: doc.data().lastName,
-            birthday: doc.data().birthday,
-            email: doc.data().email,
-            telephone: doc.data().telephone,
-            mobilephone: doc.data().mobilephone,
-            profileType: "Employee",
-
-            address: {
-              addressNumber: doc.data().address.addressNumber,
-              location: doc.data().address.location,
-              soi: doc.data().address.soi,
-              road: doc.data().address.road,
-              district: doc.data().address.district,
-              amphoe: doc.data().address.amphoe,
-              province: doc.data().address.province,
-              zipcode: doc.data().address.zipcode,
-            },
-
-            graduated: {
-              degree: doc.data().graduated.degree,
-              university: doc.data().graduated.university,
-              faculty: doc.data().graduated.faculty,
-              major: doc.data().graduated.major,
-            },
-            // subject: doc.data().subject,
-            workingProfile: doc.data().workingProfile,
-            commited: "พนักงาน",
-          };
-          this.profiles.push(profile);
-          this.$store.state.EmployeeApproveCount = this.profiles.length;
-          // }
-        });
-      });
+    this.getEmployee();
   },
 };
 </script>

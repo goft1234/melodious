@@ -15,7 +15,7 @@
               </h5>
 
               <form v-on:submit.prevent>
-                <h6 class="float-left text-success">ชื่อผู้ใช้</h6>
+                <h6 class="float-left text-success">ที่อยู่ email</h6>
                 <div class="input-group mt-2">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
@@ -26,7 +26,7 @@
                     type="text"
                     v-model.trim="email"
                     class="form-control"
-                    placeholder="สร้างชื่อผู้ใช้งาน"
+                    placeholder="กรอก email มี@"
                   />
                 </div>
 
@@ -48,6 +48,7 @@
                     v-model.trim="$v.password.$model"
                     class="form-control"
                     placeholder="ตั้งรหัสผ่านเป็นหมายเลขโทรศัพท์"
+                    maxlength="10"
                   />
                 </div>
 
@@ -70,6 +71,7 @@
                     :rules="[comparePasswords]"
                     class="form-control"
                     placeholder="ยืนยันรหัสผ่าน"
+                    maxlength="10"
                   />
                 </div>
 
@@ -120,7 +122,6 @@ export default {
   components: {},
   data() {
     return {
-      show: true,
       // spinshow:true,
       email: "",
       password: null,
@@ -149,25 +150,27 @@ export default {
 
     async createUser() {
       try {
-        this.email = `${this.email}@gmail.com`;
-        console.log(this.email);
-        // var user = await fb
-        //   .auth()
-        //   .createUserWithEmailAndPassword(this.email, this.passwordConfirm);
+        // this.email = `${this.email}@gmail.com`;
+        // console.log(this.email);
+        this.$store.state.show = true
+        var user = await fb
+          .auth()
+          .createUserWithEmailAndPassword(this.email, this.passwordConfirm);
 
-        // fb.auth()
-        //   .signOut()
-        //   .then((user) => {
-        //     this.$router.push("/");
-        //   });
-        // console.log("signOut");
-        // Swal.fire({
-        //   title: "ลงทะเบียนเรียบร้อยแล้ว",
-        //   text: "เข้าสู่ระบบด้วย 'อีเมล์' และ 'รหัสผ่าน' ที่ได้กำหนดไว้ ",
-        //   icon: "success",
-        //   confirmButtonColor: "#30855c",
-        //   confirmButtonText: "ตกลง",
-        // });
+        fb.auth()
+          .signOut()
+          .then((user) => {
+            this.$router.push("/");
+          });
+        console.log("signOut");
+        Swal.fire({
+          title: "ลงทะเบียนเรียบร้อยแล้ว",
+          text: "เข้าสู่ระบบด้วย 'อีเมล์' และ 'รหัสผ่าน' ที่ได้กำหนดไว้ ",
+          icon: "success",
+          confirmButtonColor: "#30855c",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false
       } catch (error) {
         let errorCode = error.code;
         let errorMessage = error.message;
@@ -183,8 +186,8 @@ export default {
           });
         } else if (errorCode == "auth/weak-password") {
           Swal.fire({
-            title: "กรอกรหัสผ่านอย่างน้อย 6 ตัวอักษร",
-            text: "กรอกรหัสผ่านอย่างน้อย 6 ตัวอักษร",
+            title: "กรอกรหัสผ่าน 10 ตัวอักษร",
+            text: "กรอกรหัสผ่าน 10 ตัวอักษร",
             confirmButtonColor: "#FF0000",
             icon: "error",
             confirmButtonText: "ตกลง",
@@ -214,6 +217,7 @@ export default {
             confirmButtonText: "ตกลง",
           });
         }
+        this.$store.state.show = false
       }
     },
   },

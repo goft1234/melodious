@@ -44,7 +44,10 @@
               </div>
             </span> -->
             <span v-else-if="props.column.field == 'delete'">
-              <div class="btn btn-danger" @click="deleteemployee(props.row.uid)">
+              <div
+                class="btn btn-danger"
+                @click="deleteemployee(props.row.uid)"
+              >
                 ลบ
               </div>
             </span>
@@ -72,6 +75,24 @@
 
           <!-- Modal body -->
           <div class="modal-body">
+            <div class="row">
+              <div class="col-lg-12">
+                <div id="preview">
+                  <img
+                    v-if="profile.image"
+                    :src="profile.image"
+                    class="rounded-circle mx-auto d-block"
+                    width="220"
+                    height="220"
+                    style="border: 5px solid white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h6 class="text-success text-right my-3">
+              วัน-เวลา ที่สมัคร {{ profile.addProfileAt }}
+            </h6>
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
@@ -429,6 +450,8 @@
 
 <script>
 import { db, functions, fb } from "../../firebase.js";
+import moment from "moment";
+
 export default {
   name: "",
   data() {
@@ -479,6 +502,9 @@ export default {
 
       profile: {
         uid: "",
+        addProfileAt: "",
+        image: null,
+
         namePrefix: "",
         nickName: "",
         firstName: "",
@@ -487,7 +513,7 @@ export default {
         email: "",
         telephone: "",
         mobilephone: "",
-        profileType: "employee",
+
         address: {
           addressNumber: "",
           location: "",
@@ -507,6 +533,7 @@ export default {
         },
         subject: "",
         workingProfile: "",
+        profileType: "employee",
       },
     };
   },
@@ -521,13 +548,14 @@ export default {
         confirmButtonColor: "#30855c",
         cancelButtonColor: "#d33",
         confirmButtonText: "ตกลง ลบข้อมูล",
-      }).then((result) => {
-        if (result.value) {
-          // console.log(doc)
-          db.collection("employeeData")
-            .doc(doc)
-            .delete()
-            .then(() => {
+      })
+        .then((result) => {
+          if (result.value) {
+            this.$store.state.show = true;
+            var del = functions.httpsCallable("deleteEmployee");
+            var data = { uid: uid };
+
+            del(data).then(() => {
               Swal.fire({
                 title: "ทำการลบเรียบร้อย",
                 text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
@@ -535,52 +563,26 @@ export default {
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
               });
+              this.$store.state.show = false;
             });
-        }
-      });
+          }
+        })
+        .catch((error) => {
+          console.log("Transaction failed: ", error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        });
     },
+
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profile = profile;
-    },
-
-    scheduleTable(user) {
-      // alert(uid.uid);
-      // Swal.fire({
-      //   title: "ยืนยันการอนุมัติ",
-      //   text: "ยืนยันการอนุมัติ พนักงานผู้สอน",
-      //   type: "warning",
-      //   showCancelButton: true,
-      //   confirmButtonColor: "#30855c",
-      //   cancelButtonColor: "#d33",
-      //   confirmButtonText: "ยืนยัน",
-      // }).then((result) => {
-      //   if (result.value) {
-      //     // alert(uid.uid)
-      //     var addFunctions = functions.httpsCallable("scheduleTable");
-
-      //     addFunctions(user)
-      //       .then((result) => {
-      //         Swal.fire({
-      //           title: "บันทึกประวัติเรียบร้อย",
-      //           text: "กรุณารอ Admin อนุมัติการเข้าใช้ ",
-      //           icon: "success",
-      //           confirmButtonColor: "#30855c",
-      //           confirmButtonText: "ตกลง",
-      //         });
-      //         // this.$router.push('/appending');
-      //       })
-      //       .catch((error) => {
-      //         Swal.fire({
-      //           title: "เกิดข้อผิดพลาด",
-      //           text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-      //           icon: "warning",
-      //           confirmButtonColor: "#FF0000",
-      //           confirmButtonText: "ตกลง",
-      //         });
-      //       });
-      //   }
-      // });
     },
   },
 
@@ -596,6 +598,11 @@ export default {
           console.log(doc.data());
           let profile = {
             uid: doc.id,
+            addProfileAt: moment(doc.data().addProfileAt).format(
+              "DD/MM/YYYY HH:mm:ss"
+            ),
+            image: doc.data().image,
+            
             namePrefix: doc.data().namePrefix,
             nickName: doc.data().nickName,
             firstName: doc.data().firstName,

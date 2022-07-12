@@ -52,7 +52,7 @@
                     
                   </li>
                   <li class="bottom-line" >
-                    <router-link to="/admin/teacher">
+                    <router-link to="/admin/student">
                        <i class="fas fa-user-graduate"></i>
                       <span @click="hide">ข้อมูลนักเรียน</span>
                     </router-link>
