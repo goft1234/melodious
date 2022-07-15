@@ -22,7 +22,7 @@
         </button>
       </div>
 
-      <div class="mt-3">
+      <div class="mt-3 shadow">
         <vue-good-table
           :columns="columns"
           :rows="courses"
@@ -69,10 +69,10 @@
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 v-if="modal == 'new'" class="modal-title text-success">
+            <h4 v-if="modal == 'new'" class="modal-title w-100 text-center text-success">
               เพิ่มวิชาเรียน
             </h4>
-            <h4 v-if="modal == 'edit'" class="modal-title text-warning">
+            <h4 v-if="modal == 'edit'" class="modal-title w-100 text-center text-warning">
               แก้ไขวิชาเรียน
             </h4>
             <button type="button" class="close" data-dismiss="modal">
@@ -257,7 +257,7 @@
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 class="modal-title text-secondary">สร้างแม่แบบ</h4>
+            <h4 class="modal-title w-100 text-center text-secondary">สร้างแม่แบบ</h4>
 
             <button type="button" class="close" data-dismiss="modal">
               &times;

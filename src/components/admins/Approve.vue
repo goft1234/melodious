@@ -1,5 +1,5 @@
 <template>
-  <div id="approve">
+  <div id="approve" class="shadow">
     
     <div class="container-fluid bg-light py-5">
       

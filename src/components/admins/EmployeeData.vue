@@ -1,5 +1,5 @@
 <template>
-  <div id="employee">
+  <div id="employee" class="shadow">
     <!-- <h5>อนุมัติผู้ใช้งานพนักงาน</h5> -->
     <div class="container-fluid jumbotron">
       <div class="">
@@ -65,7 +65,7 @@
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 class="modal-title text-success text-center">
+            <h4 class="modal-title text-success w-100 text-center">
               ข้อมูลและประวัติพนักงาน
             </h4>
             <button type="button" class="close" data-dismiss="modal">

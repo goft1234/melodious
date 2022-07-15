@@ -55,7 +55,7 @@
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 class="modal-title text-success text-center">
+            <h4 class="modal-title text-success w-100 text-center">
               ข้อมูลและประวัติครูผู้สอน
             </h4>
             <button type="button" class="close" data-dismiss="modal">

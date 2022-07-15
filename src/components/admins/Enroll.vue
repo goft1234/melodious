@@ -1,8 +1,8 @@
 <template>
-  <div class="container jumbotron">
+  <div class="container jumbotron shadow">
     <h4 class="text-center text-success mb-3">ข้อมูลและประวัตินักเรียน</h4>
     <div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-12 ">
         <!-- <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuNfh5XEmL28p3fZftINhCjPR1g7V8IDWJ9-H58s0jyp4GMH_nWaRqFrRFu-6CJbaTdK0&usqp=CAU"
             id="preview"
@@ -57,7 +57,7 @@
       </div>
     </div>
 
-    <form v-on:submit.prevent v-if="detailOpen">
+    <form v-on:submit.prevent v-if="detailOpen" class="">
       <div class="row mt-3">
         <div class="col-md-12">
           <div class="float-left">
@@ -446,7 +446,7 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">เอก/สาขาวิชา</label>
+            <label for="email" class="text-success">เอก / สาขาวิชา</label>
             <input
               type="email"
               class="form-control"
@@ -686,13 +686,6 @@ export default {
       this.profile.address.zipcode = address.zipcode;
     },
 
-    // addField(value, subjectDetail) {
-    //   subjectDetail.push({ value: "" });
-    // },
-
-    // removeField(index, subjectDetail) {
-    //   subjectDetail.splice(index, 1);
-    // },
     validateForm() {
       if (
         this.profile.studentId != "" &&
@@ -744,7 +737,7 @@ export default {
           this.profile.email,
           this.profile.mobilephone
         );
-      this.$store.state.show = false;
+      // this.$store.state.show = false;
 
       var ref = db.collection("studentId").doc("detail");
       let doc = await ref.get();

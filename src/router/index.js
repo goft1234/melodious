@@ -82,7 +82,12 @@ const routes = [
         path: 'course',
         name: 'course',
         component: () => import('../components/admins/AddCourse.vue')
-      }, 
+      },
+      {
+        path: 'addcourse/:uid',
+        name: 'addcourse',
+        component: () => import('../components/admins/CourseCart.vue')
+      },  
       {
         path: 'product',
         name: 'product',

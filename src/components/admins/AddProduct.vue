@@ -1,5 +1,5 @@
 <template>
-  <div id="addProduct">
+  <div id="addProduct" class="shadow">
     <div class="container-fluid jumbotron">
       <div class="">
         <h4 class="text-center text-success mb-4">ลงข้อมูลสินค้า</h4>
@@ -14,7 +14,7 @@
         </button>
       </div>
 
-      <div class="mt-3">
+      <div class="mt-3 shadow">
         <vue-good-table
           :columns="columns"
           :rows="products"
@@ -58,10 +58,10 @@
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 v-if="modal == 'new'" class="modal-title text-success">
+            <h4 v-if="modal == 'new'" class="modal-title w-100 text-center text-success">
               เพิ่มสินค้า
             </h4>
-            <h4 v-if="modal == 'edit'" class="modal-title text-warning">
+            <h4 v-if="modal == 'edit'" class="modal-title w-100 text-center text-warning">
               แก้ไขสินค้า
             </h4>
             <button type="button" class="close" data-dismiss="modal">
