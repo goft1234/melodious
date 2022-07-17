@@ -110,7 +110,7 @@
                   </span>
                 </div>
                 <input
-                  type="text"
+                  type="number"
                   v-model.trim="product.cost"
                   class="form-control"
                   placeholder="กรอกราคาต้นทุน"
@@ -125,7 +125,7 @@
                   </span>
                 </div>
                 <input
-                  type="text"
+                  type="number"
                   v-model.trim="product.price"
                   class="form-control"
                   placeholder="กรอกราคาขาย"
@@ -140,7 +140,7 @@
                   </span>
                 </div>
                 <input
-                  type="text"
+                  type="number"
                   v-model.trim="product.quantity"
                   class="form-control"
                   placeholder="กรอกจำนวน"
