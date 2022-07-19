@@ -73,7 +73,7 @@
                     
                   </li>
                   <li class="bottom-line" >
-                    <router-link to="/admin">
+                    <router-link to="/admin/attendance">
                         <i class="fas fa-arrow-circle-right"></i>
                         <span @click="hide">ระบบAttendance</span>
                     </router-link>
@@ -101,7 +101,7 @@
                     
                   </li>
                   <li class="bottom-line" >
-                    <router-link to="/admin">
+                    <router-link to="/admin/transaction">
                         <i class="fas fa-university"></i>
                         <span @click="hide">ระบบบัญชี</span>
                     </router-link>

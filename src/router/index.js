@@ -92,6 +92,16 @@ const routes = [
         path: 'product',
         name: 'product',
         component: () => import('../components/admins/AddProduct.vue')
+      },
+      {
+        path: 'attendance',
+        name: 'attendance',
+        component: () => import('../components/admins/Attendance.vue')
+      },  
+      {
+        path: 'transaction',
+        name: 'transaction',
+        component: () => import('../components/admins/Transaction.vue')
       }, 
     ],
   },
