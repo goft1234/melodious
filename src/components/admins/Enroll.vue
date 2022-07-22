@@ -752,6 +752,7 @@ export default {
         .collection("studentId")
         .doc("detail")
         .update({ stdId: firebase.firestore.FieldValue.increment(1) });
+        
       var addFunctions = functions.httpsCallable("StudentData");
       addFunctions(this.profile)
         .then(() => {

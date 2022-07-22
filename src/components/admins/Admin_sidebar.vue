@@ -1,16 +1,23 @@
 <template>
   <div>
     <!-- width="240px" -->
-    <b-sidebar id="sidebar-no-header"  title="M E N U" backdrop bg-variant="success" text-variant="success" width="240px">
+    <b-sidebar
+      id="sidebar-no-header"
+      title="M E N U"
+      backdrop
+      bg-variant="success"
+      text-variant="success"
+      width="240px"
+    >
       <template #default="{ hide }">
         <div class="page-wrapper chiller-theme toggled">
           <a id="show-sidebar" class="btn btn-sm btn-success" href="#">
             <i class="fas fa-bars"></i>
           </a>
           <nav id="sidebar " class="sidebar-wrapper">
-            <div class="sidebar-content ">
-              <div class="sidebar-brand ">
-                <router-link to="#" class="navbar-brand text-light ">
+            <div class="sidebar-content">
+              <div class="sidebar-brand">
+                <router-link to="#" class="navbar-brand text-light">
                   <h5 class="text-center">
                     <span class="text-light">เมนูหลัก</span>
                   </h5>
@@ -21,98 +28,87 @@
                   </b-nav-item>
                 </div> -->
               </div>
-        
-              <div class="sidebar-menu ">
+
+              <div class="sidebar-menu">
                 <ul class="mt-3">
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin/approve">
                       <i class="fas fa-tasks"></i>
                       <span @click="hide">อนุมัติผู้ใช้งาน</span>
                     </router-link>
                   </li>
 
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin/enroll">
                       <i class="fas fa-registered"></i>
-                      <span  @click="hide">สมัครเรียน</span>
+                      <span @click="hide">สมัครเรียน</span>
                     </router-link>
                   </li>
-                  <li class="bottom-line" >
-                    <router-link to="/admin/teacher">
-                       <i class="fas fa-chalkboard-teacher"></i>
-                      <span @click="hide">ข้อมูลครูผู้สอน</span>
-                    </router-link>
-                    
-                  </li>
-                  <li class="bottom-line" >
-                    <router-link to="/admin/employee">
-                        <i class="fas fa-user-edit"></i>
-                        <span @click="hide">ข้อมูลพนักงาน</span>
-                    </router-link>
-                    
-                  </li>
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin/student">
-                       <i class="fas fa-user-graduate"></i>
+                      <i class="fas fa-user-graduate"></i>
                       <span @click="hide">ข้อมูลนักเรียน</span>
                     </router-link>
-                    
                   </li>
-                  <li class="bottom-line" >
-                    <router-link to="/admin/course">
-                        <i class="fas fa-table"></i>
-                        <span @click="hide">ข้อมูลวิชาเรียน</span>
+                  <li class="bottom-line">
+                    <router-link to="/admin/teacher">
+                      <i class="fas fa-chalkboard-teacher"></i>
+                      <span @click="hide">ข้อมูลครูผู้สอน</span>
                     </router-link>
-                    
                   </li>
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
+                    <router-link to="/admin/employee">
+                      <i class="fas fa-user-edit"></i>
+                      <span @click="hide">ข้อมูลพนักงาน</span>
+                    </router-link>
+                  </li>
+                  <li class="bottom-line">
+                    <router-link to="/admin/course">
+                      <i class="fas fa-table"></i>
+                      <span @click="hide">ข้อมูลวิชาเรียน</span>
+                    </router-link>
+                  </li>
+                  <li class="bottom-line">
                     <router-link to="/admin/product">
-                       <i class="fas fa-cubes"></i>
+                      <i class="fas fa-cubes"></i>
                       <span @click="hide">ระบบ Stock สินค้า</span>
                     </router-link>
-                    
                   </li>
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin/attendance">
-                        <i class="fas fa-arrow-circle-right"></i>
-                        <span @click="hide">ระบบAttendance</span>
+                      <i class="fas fa-arrow-circle-right"></i>
+                      <span @click="hide">ระบบAttendance</span>
                     </router-link>
-                    
                   </li>
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin/teacher">
-                       <i class="fas fa-paste"></i>
+                      <i class="fas fa-paste"></i>
                       <span @click="hide">ระบบประเมินต่างๆ</span>
                     </router-link>
-                    
                   </li>
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin">
-                        <i class="fas fa-paste"></i>
-                        <span @click="hide">รายงาน (Report)</span>
+                      <i class="fas fa-paste"></i>
+                      <span @click="hide">รายงาน (Report)</span>
                     </router-link>
-                    
                   </li>
-                   <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin">
-                       <i class="fas fa-calendar-alt"></i>
+                      <i class="fas fa-calendar-alt"></i>
                       <span @click="hide">ระบบจัดการหน้าปฏิทิน</span>
                     </router-link>
-                    
                   </li>
-                  <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/admin/transaction">
-                        <i class="fas fa-university"></i>
-                        <span @click="hide">ระบบบัญชี</span>
+                      <i class="fas fa-university"></i>
+                      <span @click="hide">ระบบบัญชี</span>
                     </router-link>
-                    
                   </li>
-                   <li class="bottom-line" >
+                  <li class="bottom-line">
                     <router-link to="/" @click="signOut()">
-                        <i class="fa fa-power-off"></i>
-                        <span @click="hide">ออกจากระบบ</span>
+                      <i class="fa fa-power-off"></i>
+                      <span @click="hide">ออกจากระบบ</span>
                     </router-link>
-                    
                   </li>
                   <!-- <li class="sidebar-dropdown">
                     <div class="sidebar-submenu">
@@ -375,20 +371,18 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters } from "vuex";
 
 export default {
   data() {
     return {
-      email: '',
-    }
+      email: "",
+    };
   },
-  asyncData(){
+  asyncData() {
     // email : this.$store.state.authUser.email
   },
-  computed: {
-
-  },
+  computed: {},
 
   methods: {
     signOut() {
@@ -403,21 +397,16 @@ export default {
     },
   },
 
-  mounted() {
-    
-
-  },
-  created() {
-    
-  },
-}
+  mounted() {},
+  created() {},
+};
 </script>
 
 <style lang="scss" scoped>
-.bottom-line{
+.bottom-line {
   border-bottom: 2px dotted rgba(253, 255, 254, 0.125);
 }
-.bottom-line:hover{
+.bottom-line:hover {
   border-bottom: 1px dotted rgba(255, 0, 0, 0.125);
 }
 </style>

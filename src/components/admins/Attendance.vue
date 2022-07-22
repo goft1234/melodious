@@ -1,51 +1,584 @@
 <template>
-  <div id="attendance">
-    <div class="btn btn-success" @click="getData()">Get</div>
-    <ul v-for="(item, index) in invoices.teacher" :key="index">
-      <div v-for="(itm, idx) in item" :key="idx">
-        <li>{{ itm }}</li>
+  <div id="teacher" class="shadow">
+    <div class="container-fluid jumbotron">
+      <div class="">
+        <h4 class="text-center text-success mb-4">บันทึกการเข้าเรียน</h4>
       </div>
-    </ul>
+      <div class="mt-3 shadow">
+        <vue-good-table
+          :columns="columns"
+          :rows="profiles"
+          :line-numbers="true"
+          styleClass="vgt-table striped bordered"
+          :search-options="{
+            enabled: true,
+            placeholder: 'ค้นหา',
+          }"
+          :pagination-options="{
+            enabled: true,
+          }"
+        >
+          <!-- props.row คือ profiles -->
+          <template slot="table-row" slot-scope="props">
+            <!-- <span v-if="props.column.field == 'role'">
+          <select @change="changeRole(props.row.uid, $event)" class="custom-select">
+            <option :selected="props.row.role.isprofile" value="isprofile">profile</option>
+            <option :selected="props.row.role.isAgent" value="isAgent">AGENT</option>
+            <option :selected="props.row.role.isAdmin" value="isAdmin">ADMIN</option>
+          </select>
+      </span> -->
+            <span v-if="props.column.field == 'attendance'">
+              <div
+                class="btn btn-warning"
+                data-toggle="modal"
+                data-target="#profileModal"
+                @click="fullProfile(props.row)"
+              >
+                ดูข้อมูล
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'schedule'">
+              <div class="btn btn-success" @click="scheduleTable(props.row)">
+                ตารางสอน
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'delete'">
+              <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
+                ลบ
+              </div>
+            </span>
+            <!-- <span v-else>
+        {{props.formattedRow[props.column.field]}}
+      </span>       -->
+          </template>
+        </vue-good-table>
+      </div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal fade" id="profileModal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title text-success w-100 text-center">
+              บันทึกการเข้าเรียน
+            </h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div class="accordion" role="tablist">
+              <b-card no-body class="mb-1">
+                <b-card-header header-tag="header" class="p-1" role="tab">
+                  <b-button block v-b-toggle.accordion-1 variant="success"
+                    >ข้อมูลวิชาเรียน</b-button
+                  >
+                </b-card-header>
+                <b-collapse
+                  id="accordion-1"
+                  visible
+                  accordion="my-accordion"
+                  role="tabpanel"
+                >
+                  <b-card-body>
+                    <!-- style="background: #e9ecef" -->
+                    <div class="mt-3">
+                      <div class="row text-left">
+                        <div class="col-lg-4 col-md-6 d-inline-block">
+                          <div>
+                            Inv No. <span class="text-success">001</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 d-inline-block">
+                          <div>
+                            ชั้นเรียน <span class="text-success">กลุ่ม</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 d-inline-block">
+                          <div>
+                            วันที่ <span class="text-success">01/01/2022</span>
+                          </div>
+                        </div>
+                         <div class="col-lg-4 col-md-6 d-inline-block">
+                          <div>
+                            ชื่อ-นามสกุล
+                            <span class="text-success"
+                              >เอกชัย ตั้งกวินคีตสกุล</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 d-inline-block">
+                          <div>
+                            รหัสนักเรียน
+                            <span class="text-success">MMS001</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 d-inline-block">
+                          <div>
+                            ชื่อเล่น <span class="text-success">เวย์</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- <div class="row text-left">
+                        <div class="col d-inline-block">
+                          <div>
+                            ชื่อ-นามสกุล
+                            <span class="text-success"
+                              >เอกชัย ตั้งกวินคีตสกุล</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            รหัสนักเรียน
+                            <span class="text-success">MMS001</span>
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            ชื่อเล่น <span class="text-success">เวย์</span>
+                          </div>
+                        </div>
+                      </div> -->
+
+                      <div class="row text-left">
+                        <div class="col d-inline-block">
+                          <div>
+                            ชื่อ-นามสกุล ครู
+                            <span class="text-success"
+                              >เอกชัย ตั้งกวินคีตสกุล</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            วันเรียน <span class="text-success">เสาร์</span>
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            เวลาเรียน
+                            <span class="text-success">10.00-11.00</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row text-left">
+                        <div class="col d-inline-block">
+                          <div>
+                            เบอร์โทรครู
+                            <span class="text-success">0918016326</span>
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            วิชา <span class="text-success">ศิลปะ</span>
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            จำนวน ชม. <span class="text-success">10</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row text-left">
+                        <div class="col d-inline-block">
+                          <div>
+                            โปรโมชั่น
+                            <span class="text-success"
+                              >เซตเสือน้อย5%แถมฟรี1ครั้ง</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            วันที่เริ่มเรียน
+                            <span class="text-success">19มี.ค.65</span>
+                          </div>
+                        </div>
+                        <div class="col d-inline-block">
+                          <div>
+                            วันที่เรียนจบ
+                            <span class="text-success">19มี.ค.65</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </b-card-body>
+                </b-collapse>
+              </b-card>
+
+              <b-card no-body class="mb-1">
+                <b-card-header header-tag="header" class="p-1" role="tab">
+                  <b-button block v-b-toggle.accordion-2 variant="success"
+                    >หนังสือ - อุปกรณ์</b-button
+                  >
+                </b-card-header>
+                <b-collapse
+                  id="accordion-2"
+                  accordion="my-accordion"
+                  role="tabpanel"
+                >
+                  <b-card-body> </b-card-body>
+                </b-collapse>
+              </b-card>
+
+              <b-card no-body class="mb-1">
+                <b-card-header header-tag="header" class="p-1" role="tab">
+                  <b-button block v-b-toggle.accordion-3 variant="success"
+                    >Invoice</b-button
+                  >
+                </b-card-header>
+                <b-collapse
+                  id="accordion-3"
+                  accordion="my-accordion"
+                  role="tabpanel"
+                >
+                  <b-card-body> </b-card-body>
+                </b-collapse>
+              </b-card>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <!-- Button to Open the Modal -->
+                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                        Open modal
+                </button> -->
+              </div>
+            </div>
+
+            <!-- <div class="table-responsive-lg">
+              <table
+                class="table table-bordered table-striped mt-3 text-center"
+              >
+                <thead>
+                  <tr class="bg-success text-light">
+                    <th>วันที่</th>
+                    <th>นักเรียน</th>
+                    <th>อาจารย์</th>
+                    <th>รายละเอียด</th>
+                    <th>รายเซ็นต์</th>
+                    <th>Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="justify-content-center align-center">
+                    <td>19มี.ค.65</td>
+                    <td>A</td>
+                    <td class="text-left">
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            value=""
+                          />มา
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            value=""
+                          />ไม่มา
+                        </label>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <textarea
+                          class="form-control"
+                          rows="5"
+                          id="comment"
+                        ></textarea>
+                      </div>
+                    </td>
+                    <td>Doe</td>
+                    <td>john@example.com</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div> -->
+            <!-- <h6 class="float-right text-success">12/27/2022</h6> -->
+            <div class="card mt-3">
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="namePrefix" class="text-success"
+                        >วันที่</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="กรอกชื่อเล่น"
+                        id="namePrefix"
+                        v-model.trim="profile.namePrefix"
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="nickName" class="text-success">วันที่</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="กรอกชื่อเล่น"
+                        id="nickName"
+                        v-model.trim="profile.nickName"
+                        disabled
+                      />
+                      <!-- <span> : {{ profile.nickName }}</span> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- </b-overlay> -->
+
+    <!-- The Modal -->
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Modal Heading</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">Modal body..</div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { db } from "../../firebase";
+import { db, functions, fb } from "../../firebase.js";
+import moment from "moment";
 
 export default {
-  name: "attendance",
-
+  name: "",
   data() {
     return {
-      invoices: [],
-      fields:[],
+      columns: [
+        {
+          label: "ครู",
+          field: "teacherName",
+          type: "text",
+        },
+        {
+          label: "นักเรียน/กลุ่ม",
+          field: "firstName",
+          type: "text",
+        },
+        {
+          label: "รหัสนักเรียน",
+          field: "studentId",
+          type: "text",
+        },
+        {
+          label: "วิชา",
+          field: "courseName",
+          type: "text",
+        },
+        {
+          label: "ประเภท",
+          field: "classType",
+          type: "text",
+        },
+        {
+          label: "ระดับ",
+          field: "level",
+          type: "text",
+        },
+        {
+          label: "บันทึก",
+          field: "attendance",
+          type: "text",
+        },
+        {
+          label: "delete",
+          field: "delete",
+          type: "text",
+        },
+      ],
+      profiles: [],
+
+      profile: {
+        uid: "",
+        addProfileAt: "",
+        image: null,
+
+        namePrefix: "",
+        nickName: "",
+        firstName: "",
+        lastName: "",
+        birthday: null,
+        email: "",
+        telephone: "",
+        mobilephone: "",
+
+        address: {
+          addressNumber: "",
+          location: "",
+          soi: "",
+          road: "",
+          district: "",
+          amphoe: "",
+          province: "",
+          zipcode: "",
+        },
+
+        graduated: {
+          degree: "",
+          university: "",
+          faculty: "",
+          major: "",
+        },
+
+        subject: "",
+        workingProfile: "",
+        profileType: "teacher",
+      },
     };
   },
 
   methods: {
-    async getData() {
-      let get = await db.collection("invoiceData").get();
-      // console.log(get);
-      this.invoices = [];
-      get.forEach((doc) => {
-        let dt = {
-          courseDetail: doc.data().courseDetail,
-        };
-        this.invoices.push(dt);
-        console.log(this.invoices);
-        // this.fields = []
-        // this.invoices.forEach((f)=>{
-        //     let dt = {
-        //         amount : f.data().amount
-        //     }
-        //     this.fields.push(dt)
-        //     console.log(this.fields);
-        // })
-      });
+    deleteTeacher(uid) {
+      Swal.fire({
+        title: "ต้องการลบ?",
+        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#30855c",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ตกลง ลบข้อมูล",
+      })
+        .then((result) => {
+          if (result.value) {
+            this.$store.state.show = true;
+            var del = functions.httpsCallable("deleteTeacher");
+            var data = { uid: uid };
+
+            del(data).then(() => {
+              Swal.fire({
+                title: "ทำการลบเรียบร้อย",
+                text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
+                icon: "success",
+                confirmButtonColor: "#30855c",
+                confirmButtonText: "ตกลง",
+              });
+              this.$store.state.show = false;
+            });
+          }
+        })
+        .catch((error) => {
+          console.log("Transaction failed: ", error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        });
     },
+
+    fullProfile(profile) {
+      // alert(profile.firstName);
+      this.profile = profile;
+    },
+
+    getData() {
+      try {
+        this.$store.state.show = true;
+        db.collection("courseActive")
+          // .where("role.isTeacher", "==", true)
+          .onSnapshot((querySnapshot) => {
+            this.profiles = [];
+            querySnapshot.forEach((doc) => {
+              // if(!doc.data().role.isAdmin)
+              // {
+              // console.log(doc.data());
+              let profile = {
+                uid: doc.id,
+                amount: doc.data().amount,
+                classType: doc.data().classType,
+                courseName: doc.data().courseName,
+                day: doc.data().day,
+                discount: doc.data().discount,
+                endDate: moment(doc.data().endDate).format("DD/MM/YYYY"),
+                finishTime: doc.data().finishTime,
+                firstName: doc.data().firstName,
+                invoiceNo: doc.data().invoiceNo,
+
+                lastName: doc.data().lastName,
+                level: doc.data().level,
+                nickName: doc.data().nickName,
+                price: doc.data().price,
+                qty: doc.data().qty,
+                startDate: moment(doc.data().startDate).format("DD/MM/YYYY"),
+                startTime: doc.data().startTime,
+                studentId: doc.data().studentId,
+                teacherId: doc.data().teacherId,
+                teacherName: doc.data().teacherName,
+                uid: doc.data().uid,
+              };
+              this.profiles.push(profile);
+            });
+            this.$store.state.show = false;
+          });
+      } catch (err) {
+        console.log(err);
+        this.$store.state.show = false;
+      }
+    },
+  },
+
+  mounted() {
+    window.scrollTo(0, 0);
+    this.getData();
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

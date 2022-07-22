@@ -111,7 +111,7 @@
                 <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
               </td>
               <td class="text-right">
-                <h5>Inv.No. 8479</h5>
+                <h5>Inv.No. {{ invoiceNo }}</h5>
               </td>
             </tr>
           </table>
@@ -150,7 +150,7 @@
                 <label for=""></label>
               </td>
               <td>
-                <input type="checkbox" name="" value="" checked />
+                <input type="checkbox" name="" value="" Checked />
                 <label for=""> ลงทะเบียนใหม่</label>
               </td>
               <td>
@@ -223,25 +223,44 @@
           <table width="100%">
             <tr class="text-left">
               <td>(2):เพื่อชำระค่า</td>
-              <td>
-                <input type="checkbox" name="" value="" checked />
-                <label for="">หนังสือเรียน</label>
+              <!-- <td
+                v-for="(item, index) in options"
+                :key="index"
+                style="display: inline-block"
+                class="ml-5"
+              >
+                <input
+                  type="checkbox"
+                  id="mike"
+                  value="item.value"
+                  v-model="selected"
+                  class="ml-5"
+                />
+                <label for="mike">{{ item.text }}</label>
+              </td> -->
+              <td
+                v-for="(item, index) in selected"
+                :key="index"
+                colspan="1"
+                style="display: inline-block"
+              >
+                <u v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
+                  >หนังสือเรียน ,</u
+                >
+                <u v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2">อุปกรณ์การเรียน ,</u>
+                <u v-if="item == 'อื่นๆ'" class="text-left pl-2"
+                  >อื่นๆ</u
+                >
               </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">อุปกรณ์การเรียน</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">อื่นๆ</label>
-              </td>
+              <td></td>
+              <td></td>
             </tr>
           </table>
 
           <table width="100%" class="table-bordered" style="text-align: center">
             <tr>
               <th style="width: 8%">ลำดับ<br />No.</th>
-              <th style="width: 56%">รายละเอียด<br />Enrolled Course</th>
+              <th style="width: 56%">รายละเอียด<br />Description</th>
               <th style="width: 8%">จำนวน<br />Qty.</th>
               <th style="width: 12%">ราคา/หน่วย<br />unit price</th>
               <th style="width: 8%">ส่วนลด<br />Discount</th>
@@ -294,7 +313,7 @@
           <table width="100%">
             <tr class="text-left">
               <td>
-                <input type="checkbox" name="" value="" checked />
+                <input type="checkbox" name="" value="" />
                 <label for="">เงินสด</label>
               </td>
               <td>
@@ -335,9 +354,7 @@
           <br />
           <table width="100%" style="1px solid black">
             <tr class="text-left">
-              <td colspan="4">
-                หมายเหตุ________________________________________________________________________________
-              </td>
+              <td colspan="4">หมายเหตุ {{ note }}</td>
             </tr>
           </table>
           <p><br /></p>
@@ -1455,7 +1472,12 @@
                       }"
                     >
                       <template slot="table-row" slot-scope="props">
-                        <span v-if="props.column.field == 'buy'">
+                        <span v-if="props.column.field == 'quantity'">
+                          <h6>
+                            {{ props.row.quantity - props.row.buyAmount }}
+                          </h6>
+                        </span>
+                        <span v-else-if="props.column.field == 'buy'">
                           <div class="form-group">
                             <input
                               type="number"
@@ -1511,7 +1533,7 @@
                   role="tabpanel"
                 >
                   <b-card-body>
-                    <div class="py-3" style="border:1px solid green">
+                    <div class="py-3" style="border: 1px solid green">
                       <h6 class="text-center text-success mt-3">วิชาเรียน</h6>
                       <div class="form-check-inline ml-3">
                         <label class="form-check-label" for="radio1">
@@ -1583,146 +1605,232 @@
                       </div>
                     </div>
 
-                    <div class="py-3 my-2" style="border:1px solid green">
-                    <h6 class="text-center text-success mt-5">
-                      หนังสือ - อุปกรณ์
-                    </h6>
-                    <div class="row mx-auto">
-                      <div class="col-md-3">
-                        <div class="form-check-inline">
-                          <label class="form-check-label">
-                            <input
-                              type="checkbox"
-                              class="form-check-input"
-                              :value="หนังสือเรียน"
-                              v-model="paymentFor"
-                            />หนังสือเรียน
-                          </label>
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="form-check-inline">
-                          <label class="form-check-label">
-                            <input
-                              type="checkbox"
-                              class="form-check-input"
-                              :value="อุปกรณ์การเรียน"
-                              v-model="paymentFor"
-                            />อุปกรณ์การเรียน
-                          </label>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="input-group mb-3">
-                          อื่นๆ
-                          <div class="input-group-prepend">
-                            <div class="input-group-text">
-                              <input type="checkbox" value="อื่นๆ" v-model="paymentFor"/>
-                            </div>
-                          </div>
-                          <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Some text"
-                            
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="table-responsive">
-                      <table
-                        class="table table-bordered table-striped text-center"
+                    <div class="py-3 my-2" style="border: 1px solid green">
+                      <h6 class="text-center text-success mt-3">
+                        หนังสือ - อุปกรณ์
+                      </h6>
+                      <b-form-group
+                        label="เพื่อชำระ (Payment for) :"
+                        v-slot="{ ariaDescribedby }"
                       >
-                        <thead class="thead-light">
-                          <tr>
-                            <th>สินค้า</th>
-                            <th>จำนวน</th>
-                            <th>ราคา/หน่วย</th>
-                            <th>ส่วนลด</th>
-                            <th>รวม</th>
-                            <th>ลบ</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(item, index) in carts" :key="index">
-                            <td>{{ item.pName }}</td>
-                            <td>{{ item.buyAmount }}</td>
-                            <td>{{ item.price }}</td>
-                            <td>{{ item.pDiscount }}</td>
-                            <td>
-                              {{ item.buyAmount * item.price - item.pDiscount }}
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                @click="deleteProduct(index)"
-                                class="btn btn-danger btn-sm"
-                              >
-                                ลบ
-                              </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                        <b-form-checkbox-group
+                          id="checkbox-group-1"
+                          v-model="selected"
+                          :options="options"
+                          :aria-describedby="ariaDescribedby"
+                          name="flavour-1"
+                        ></b-form-checkbox-group>
+                      </b-form-group>
+
+                      <!-- <div class="row mx-auto mt-3">
+                        <div class="col-md-3">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="หนังสือเรียน"
+                                v-model="paymentFor"
+                              />หนังสือเรียน
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="อุปกรณ์การเรียน"
+                                v-model="paymentFor"
+                              />อุปกรณ์การเรียน
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="input-group mb-3">
+                            อื่นๆ
+                            <div class="input-group-prepend">
+                              <div class="input-group-text">
+                                <input
+                                  type="checkbox"
+                                  value="อื่นๆ"
+                                  v-model="paymentFor"
+                                />
+                              </div>
+                            </div>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="รายละเอียดอื่นๆ"
+                              v-model="other"
+                            />
+                          </div>
+                        </div>
+                      </div> -->
+                      <div class="table-responsive">
+                        <table
+                          class="table table-bordered table-striped text-center"
+                        >
+                          <thead class="thead-light">
+                            <tr>
+                              <th>สินค้า</th>
+                              <th>จำนวน</th>
+                              <th>ราคา/หน่วย</th>
+                              <th>ส่วนลด</th>
+                              <th>รวม</th>
+                              <th>ลบ</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(item, index) in carts" :key="index">
+                              <td>{{ item.pName }}</td>
+                              <td>{{ item.buyAmount }}</td>
+                              <td>{{ item.price }}</td>
+                              <td>{{ item.pDiscount }}</td>
+                              <td>
+                                {{
+                                  item.buyAmount * item.price - item.pDiscount
+                                }}
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  @click="deleteProduct(index)"
+                                  class="btn btn-danger btn-sm"
+                                >
+                                  ลบ
+                                </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
 
-                    <div class="py-3" style="border:1px solid green">
-                    <h6 class="text-center text-success mt-5">สรุปยอด</h6>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group ml-3">
-                          <label for="usr" class="text-success"
-                            >ค่าแรกเข้า
-                          </label>
-                          <input
-                            type="number"
-                            class="form-control"
-                            id="usr"
-                            v-model="fee"
-                          />
+                    <div class="py-3" style="border: 1px solid green">
+                      <h6 class="text-center text-success mt-3">สรุปยอด</h6>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group ml-3">
+                            <label for="usr" class="text-success"
+                              >ค่าแรกเข้า
+                            </label>
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="usr"
+                              v-model="fee"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="table-responsive">
-                      <table
-                        class="table table-bordered table-striped text-center"
-                      >
-                        <thead class="thead-light">
-                          <tr>
-                            <th>(1)รวมค่าเรียน</th>
-                            <th>(2)ค่าหนังสือหรืออุปกรณ์</th>
-                            <th>ค่าแรกเข้า</th>
-                            <th>รวมจำนวนเงินทั้งสิ้น</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>{{ subTotal }}</td>
-                            <td>{{ pSubtotal }}</td>
-                            <td>{{ fee }}</td>
-                            <td>{{ grandTotal }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div class="row text-center">
-                      <div class="col-md-12">
-                        <button
-                          class="btn btn-primary no-print"
-                          @click="confirmInvoice()"
+                      <div class="table-responsive">
+                        <table
+                          class="table table-bordered table-striped text-center"
                         >
-                          ยืนยัน
-                        </button>
-                        <button
-                          v-if="confirm"
-                          class="btn btn-warning no-print ml-3"
-                          @click="print"
-                        >
-                          <i class="fas fa-print"></i> Print
-                        </button>
+                          <thead class="thead-light">
+                            <tr>
+                              <th>(1)รวมค่าเรียน</th>
+                              <th>(2)ค่าหนังสือหรืออุปกรณ์</th>
+                              <th>ค่าแรกเข้า</th>
+                              <th>รวมจำนวนเงินทั้งสิ้น</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>{{ subTotal }}</td>
+                              <td>{{ pSubtotal }}</td>
+                              <td>{{ fee }}</td>
+                              <td>{{ grandTotal }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
-                    </div>
+
+                      <h6 class="ml-3 text-success">ชำระเงินโดย Pay By</h6>
+                      <div class="row mx-auto">
+                        <div class="col-md-3">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="เงินสด"
+                                v-model="payBy"
+                              />เงินสด
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="เครดิตการ์ด"
+                                v-model="payBy"
+                              />เครดิตการ์ด
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="โอนผ่านบัญชี"
+                                v-model="payBy"
+                              />โอนผ่านบัญชี
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group mt-2">
+                            <label for="usr" class="text-success"
+                              >หมายเหตุ
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="usr"
+                              v-model="note"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group mt-2">
+                            <label for="usr" class="text-success"
+                              >วันเวลา ที่โอน
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="usr"
+                              v-model="transactionTime"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row text-center">
+                        <div class="col-md-12">
+                          <button
+                            class="btn btn-primary no-print"
+                            @click="confirmInvoice()"
+                          >
+                            ยืนยัน
+                          </button>
+                          <button
+                            v-if="confirm == false"
+                            class="btn btn-warning no-print ml-3"
+                            @click="print"
+                          >
+                            <i class="fas fa-print"></i> Print
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </b-card-body>
                 </b-collapse>
@@ -1740,6 +1848,20 @@
               Close
             </button>
           </div>
+          <!-- <b-form-group
+            label="Using options array:"
+            v-slot="{ ariaDescribedby }"
+          >
+            <b-form-checkbox-group
+              id="checkbox-group-1"
+              v-model="selected"
+              :options="options"
+              :aria-describedby="ariaDescribedby"
+              name="flavour-1"
+            ></b-form-checkbox-group>
+          </b-form-group>
+
+          selected {{ selected }} -->
         </div>
       </div>
     </div>
@@ -1779,12 +1901,20 @@
 
 <script>
 import { db, functions, fb } from "../../firebase.js";
+import firebase from "firebase/app";
+
 import moment from "moment";
 
 export default {
   name: "",
   data() {
     return {
+      selected: ["อุปกรณ์การเรียน"],
+      options: [
+        { text: "หนังสือเรียน", value: "หนังสือเรียน" },
+        { text: "อุปกรณ์การเรียน", value: "อุปกรณ์การเรียน" },
+        { text: "อื่นๆ", value: "อื่นๆ" },
+      ],
       columns: [
         {
           label: "รหัส",
@@ -1945,7 +2075,11 @@ export default {
       endDate: "",
       qty: 1,
       paymentType: null,
-      paymentFor: null,
+      paymentFor: [],
+      other: null,
+      payBy: [],
+      note: null,
+      transactionTime: null,
 
       cName: [],
       cType: [],
@@ -2011,12 +2145,66 @@ export default {
     //   // this.selIdeaIndex = {id: selectedIdea.uid , name : selectedIdea.fullName }
     //   // console.log(this.selIdeaIndex);
     // },
-    async confirmInvoice() {
+    activeCourse() {
+      try {
+        var batch = db.batch();
+        this.courses.forEach((item) => {
+          let data = {
+            uid: this.std.uid,
+            studentId: this.std.studentId,
+            firstName: this.std.firstName,
+            lastName: this.std.lastName,
+            nickName: this.std.nickName,
+            courseName: item.courseSelected,
+            amount: item.amount,
+            classType: item.classTypeSelected,
+            invoiceNo: this.invoiceNo,
+
+            day: item.daySelected,
+            discount: item.discount,
+            finishTime: item.finishTime,
+            level: item.levelSelected,
+            price: item.priceSelected,
+            qty: item.qty,
+            startDate: moment(item.startDate).format("x"),
+            endDate: moment(item.endDate).format("x"),
+            startTime: item.startTime,
+
+            teacherName: item.teacherSelected.teacherName,
+            teacherId: item.teacherSelected.teacherId,
+          };
+          batch.set(db.collection("courseActive").doc(), data);
+        });
+
+        this.carts.forEach((item) => {
+          var newQty = item.quantity - item.buyAmount;
+          console.log(newQty);
+          batch.update(db.collection("products").doc(item.pID), {
+            quantity: newQty,
+          });
+        });
+
+        batch.commit();
+        console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+
+        //  this.carts = [];
+        this.addInvoice();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async addInvoice() {
       // console.log(invoiceData);
       try {
         this.courseInfo = [];
         this.courses.forEach((item) => {
           let data = {
+            uid: this.std.uid,
+            studentId: this.std.studentId,
+            firstName: this.std.firstName,
+            lastName: this.std.lastName,
+            nickName: this.std.nickName,
             courseName: item.courseSelected,
             amount: item.amount,
             classType: item.classTypeSelected,
@@ -2034,7 +2222,7 @@ export default {
           };
 
           this.courseInfo.push(data);
-          console.log(data);
+          // console.log(this.courseInfo);
           // this.courseInfo = []
           // item.teacher.forEach((detail)=>{
           //   let data = {
@@ -2052,16 +2240,22 @@ export default {
           firstName: this.std.firstName,
           lastName: this.std.lastName,
           nickName: this.std.nickName,
-          payBy: null,
-          invoiceNo: null,
+          payBy: this.payBy,
+          invoiceNo: this.invoiceNo,
           paymentType: this.paymentType,
+
           courseDetail: this.courseInfo,
           productDetail: this.carts,
+
+          pSubtotal: this.pSubtotal,
           subTotal: this.subTotal,
           grandTotal: this.grandTotal,
           fee: this.fee,
+
           paymentFor: this.paymentFor,
-          test: null,
+          other: this.other,
+          note: this.note,
+          transactionTime: this.transactionTime,
         };
 
         await db.collection("invoiceData").add(invoiceData);
@@ -2072,19 +2266,148 @@ export default {
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
         });
+        this.updateInvoiceId();
       } catch (err) {
         Swal.fire({
-          title: "เกิดข้อผิดพลาด",
+          title: "Add Course เกิดข้อผิดพลาด",
           text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
           icon: "error",
           confirmButtonColor: "#FF0000",
           confirmButtonText: "ตกลง",
         });
       }
-      this.confirm = true;
     },
+
+    async updateInvoiceId() {
+      await db
+        .collection("invoiceId")
+        .doc("detail")
+        .update({ invoiceNo: firebase.firestore.FieldValue.increment(1) });
+      this.confirm = true;
+      console.log("จบการทำงาน");
+      // console.log(product.pID);
+      // this.$store.state.show = true;
+      // var Ref = db.collection("products").doc(product.pID);
+      // try {
+      //   await db
+      //     .runTransaction((transaction) => {
+      //       return transaction.get(Ref).then((sfDoc) => {
+      //         if(!sfDoc.exists) {
+      //           throw "Document does not exist!";
+      //         }
+      //         var newQuantity=sfDoc.data().quantity-product.buyAmount;
+      //         transaction.update(Ref, { quantity: newQuantity });
+      //       });
+      //     });
+      //   Swal.fire({
+      //     title: "Add To Cart",
+      //     text: "เพิ่มสินค้าลงตระกร้าเรียบร้อยแล้ว",
+      //     icon: "success",
+      //     confirmButtonColor: "#30855c",
+      //     confirmButtonText: "ตกลง",
+      //   });
+      //   this.carts.push(product);
+      //   this.$store.state.show=false;
+      //   console.log(this.cart);
+      // } catch(error) {
+      //   console.log("Transaction failed: ", error);
+      //   Swal.fire({
+      //     title: "เกิดข้อผิดพลาดที่ระบบ",
+      //     text: "ไม่สามารถตัดยอดสินค้าได้ กรุณาลองใหม่อีกครั้ง",
+      //     icon: "warning",
+      //     confirmButtonColor: "#FF0000",
+      //     confirmButtonText: "ตกลง",
+      //   });
+      //   this.$store.state.show=false;
+      // }
+    },
+
+    async confirmInvoice() {
+      this.getInvoiceId();
+      // console.log(invoiceData);
+      // try {
+      //   this.courseInfo = [];
+      //   this.courses.forEach((item) => {
+      //     let data = {
+      //       uid: this.std.uid,
+      //       studentId: this.std.studentId,
+      //       firstName: this.std.firstName,
+      //       lastName: this.std.lastName,
+      //       nickName: this.std.nickName,
+      //       courseName: item.courseSelected,
+      //       amount: item.amount,
+      //       classType: item.classTypeSelected,
+      //       day: item.daySelected,
+      //       discount: item.discount,
+      //       endDate: item.endDate,
+      //       finishTime: item.finishTime,
+      //       level: item.levelSelected,
+      //       price: item.priceSelected,
+      //       qty: item.qty,
+      //       startDate: item.startDate,
+      //       startTime: item.startTime,
+      //       teacherName: item.teacherSelected.teacherName,
+      //       teacherId: item.teacherSelected.teacherId,
+      //     };
+
+      //     this.courseInfo.push(data);
+      //     console.log(this.courseInfo);
+      //     // this.courseInfo = []
+      //     // item.teacher.forEach((detail)=>{
+      //     //   let data = {
+      //     //     teacherName : detail.fullName,
+      //     //     teacherId : detail.uid,
+      //     //   }
+      //     //       this.courseInfo.push(data)
+      //     //       console.log(this.courseInfo);
+      //     // })
+      //   });
+
+      //   let invoiceData = {
+      //     uid: this.std.uid,
+      //     studentId: this.std.studentId,
+      //     firstName: this.std.firstName,
+      //     lastName: this.std.lastName,
+      //     nickName: this.std.nickName,
+      //     payBy: this.payBy,
+      //     invoiceNo: invoiceNo,
+      //     paymentType: this.paymentType,
+
+      //     courseDetail: this.courseInfo,
+      //     productDetail: this.carts,
+      //     subTotal: this.subTotal,
+      //     grandTotal: this.grandTotal,
+      //     fee: this.fee,
+
+      //     paymentFor: this.paymentFor,
+      //     other: this.other,
+      //     note: this.note,
+      //     transactionTime: this.transactionTime,
+      //   };
+
+      //   await db.collection("invoiceData").add(invoiceData);
+      //   Swal.fire({
+      //     title: "เรียบร้อย",
+      //     text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
+      //     icon: "success",
+      //     confirmButtonColor: "#30855c",
+      //     confirmButtonText: "ตกลง",
+      //   });
+      // } catch (err) {
+      //   Swal.fire({
+      //     title: "เกิดข้อผิดพลาด",
+      //     text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
+      //     icon: "error",
+      //     confirmButtonColor: "#FF0000",
+      //     confirmButtonText: "ตกลง",
+      //   });
+      // }
+      // this.confirm = true;
+    },
+
     addToCart(product) {
       this.carts.push(product);
+      // console.log(this.carts);
       // console.log(product.pID);
       // this.$store.state.show = true;
       // var Ref = db.collection("products").doc(product.pID);
@@ -2138,6 +2461,7 @@ export default {
       // Pass the element id here
       // window.print();
       this.$htmlToPaper("InvPckPrint");
+      this.carts = [];
     },
 
     addcourse(std) {
@@ -2387,7 +2711,10 @@ export default {
         }
         let str = doc.data().invoiceNo.toString();
         this.invoiceNo = str.padStart(3, "0");
+
         console.log(this.invoiceNo);
+        this.activeCourse();
+
         this.$store.state.show = false;
       } catch (err) {
         Swal.fire({
@@ -2411,6 +2738,8 @@ export default {
     this.getCourseTemplate();
     this.getProducts();
   },
+  // ขั้นตอนการทำงาน confirmInvoice() ->  getInvoiceId() ->
+  // activeCourse() -> ตัดสต็อค -> addInvoice()
 };
 </script>
 
@@ -2469,3 +2798,4 @@ div.page[size="A4"] {
   }
 }
 </style>
+
