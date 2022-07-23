@@ -27,6 +27,7 @@
             <option :selected="props.row.role.isAdmin" value="isAdmin">ADMIN</option>
           </select>
       </span> -->
+       <!-- @click="fullProfile(props.row)" -->
             <span v-if="props.column.field == 'attendance'">
               <div
                 class="btn btn-warning"
@@ -75,7 +76,7 @@
               <b-card no-body class="mb-1">
                 <b-card-header header-tag="header" class="p-1" role="tab">
                   <b-button block v-b-toggle.accordion-1 variant="success"
-                    >ข้อมูลวิชาเรียน</b-button
+                    >รายละเอียดวิชาเรียน</b-button
                   >
                 </b-card-header>
                 <b-collapse
@@ -88,107 +89,76 @@
                     <!-- style="background: #e9ecef" -->
                     <div class="mt-3">
                       <div class="row text-left">
-                        <div class="col-lg-4 col-md-6 d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            Inv No. <span class="text-success">001</span>
+                            Inv No. <span class="text-success">{{profile.invoiceNo}}</span>
                           </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            ชั้นเรียน <span class="text-success">กลุ่ม</span>
+                            ชั้นเรียน <span class="text-success">{{profile.classType}}</span>
                           </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            วันที่ <span class="text-success">01/01/2022</span>
+                            วันที่ <span class="text-success">{{profile.nowDate}}</span>
                           </div>
                         </div>
-                         <div class="col-lg-4 col-md-6 d-inline-block">
-                          <div>
-                            ชื่อ-นามสกุล
-                            <span class="text-success"
-                              >เอกชัย ตั้งกวินคีตสกุล</span
-                            >
-                          </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 d-inline-block">
-                          <div>
-                            รหัสนักเรียน
-                            <span class="text-success">MMS001</span>
-                          </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 d-inline-block">
-                          <div>
-                            ชื่อเล่น <span class="text-success">เวย์</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- <div class="row text-left">
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             ชื่อ-นามสกุล
                             <span class="text-success"
-                              >เอกชัย ตั้งกวินคีตสกุล</span
+                              >{{profile.firstName}} {{profile.lastName}}</span
                             >
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             รหัสนักเรียน
-                            <span class="text-success">MMS001</span>
+                            <span class="text-success">{{profile.studentId}}</span>
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            ชื่อเล่น <span class="text-success">เวย์</span>
+                            ชื่อเล่น <span class="text-success">{{profile.nickName}}</span>
                           </div>
                         </div>
-                      </div> -->
-
-                      <div class="row text-left">
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             ชื่อ-นามสกุล ครู
                             <span class="text-success"
-                              >เอกชัย ตั้งกวินคีตสกุล</span
+                              >{{profile.teacherName}}</span
                             >
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            วันเรียน <span class="text-success">เสาร์</span>
+                            วันเรียน <span class="text-success">{{profile.day}}</span>
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             เวลาเรียน
-                            <span class="text-success">10.00-11.00</span>
+                            <span class="text-success">{{profile.startTime}}-{{profile.finishTime}}</span>
                           </div>
                         </div>
-                      </div>
-
-                      <div class="row text-left">
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            เบอร์โทรครู
-                            <span class="text-success">0918016326</span>
+                            เบอร์โทร
+                            <span class="text-success">{{profile.mobilephone}}</span>
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            วิชา <span class="text-success">ศิลปะ</span>
+                            วิชา <span class="text-success">{{profile.courseName}}</span>
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
-                            จำนวน ชม. <span class="text-success">10</span>
+                            จำนวน ชม. <span class="text-success">{{profile.amount}}</span>
                           </div>
                         </div>
-                      </div>
-
-                      <div class="row text-left">
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             โปรโมชั่น
                             <span class="text-success"
@@ -196,16 +166,16 @@
                             >
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             วันที่เริ่มเรียน
-                            <span class="text-success">19มี.ค.65</span>
+                            <span class="text-success">{{profile.startDate}}</span>
                           </div>
                         </div>
-                        <div class="col d-inline-block">
+                        <div class="col-lg-4 col-md-6">
                           <div>
                             วันที่เรียนจบ
-                            <span class="text-success">19มี.ค.65</span>
+                            <span class="text-success">{{profile.endDate}}</span>
                           </div>
                         </div>
                       </div>
@@ -442,40 +412,40 @@ export default {
       profiles: [],
 
       profile: {
-        uid: "",
-        addProfileAt: "",
-        image: null,
+        // amount: "",
+        // addProfileAt: "",
+        // image: null,
 
-        namePrefix: "",
-        nickName: "",
-        firstName: "",
-        lastName: "",
-        birthday: null,
-        email: "",
-        telephone: "",
-        mobilephone: "",
+        // namePrefix: "",
+        // nickName: "",
+        // firstName: "",
+        // lastName: "",
+        // birthday: null,
+        // email: "",
+        // telephone: "",
+        // mobilephone: "",
 
-        address: {
-          addressNumber: "",
-          location: "",
-          soi: "",
-          road: "",
-          district: "",
-          amphoe: "",
-          province: "",
-          zipcode: "",
-        },
+        // address: {
+        //   addressNumber: "",
+        //   location: "",
+        //   soi: "",
+        //   road: "",
+        //   district: "",
+        //   amphoe: "",
+        //   province: "",
+        //   zipcode: "",
+        // },
 
-        graduated: {
-          degree: "",
-          university: "",
-          faculty: "",
-          major: "",
-        },
+        // graduated: {
+        //   degree: "",
+        //   university: "",
+        //   faculty: "",
+        //   major: "",
+        // },
 
-        subject: "",
-        workingProfile: "",
-        profileType: "teacher",
+        // subject: "",
+        // workingProfile: "",
+        // profileType: "teacher",
       },
     };
   },
@@ -524,14 +494,22 @@ export default {
 
     fullProfile(profile) {
       // alert(profile.firstName);
+      // console.log(profile.courseId);
       this.profile = profile;
+    },
+    getDate(){
+      var date = moment(Date.now()).day();
+      console.log(date);
     },
 
     getData() {
       try {
         this.$store.state.show = true;
+        var date = moment(Date.now()).day();
+        console.log(date);
         db.collection("courseActive")
-          // .where("role.isTeacher", "==", true)
+          .where("day.dayNum", "==", date )
+          .where("amount",">=",1 )
           .onSnapshot((querySnapshot) => {
             this.profiles = [];
             querySnapshot.forEach((doc) => {
@@ -539,24 +517,26 @@ export default {
               // {
               // console.log(doc.data());
               let profile = {
-                uid: doc.id,
+                nowDate : moment(Date.now()).format("ll"),
+                courseId: doc.id,
                 amount: doc.data().amount,
                 classType: doc.data().classType,
                 courseName: doc.data().courseName,
-                day: doc.data().day,
+                day: doc.data().day.item,
                 discount: doc.data().discount,
-                endDate: moment(doc.data().endDate).format("DD/MM/YYYY"),
-                finishTime: doc.data().finishTime,
+                endDate: moment(parseInt(doc.data().endDate)).format("ll"),
+                finishTime: moment(doc.data().finishTime,'HH:mm:ss').format('HH:mm'),
                 firstName: doc.data().firstName,
                 invoiceNo: doc.data().invoiceNo,
 
                 lastName: doc.data().lastName,
                 level: doc.data().level,
+                mobilephone:doc.data().mobilephone,
                 nickName: doc.data().nickName,
                 price: doc.data().price,
                 qty: doc.data().qty,
-                startDate: moment(doc.data().startDate).format("DD/MM/YYYY"),
-                startTime: doc.data().startTime,
+                startDate: moment(parseInt(doc.data().startDate)).format("ll"),
+                startTime: moment(doc.data().startTime,'HH:mm:ss').format('HH:mm'),
                 studentId: doc.data().studentId,
                 teacherId: doc.data().teacherId,
                 teacherName: doc.data().teacherName,
@@ -580,5 +560,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

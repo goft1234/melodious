@@ -247,10 +247,10 @@
                 <u v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
                   >หนังสือเรียน ,</u
                 >
-                <u v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2">อุปกรณ์การเรียน ,</u>
-                <u v-if="item == 'อื่นๆ'" class="text-left pl-2"
-                  >อื่นๆ</u
+                <u v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
+                  >อุปกรณ์การเรียน ,</u
                 >
+                <u v-if="item == 'อื่นๆ'" class="text-left pl-2">อื่นๆ</u>
               </td>
               <td></td>
               <td></td>
@@ -1327,10 +1327,10 @@
                                 {{ item.fullName }}
                               </option>
                             </select>
-                            <span
+                            <!-- <span
                               >courseSelected:
                               {{ course.teacherSelected }}</span
-                            >
+                            > -->
                           </div>
                         </div>
 
@@ -1350,6 +1350,7 @@
                               <option
                                 v-for="(item, index) in course.day"
                                 :key="index"
+                                :value="{dayNum :index + 1,item}"
                               >
                                 {{ item }}
                               </option>
@@ -2155,6 +2156,7 @@ export default {
             firstName: this.std.firstName,
             lastName: this.std.lastName,
             nickName: this.std.nickName,
+            mobilephone : this.std.mobilephone,
             courseName: item.courseSelected,
             amount: item.amount,
             classType: item.classTypeSelected,
@@ -2798,4 +2800,3 @@ div.page[size="A4"] {
   }
 }
 </style>
-
