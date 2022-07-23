@@ -27,7 +27,13 @@
           :pagination-options="{
             enabled: true,
           }"
+          :sort-options="{
+            enabled: true,
+            initialSortBy: { field: 'pCode', type: 'asc' },
+          }"
+          compactMode
         >
+          <!-- props.row มีค่า = doc.data() -->
           <template slot="table-row" slot-scope="props">
             <span v-if="props.column.field == 'edit'">
               <div
@@ -36,12 +42,12 @@
                 data-toggle="modal"
                 data-target="#product"
               >
-                แก้ไข
+                <i class="fas fa-edit"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
               <div class="btn btn-danger" @click="deleteProduct(props.row.pID)">
-                ลบสินค้า
+                <i class="fas fa-trash-alt"></i>
               </div>
             </span>
             <span v-else>
@@ -58,10 +64,16 @@
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 v-if="modal == 'new'" class="modal-title w-100 text-center text-success">
+            <h4
+              v-if="modal == 'new'"
+              class="modal-title w-100 text-center text-success"
+            >
               เพิ่มสินค้า
             </h4>
-            <h4 v-if="modal == 'edit'" class="modal-title w-100 text-center text-warning">
+            <h4
+              v-if="modal == 'edit'"
+              class="modal-title w-100 text-center text-warning"
+            >
               แก้ไขสินค้า
             </h4>
             <button type="button" class="close" data-dismiss="modal">
@@ -151,7 +163,11 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
               Close
             </button>
             <button
@@ -209,15 +225,15 @@ export default {
         {
           label: "จำนวน",
           field: "quantity",
-          type: "text",
+          type: "number",
         },
         {
-          label: "edit",
+          label: "แก้ไข",
           field: "edit",
           type: "text",
         },
         {
-          label: "delete",
+          label: "ลบ",
           field: "delete",
           type: "text",
         },
@@ -227,11 +243,11 @@ export default {
 
       products: [],
       product: {
-        pName: null,
-        pCode: null,
-        cost: null,
-        price: null,
-        quantity: null,
+        // pName: null,
+        // pCode: null,
+        // cost: null,
+        // price: null,
+        // quantity: null,
       },
     };
   },
@@ -281,7 +297,7 @@ export default {
 
     editProduct(product) {
       this.modal = "edit";
-      // console.log(pId);
+      // console.log(product);
       this.product = product;
     },
 
@@ -351,5 +367,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

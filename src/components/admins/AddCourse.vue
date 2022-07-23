@@ -35,6 +35,7 @@
           :pagination-options="{
             enabled: true,
           }"
+          compactMode
         >
           <template slot="table-row" slot-scope="props">
             <span v-if="props.column.field == 'edit'">
@@ -44,7 +45,7 @@
                 data-toggle="modal"
                 data-target="#course"
               >
-                แก้ไข
+                <i class="fas fa-edit"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
@@ -52,7 +53,7 @@
                 class="btn btn-danger"
                 @click="deletecourse(props.row.couseId)"
               >
-                ลบ
+                <i class="fas fa-trash-alt"></i>
               </div>
             </span>
             <span v-else>
@@ -523,12 +524,12 @@ export default {
           type: "text",
         },
         {
-          label: "edit",
+          label: "แก้ไข",
           field: "edit",
           type: "text",
         },
         {
-          label: "delete",
+          label: "ลบ",
           field: "delete",
           type: "text",
         },

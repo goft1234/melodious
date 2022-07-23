@@ -17,6 +17,7 @@
           :pagination-options="{
             enabled: true,
           }"
+          compactMode
         >
           <!-- props.row คือ profiles -->
           <template slot="table-row" slot-scope="props">
@@ -34,7 +35,8 @@
                 data-target="#profileModal"
                 @click="fullProfile(props.row)"
               >
-                ดูข้อมูล
+              <i class="fa-solid fa-user"></i>
+                
               </div>
             </span>
             <!-- class="btn btn-success"
@@ -48,7 +50,7 @@
                 data-target="#addCourseModal"
                 @click="addcourse(props.row)"
               >
-                เพิ่มคอร์ส
+                <i class="fa-solid fa-file-circle-plus"></i>
               </div>
             </span>
             <!-- @click="Reneval(props.row)" -->
@@ -58,15 +60,21 @@
                 data-toggle="modal"
                 data-target="#RenevalModal"
               >
-                ต่อคอร์ส
+                <i class="fa-solid fa-user-plus"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'data'">
-              <div class="btn btn-dark" @click="addToInvoice()">ดูข้อมูล</div>
+              <div
+                class="btn btn-dark"
+                data-toggle="modal"
+                data-target="#RenevalModal"
+              >
+                <i class="fas fa-table"></i>
+              </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
               <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
-                ลบ
+                <i class="fas fa-trash-alt"></i>
               </div>
             </span>
             <!-- <span v-else>
@@ -1471,6 +1479,7 @@
                       :pagination-options="{
                         enabled: true,
                       }"
+                      compactMode
                     >
                       <template slot="table-row" slot-scope="props">
                         <span v-if="props.column.field == 'quantity'">
@@ -1948,7 +1957,7 @@ export default {
           type: "text",
         },
         {
-          label: "เพิ่มเติม",
+          label: "โปร์ไฟล์",
           field: "otherprofile",
           type: "text",
         },
@@ -2033,7 +2042,7 @@ export default {
           type: "text",
         },
         {
-          label: "จำนวนคงเหลือ",
+          label: "คงเหลือ",
           field: "quantity",
           type: "text",
         },

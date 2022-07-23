@@ -17,6 +17,7 @@
           :pagination-options="{
             enabled: true,
           }"
+          compactMode
         >
           <!-- props.row คือ profiles -->
           <template slot="table-row" slot-scope="props">
@@ -35,7 +36,7 @@
                 data-target="#profileModal"
                 @click="fullProfile(props.row)"
               >
-                ดูข้อมูล
+                <i class="fas fa-table"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'schedule'">
@@ -45,7 +46,7 @@
             </span>
             <span v-else-if="props.column.field == 'delete'">
               <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
-                ลบ
+                <i class="fas fa-trash-alt"></i>
               </div>
             </span>
             <!-- <span v-else>

@@ -27,6 +27,7 @@
           :pagination-options="{
             enabled: true,
           }"
+          compactMode
         >
           <template slot="table-row" slot-scope="props">
             <span v-if="props.column.field == 'edit'">
