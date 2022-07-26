@@ -35,8 +35,7 @@
                 data-target="#profileModal"
                 @click="fullProfile(props.row)"
               >
-              <i class="fa-solid fa-user"></i>
-                
+                <i class="fa-solid fa-user"></i>
               </div>
             </span>
             <!-- class="btn btn-success"
@@ -151,19 +150,11 @@
             </tr>
           </table>
           <br />
-          <table width="100%">
+          <table width="100%" class="mb-2">
             <tr class="text-left">
-              <td>
-                (1):เพื่อชำระค่าเรียน
+              <td colspan="4">
+                (1):เพื่อชำระค่าเรียน <b>{{ paymentType }}</b>
                 <label for=""></label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" Checked />
-                <label for=""> ลงทะเบียนใหม่</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for=""> ต่อคอร์สเรียน</label>
               </td>
             </tr>
           </table>
@@ -190,7 +181,7 @@
                   course.classTypeSelected
                 }}({{ course.levelSelected }}) , วันที่เริ่มเรียน
                 {{ course.startDate }} , <br />
-                อาจารย์ผู้สอน-{{ course.teacherSelected }}
+                อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
               </td>
               <td>{{ course.qty }}</td>
               <td>{{ course.priceSelected }}</td>
@@ -228,42 +219,26 @@
             </tr>
           </table>
           <p><br /></p>
-          <table width="100%">
-            <tr class="text-left">
-              <td>(2):เพื่อชำระค่า</td>
-              <!-- <td
-                v-for="(item, index) in options"
-                :key="index"
-                style="display: inline-block"
-                class="ml-5"
+
+          <div class="mb-2">
+            (2):เพื่อชำระค่า
+            <span
+              v-for="(item, index) in selected"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
+                >หนังสือเรียน ,</b
               >
-                <input
-                  type="checkbox"
-                  id="mike"
-                  value="item.value"
-                  v-model="selected"
-                  class="ml-5"
-                />
-                <label for="mike">{{ item.text }}</label>
-              </td> -->
-              <td
-                v-for="(item, index) in selected"
-                :key="index"
-                colspan="1"
-                style="display: inline-block"
+              <b v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
+                >อุปกรณ์การเรียน ,</b
               >
-                <u v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
-                  >หนังสือเรียน ,</u
-                >
-                <u v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
-                  >อุปกรณ์การเรียน ,</u
-                >
-                <u v-if="item == 'อื่นๆ'" class="text-left pl-2">อื่นๆ</u>
-              </td>
-              <td></td>
-              <td></td>
-            </tr>
-          </table>
+              <b v-if="item == 'อื่นๆ'" class="text-left pl-2">{{
+                payforDetail
+              }}</b>
+            </span>
+          </div>
 
           <table width="100%" class="table-bordered" style="text-align: center">
             <tr>
@@ -307,33 +282,29 @@
                   border-right: 0;
                   border-bottom: 6px black double;
                 "
-              ></td>
+              >{{pSubtotal}}</td>
             </tr>
           </table>
           <p><br /></p>
-          <table width="100%">
-            <tr>
-              <td style="" colspan="4">
-                <p class="text-left">ชำระเงินโดย (Pay by)</p>
-              </td>
-            </tr>
-          </table>
-          <table width="100%">
-            <tr class="text-left">
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">เงินสด</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">เครดิตการ์ด</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">โอนผ่านธนาคาร</label>
-              </td>
-            </tr>
-          </table>
+
+          <div class="mb-2">
+            ชำระเงินโดย (Pay by)
+            <span
+              v-for="(item, index) in payBy"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'เงินสด'" class="text-left pl-2">เงินสด ,</b>
+              <b v-if="item == 'เครดิตการ์ด'" class="text-left pl-2"
+                >เครดิตการ์ด ,</b
+              >
+              <b v-if="item == 'โอนผ่านธนาคาร'" class="text-left pl-2">{{
+                bankDetail
+              }}</b>
+            </span>
+          </div>
+
           <table width="100%" class="table-bordered" style="text-align: center">
             <tr>
               <th style="width: 25%">(1)รวมค่าเรียน<br />Totol Tuition Fee</th>
@@ -1047,7 +1018,7 @@
                     class="form-control"
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
-                    v-model="profile.graduated.degree"
+                    v-model.trim="profile.graduated.degree"
                     disabled
                   />
                 </div>
@@ -1062,7 +1033,7 @@
                     class="form-control"
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
-                    v-model="profile.graduated.university"
+                    v-model.trim="profile.graduated.university"
                     disabled
                   />
                 </div>
@@ -1080,7 +1051,7 @@
                     class="form-control"
                     placeholder="กรอกคณะที่จบ"
                     id="email"
-                    v-model="profile.graduated.faculty"
+                    v-model.trim="profile.graduated.faculty"
                     disabled
                   />
                 </div>
@@ -1093,7 +1064,7 @@
                     class="form-control"
                     placeholder="กรอกเอก/สาขาวิชา"
                     id="email"
-                    v-model="profile.graduated.major"
+                    v-model.trim="profile.graduated.major"
                     disabled
                   />
                 </div>
@@ -1147,7 +1118,7 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <div class="accordion" role="tablist">
+            <div class="accordion" role="tablist" style="padding: 0">
               <b-card no-body class="mb-1">
                 <b-card-header header-tag="header" class="p-1" role="tab">
                   <b-button block v-b-toggle.accordion-1 variant="success"
@@ -1289,7 +1260,8 @@
                                 type="number"
                                 class="form-control"
                                 placeholder="กรอกเป็นตัวเลข"
-                                v-model="course.discount"
+                                min="0"
+                                v-model.trim="course.discount"
                               />
                             </div>
                           </div>
@@ -1305,7 +1277,7 @@
                                 type="number"
                                 class="form-control"
                                 placeholder="กรอกเป็นตัวเลข"
-                                v-model="course.amount"
+                                v-model.trim="course.amount"
                               />
                             </div>
                           </div>
@@ -1345,25 +1317,17 @@
                         <div class="col-lg-6">
                           <div class="form-group">
                             <label for="namePrefix" class="text-success"
-                              >วันที่เลือกเรียน</label
+                              >ค่าสอนของครู</label
                             >
-                            <select
-                              class="form-control"
-                              id="namePrefix"
-                              v-model="course.daySelected"
-                            >
-                              <option disabled value="">
-                                วันที่เลือกเรียน
-                              </option>
-                              <option
-                                v-for="(item, index) in course.day"
-                                :key="index"
-                                :value="{dayNum :index + 1,item}"
-                              >
-                                {{ item }}
-                              </option>
-                            </select>
-                            <!-- <span>courseSelected: {{ course.daySelected }}</span> -->
+                            <div class="form-group">
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="กรอกเป็นตัวเลข"
+                                min="0"
+                                v-model.trim="course.wages"
+                              />
+                            </div>
                           </div>
                         </div>
 
@@ -1429,6 +1393,31 @@
 
                         <div class="col-lg-6">
                           <div class="form-group">
+                            <label for="namePrefix" class="text-success"
+                              >วันที่เลือกเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.daySelected"
+                            >
+                              <option disabled value="">
+                                วันที่เลือกเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.day"
+                                :key="index"
+                                :value="{ dayNum: index + 1, item }"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                            <!-- <span>courseSelected: {{ course.daySelected }}</span> -->
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
                             <label for="" class="text-success"
                               >จำนวนคอร์ส</label
                             >
@@ -1437,7 +1426,8 @@
                                 type="number"
                                 class="form-control"
                                 placeholder="กรอกเป็นตัวเลข"
-                                v-model="course.qty"
+                                min="1"
+                                v-model.trim="course.qty"
                               />
                             </div>
                           </div>
@@ -1493,7 +1483,8 @@
                               type="number"
                               class="form-control"
                               placeholder="กรอกเป็นตัวเลข"
-                              v-model="props.row.buyAmount"
+                              min="0"
+                              v-model.trim="props.row.buyAmount"
                             />
                           </div>
                         </span>
@@ -1503,7 +1494,8 @@
                               type="number"
                               class="form-control"
                               placeholder="กรอกเป็นตัวเลข"
-                              v-model="props.row.pDiscount"
+                              min="0"
+                              v-model.trim="props.row.pDiscount"
                             />
                           </div>
                         </span>
@@ -1544,17 +1536,20 @@
                 >
                   <b-card-body>
                     <div class="py-3" style="border: 1px solid green">
-                      <h6 class="text-center text-success mt-3">วิชาเรียน</h6>
+                      <h5 class="text-center text-success mt-3">วิชาเรียน</h5>
+                      <h6 class="ml-3 mt-3 text-success">
+                        เพื่อชำระค่าเรียน (Payment for tuition)
+                      </h6>
                       <div class="form-check-inline ml-3">
-                        <label class="form-check-label" for="radio1">
+                        <label class="form-check-label" for="">
                           <input
                             type="radio"
                             class="form-check-input"
-                            id="radio1"
-                            name="optradio"
+                            id=""
+                            name=""
                             value="ลงทะเบียนใหม่"
-                            v-model="paymentType"
                             checked
+                            v-model.trim="paymentType"
                           />ลงทะเบียนใหม่
                         </label>
                       </div>
@@ -1563,10 +1558,10 @@
                           <input
                             type="radio"
                             class="form-check-input"
-                            id="radio2"
-                            name="optradio"
+                            id=""
+                            name=""
                             value="ต่อคอร์ส"
-                            v-model="paymentType"
+                            v-model.trim="paymentType"
                           />ต่อคอร์สเรียน
                         </label>
                       </div>
@@ -1606,7 +1601,7 @@
                                   @click="deleteItem(index)"
                                   class="btn btn-danger btn-sm"
                                 >
-                                  ลบ
+                                  <i class="fas fa-times text-light"></i>
                                 </button>
                               </td>
                             </tr>
@@ -1616,21 +1611,57 @@
                     </div>
 
                     <div class="py-3 my-2" style="border: 1px solid green">
-                      <h6 class="text-center text-success mt-3">
+                      <h5 class="text-center text-success mt-3">
                         หนังสือ - อุปกรณ์
+                      </h5>
+                      <h6 class="ml-3 mt-3 text-success">
+                        เพื่อชำระ (Payment for)
                       </h6>
-                      <b-form-group
-                        label="เพื่อชำระ (Payment for) :"
-                        v-slot="{ ariaDescribedby }"
-                      >
-                        <b-form-checkbox-group
-                          id="checkbox-group-1"
-                          v-model="selected"
-                          :options="options"
-                          :aria-describedby="ariaDescribedby"
-                          name="flavour-1"
-                        ></b-form-checkbox-group>
-                      </b-form-group>
+                      <div class="row mx-auto">
+                        <div class="col-md-3">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="หนังสือเรียน"
+                                v-model.trim="selected"
+                              />หนังสือเรียน
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-check-inline">
+                            <label class="form-check-label">
+                              <input
+                                type="checkbox"
+                                class="form-check-input"
+                                value="อุปกรณ์การเรียน"
+                                v-model.trim="selected"
+                              />อุปกรณ์การเรียน
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <div class="input-group-text">
+                                <input
+                                  type="checkbox"
+                                  value="อื่นๆ"
+                                  v-model.trim="selected"
+                                />
+                              </div>
+                            </div>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="กรอกรายการชำระ"
+                              v-model.trim="payforDetail"
+                            />
+                          </div>
+                        </div>
+                      </div>
 
                       <!-- <div class="row mx-auto mt-3">
                         <div class="col-md-3">
@@ -1719,18 +1750,19 @@
                     </div>
 
                     <div class="py-3" style="border: 1px solid green">
-                      <h6 class="text-center text-success mt-3">สรุปยอด</h6>
-                      <div class="row">
+                      <h5 class="text-center text-success mt-3">สรุปยอด</h5>
+                      <div class="row mx-auto">
                         <div class="col-md-6">
-                          <div class="form-group ml-3">
+                          <div class="form-group">
                             <label for="usr" class="text-success"
-                              >ค่าแรกเข้า
+                              >ค่าแรกเข้า (Enrollment fee)
                             </label>
                             <input
                               type="number"
                               class="form-control"
                               id="usr"
-                              v-model="fee"
+                              min="0"
+                              v-model.trim="fee"
                             />
                           </div>
                         </div>
@@ -1758,7 +1790,7 @@
                         </table>
                       </div>
 
-                      <h6 class="ml-3 text-success">ชำระเงินโดย Pay By</h6>
+                      <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
                       <div class="row mx-auto">
                         <div class="col-md-3">
                           <div class="form-check-inline">
@@ -1767,7 +1799,7 @@
                                 type="checkbox"
                                 class="form-check-input"
                                 value="เงินสด"
-                                v-model="payBy"
+                                v-model.trim="payBy"
                               />เงินสด
                             </label>
                           </div>
@@ -1779,21 +1811,29 @@
                                 type="checkbox"
                                 class="form-check-input"
                                 value="เครดิตการ์ด"
-                                v-model="payBy"
+                                v-model.trim="payBy"
                               />เครดิตการ์ด
                             </label>
                           </div>
                         </div>
                         <div class="col-md-6">
-                          <div class="form-check-inline">
-                            <label class="form-check-label">
-                              <input
-                                type="checkbox"
-                                class="form-check-input"
-                                value="โอนผ่านบัญชี"
-                                v-model="payBy"
-                              />โอนผ่านบัญชี
-                            </label>
+                          <!-- โอนผ่านธนาคาร -->
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <div class="input-group-text">
+                                <input
+                                  type="checkbox"
+                                  value="โอนผ่านธนาคาร"
+                                  v-model.trim="payBy"
+                                />
+                              </div>
+                            </div>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="โอนผ่านบัญชีธนาคาร"
+                              v-model.trim="bankDetail"
+                            />
                           </div>
                         </div>
                         <div class="col-md-6">
@@ -1805,21 +1845,25 @@
                               type="text"
                               class="form-control"
                               id="usr"
-                              v-model="note"
+                              v-model.trim="note"
                             />
                           </div>
                         </div>
                         <div class="col-md-6">
                           <div class="form-group mt-2">
                             <label for="usr" class="text-success"
-                              >วันเวลา ที่โอน
+                              >วัน-เวลาที่ทำธุรกรรม
                             </label>
-                            <input
+                            <!-- <input
                               type="text"
                               class="form-control"
                               id="usr"
                               v-model="transactionTime"
-                            />
+                            /> -->
+                            <!-- <date-picker v-model.trim="transactionTime" :config="options" locale="th"></date-picker> -->
+                          <!-- <Datepicker format="DD/MM/YYYY H:i:s"  v-model="transactionTime" @change="test(e)"></Datepicker> -->
+                          <DatetimePicker></DatetimePicker>
+
                           </div>
                         </div>
                       </div>
@@ -1830,10 +1874,16 @@
                             class="btn btn-primary no-print"
                             @click="confirmInvoice()"
                           >
-                            ยืนยัน
+                            <i class="fas fa-check-circle"></i> ยืนยัน
                           </button>
                           <button
-                            v-if="confirm == false"
+                            class="btn btn-danger no-print ml-3"
+                            @click="reset"
+                          >
+                            <i class="fas fa-redo"></i> Reset/ยกเลิก
+                          </button>
+                          <button
+                            v-if="confirm"
                             class="btn btn-warning no-print ml-3"
                             @click="print"
                           >
@@ -1850,6 +1900,9 @@
 
           <!-- Modal footer -->
           <div class="modal-footer">
+            <button class="btn btn-danger no-print ml-3" @click="reset">
+              <i class="fas fa-redo"></i> Reset
+            </button>
             <button
               type="button"
               class="btn btn-secondary"
@@ -1912,19 +1965,19 @@
 <script>
 import { db, functions, fb } from "../../firebase.js";
 import firebase from "firebase/app";
-
 import moment from "moment";
+// import { DatetimePicker } from '@livelybone/vue-datepicker';
 
 export default {
   name: "",
+  components: {},
   data() {
     return {
-      selected: ["อุปกรณ์การเรียน"],
-      options: [
-        { text: "หนังสือเรียน", value: "หนังสือเรียน" },
-        { text: "อุปกรณ์การเรียน", value: "อุปกรณ์การเรียน" },
-        { text: "อื่นๆ", value: "อื่นๆ" },
-      ],
+      // options: [
+      //   { text: "หนังสือเรียน", value: "หนังสือเรียน" },
+      //   { text: "อุปกรณ์การเรียน", value: "อุปกรณ์การเรียน" },
+      //   { text: "อื่นๆ", value: "อื่นๆ" },
+      // ],
       columns: [
         {
           label: "รหัส",
@@ -2080,14 +2133,18 @@ export default {
       discount: 0,
       amount: 12,
       startTime: "",
+      wages: 0,
       finishTime: "",
       startDate: "",
       endDate: "",
       qty: 1,
       paymentType: null,
       paymentFor: [],
+      selected: [],
       other: null,
       payBy: [],
+      payforDetail: "",
+      bankDetail: "",
       note: null,
       transactionTime: null,
 
@@ -2142,6 +2199,12 @@ export default {
   },
 
   methods: {
+    test(e){
+      console.log(this.transactionTime);
+    },
+    reset() {
+      location.reload();
+    },
     // setTeacherId(value) {
     //   // console.log(value);
     //   var selected = this.cTeacher[value];
@@ -2165,7 +2228,7 @@ export default {
             firstName: this.std.firstName,
             lastName: this.std.lastName,
             nickName: this.std.nickName,
-            mobilephone : this.std.mobilephone,
+            mobilephone: this.std.mobilephone,
             courseName: item.courseSelected,
             amount: item.amount,
             classType: item.classTypeSelected,
@@ -2180,6 +2243,7 @@ export default {
             startDate: moment(item.startDate).format("x"),
             endDate: moment(item.endDate).format("x"),
             startTime: item.startTime,
+            wages: item.wages,
 
             teacherName: item.teacherSelected.teacherName,
             teacherId: item.teacherSelected.teacherId,
@@ -2207,6 +2271,7 @@ export default {
 
     async addInvoice() {
       // console.log(invoiceData);
+      // $('#addCourseModal').modal('hide')
       try {
         this.courseInfo = [];
         this.courses.forEach((item) => {
@@ -2228,6 +2293,7 @@ export default {
             qty: item.qty,
             startDate: item.startDate,
             startTime: item.startTime,
+            wages: item.wages,
             teacherName: item.teacherSelected.teacherName,
             teacherId: item.teacherSelected.teacherId,
           };
@@ -2252,6 +2318,8 @@ export default {
           lastName: this.std.lastName,
           nickName: this.std.nickName,
           payBy: this.payBy,
+          payforDetail: this.payforDetail,
+          bankDetail: this.bankDetail,
           invoiceNo: this.invoiceNo,
           paymentType: this.paymentType,
 
@@ -2263,10 +2331,12 @@ export default {
           grandTotal: this.grandTotal,
           fee: this.fee,
 
-          paymentFor: this.paymentFor,
+          paymentFor: this.selected,
           other: this.other,
           note: this.note,
           transactionTime: this.transactionTime,
+          invoiceTime : moment(Date.now()).format('DD/MM/YYYY') ,
+          invoiceTimestamp : moment(Date.now()).format('x') ,
         };
 
         await db.collection("invoiceData").add(invoiceData);
@@ -2334,7 +2404,18 @@ export default {
     },
 
     async confirmInvoice() {
-      this.getInvoiceId();
+      if (this.payBy.length != 0) {
+        this.getInvoiceId();
+      } else {
+        Swal.fire({
+          title: "ไม่มีข้อมูลการชำระเงิน",
+          text: "ตรวจสอบวิธีชำระเงินใหม่อีกครั้งที่ ชำระเงินโดย (Pay By)",
+          icon: "error",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
+
       // console.log(invoiceData);
       // try {
       //   this.courseInfo = [];
@@ -2417,6 +2498,7 @@ export default {
     },
 
     addToCart(product) {
+      console.log(product);
       this.carts.push(product);
       // console.log(this.carts);
       // console.log(product.pID);
@@ -2472,7 +2554,8 @@ export default {
       // Pass the element id here
       // window.print();
       this.$htmlToPaper("InvPckPrint");
-      this.carts = [];
+      // this.carts = [];
+      // this.reset()
     },
 
     addcourse(std) {
@@ -2572,10 +2655,12 @@ export default {
     },
 
     deleteItem(index) {
+      console.log(index);
       this.courses.splice(index, 1);
     },
 
     deleteProduct(index) {
+      // console.log(index);
       this.carts.splice(index, 1);
     },
 
@@ -2592,6 +2677,7 @@ export default {
         discount: 0,
         amount: 12,
         startTime: "",
+        wages: 0,
         finishTime: "",
         startDate: "",
         endDate: "",

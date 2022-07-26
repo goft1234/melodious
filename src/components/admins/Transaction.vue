@@ -1,9 +1,28 @@
 <template>
-  <div id="addProduct" class="shadow">
+  <div id="transaction" class="shadow">
     <div class="container-fluid jumbotron">
       <div class="">
-        <h4 class="text-center text-success mb-4">ข้อมูล transaction</h4>
-        <h5 class="d-inline-block text-success">รายการ</h5>
+        <h4 class="text-center text-success mb-4">
+          ข้อมูล transaction {{ incomeTotal }}
+        </h4>
+        <div class="row">
+          <div class="col-md-12">
+            <date-range-picker
+              :single-date-picker="singleDatePicker"
+              @update="getDatetest"
+              :showDropdowns="showDropdowns"
+              v-model="pickerDates"
+            >
+              <template v-slot:input="pickerDates" style="min-width: 350px"
+                >{{ pickerDates.startDate | date }} -
+                {{ pickerDates.endDate | date }}
+              </template>
+            </date-range-picker>
+            <br />
+            <!-- <div class="btn btn-success px-3" @click="test()">test</div> -->
+          </div>
+        </div>
+        <h5 class="text-success text-left">รายการ</h5>
         <!-- <button
           @click="addNew"
           class="btn btn-success d-inline-block float-right px-5"
@@ -191,11 +210,50 @@
 
 <script>
 import { db } from "../../firebase";
+import DateRangePicker from "vue2-daterange-picker";
+//you need to import the CSS manually
+import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
+import moment from "moment";
+
 export default {
   name: "addProduct",
-
+  components: { DateRangePicker },
   data() {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 6);
     return {
+      singleDatePicker: "range",
+      showDropdowns: true,
+      localeData: {
+        direction: "ltr",
+        format: "DD/MM/YYYY",
+        separator: " - ",
+        applyLabel: "Apply",
+        cancelLabel: "Cancel",
+        weekLabel: "W",
+        customRangeLabel: "Custom Range",
+        daysOfWeek: ["อา", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        monthNames: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        firstDay: 0,
+      },
+      pickerDates: {
+        startDate,
+        endDate,
+      },
       columns: [
         {
           label: "รหัสนักเรียน",
@@ -228,6 +286,11 @@ export default {
           type: "text",
         },
         {
+          label: "วันที่",
+          field: "invoiceTime",
+          type: "text",
+        },
+        {
           label: "รายละเอียด",
           field: "paymentType",
           type: "text",
@@ -244,9 +307,76 @@ export default {
         price: null,
         quantity: null,
       },
+      datatest: [],
     };
   },
+  filters: {
+    date(date) {
+      return new Intl.DateTimeFormat("en-En").format(date);
+    },
+  },
+
+  computed: {
+    incomeTotal() {
+      var total = this.products.reduce((accumulator, item) => {
+        return accumulator + item.grandTotal;
+      }, 0);
+      console.log(total);
+      return total;
+    },
+  },
   methods: {
+    async getDatetest() {
+      try {
+        var startDateFormat = moment(this.pickerDates.startDate).format(
+          "x"
+        );
+        console.log(startDateFormat);
+        var endDateFormat = moment(this.pickerDates.endDate).format("x");
+        await db.collection("invoiceData")
+          .where("invoiceTimestamp", ">=", startDateFormat)
+          .where("invoiceTimestamp", "<=", endDateFormat)
+          .onSnapshot((querySnapshot) => {
+            this.products = [];
+            querySnapshot.forEach((doc) => {
+              let product = {
+                uid: doc.data().uid,
+                bankDetail: doc.data().bankDetail,
+                studentId: doc.data().studentId,
+                firstName: doc.data().firstName,
+                lastName: doc.data().lastName,
+                nickName: doc.data().nickName,
+                invoiceNo: doc.data().invoiceNo,
+                paymentType: doc.data().paymentType,
+                courseDetail: doc.data().courseDetail,
+                productDetail: doc.data().productDetail,
+
+                pSubtotal: doc.data().pSubtotal,
+                subTotal: doc.data().subTotal,
+                grandTotal: doc.data().grandTotal,
+                fee: doc.data().fee,
+                payforDetail: doc.data().payforDetail,
+                invoiceTime: doc.data().invoiceTime,
+                note: doc.data().note,
+                payBy: doc.data().payBy,
+                paymentFor: doc.data().paymentFor,
+                transactionTime: doc.data().transactionTime,
+
+                other: doc.data().other,
+                docId: doc.id,
+              };
+              this.products.push(product);
+            });
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    test() {
+      var startDateFormat = moment(this.pickerDates.endDate).format("x");
+      var endDateFormat = moment(this.pickerDates.endDate).format("x");
+      console.log("start " + startDateFormat);
+    },
     deleteProduct(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
@@ -338,30 +468,43 @@ export default {
     },
 
     getData() {
-      db.collection("invoiceData").onSnapshot((querySnapshot) => {
-        this.products = [];
-        querySnapshot.forEach((doc) => {
-          let product = {
-            uid: doc.data().uid,
-            studentId: doc.data().studentId,
-            firstName: doc.data().firstName,
-            lastName: doc.data().lastName,
-            nickName: doc.data().nickName,
-            invoiceNo: doc.data().invoiceNo,
-            paymentType: doc.data().paymentType,
+      var today = moment(Date.now()).format("DD/MM/YYYY");
+      // moment().toDate().getDate()
+      console.log(today);
+      db.collection("invoiceData")
+        .where("invoiceTime", "==", today)
+        .onSnapshot((querySnapshot) => {
+          this.products = [];
+          querySnapshot.forEach((doc) => {
+            let product = {
+              uid: doc.data().uid,
+              bankDetail: doc.data().bankDetail,
+              studentId: doc.data().studentId,
+              firstName: doc.data().firstName,
+              lastName: doc.data().lastName,
+              nickName: doc.data().nickName,
+              invoiceNo: doc.data().invoiceNo,
+              paymentType: doc.data().paymentType,
+              courseDetail: doc.data().courseDetail,
+              productDetail: doc.data().productDetail,
 
-            courseDetail: doc.data().courseDetail,
-            productDetail: doc.data().productDetail,
-            subTotal: doc.data().subTotal,
-            grandTotal: doc.data().grandTotal,
-            fee: doc.data().fee,
-            test: doc.data().test,
-            // paymentType: doc.data().paymentType,
-            pID: doc.id,
-          };
-          this.products.push(product);
+              pSubtotal: doc.data().pSubtotal,
+              subTotal: doc.data().subTotal,
+              grandTotal: doc.data().grandTotal,
+              fee: doc.data().fee,
+              payforDetail: doc.data().payforDetail,
+              invoiceTime: doc.data().invoiceTime,
+              note: doc.data().note,
+              payBy: doc.data().payBy,
+              paymentFor: doc.data().paymentFor,
+              transactionTime: doc.data().transactionTime,
+
+              other: doc.data().other,
+              docId: doc.id,
+            };
+            this.products.push(product);
+          });
         });
-      });
     },
   },
 
@@ -372,5 +515,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#transaction {
+  text-align: center;
+  color: #2c3e50;
+}
 </style>

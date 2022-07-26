@@ -26,6 +26,10 @@ import datePicker from 'vue-bootstrap-datetimepicker';
 import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
 Vue.use(datePicker);
 
+import  DatetimePicker  from '@livelybone/vue-datepicker';
+Vue.use('datetime-picker', DatetimePicker);
+
+
 import ThailandAutoComplete from 'vue-thailand-address-autocomplete'
 Vue.component('ThailandAutoComplete', ThailandAutoComplete)
 
