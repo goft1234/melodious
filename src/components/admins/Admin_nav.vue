@@ -27,7 +27,7 @@
     </div>
 
     <div>
-      <b-button variant="primary" v-b-toggle.sidebar-no-header class="my-bar"
+      <b-button variant="success" v-b-toggle.sidebar-no-header class="my-bar"
         ><i class="fas fa-bars"></i>
       </b-button>
     </div>

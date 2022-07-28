@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
-import { fb } from '../firebase';
+import {
+  fb
+} from '../firebase';
 
 Vue.use(VueRouter)
 
@@ -46,38 +48,36 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    children: 
-    [
-      {
-      path: 'home',
-      name: 'home',
-      component: () => import('../components/admins/Home.vue')
-      }, 
+    children: [{
+        path: 'home',
+        name: 'home',
+        component: () => import('../components/admins/Home.vue')
+      },
       {
         path: 'approve',
         name: 'approve',
         component: () => import('../components/admins/Approve.vue')
-      }, 
+      },
       {
         path: 'teacher',
         name: 'teacher',
         component: () => import('../components/admins/TeacherData.vue')
-      }, 
+      },
       {
         path: 'employee',
         name: 'employee',
         component: () => import('../components/admins/EmployeeData.vue')
-      }, 
+      },
       {
         path: 'student',
         name: 'student',
         component: () => import('../components/admins/StudentData.vue')
-      }, 
+      },
       {
         path: 'enroll',
         name: 'enroll',
         component: () => import('../components/admins/Enroll.vue')
-      }, 
+      },
       {
         path: 'course',
         name: 'course',
@@ -87,7 +87,7 @@ const routes = [
         path: 'addcourse/:uid',
         name: 'addcourse',
         component: () => import('../components/admins/CourseCart.vue')
-      },  
+      },
       {
         path: 'product',
         name: 'product',
@@ -97,12 +97,29 @@ const routes = [
         path: 'attendance',
         name: 'attendance',
         component: () => import('../components/admins/Attendance.vue')
-      },  
+      },
+
       {
-        path: 'transaction',
-        name: 'transaction',
-        component: () => import('../components/admins/Transaction.vue')
-      }, 
+        path: 'account',
+        name: 'account',
+        component: () => import('../components/admins/Account.vue'),
+        children: [{
+          path: 'overview',
+          name: 'overview',
+          component: () => import('../components/admins/AccountOverview.vue')
+        }, 
+        {
+          path: 'transaction',
+          name: 'transaction',
+          component: () => import('../components/admins/Transaction.vue')
+        },
+        {
+          path: 'incomeday',
+          name: 'incomeday',
+          component: () => import('../components/admins/IncomeDay.vue')
+        },
+      ]
+      },
     ],
   },
 
@@ -137,7 +154,7 @@ const router = new VueRouter({
 //           // alert('test')
 
 //         }
-        
+
 //       });
 //     }
 //     else {

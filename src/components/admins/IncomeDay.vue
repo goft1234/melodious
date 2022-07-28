@@ -1,8 +1,8 @@
 <template>
   <div id="transaction" class="shadow">
-    <div class="container-fluid jumbotron">
+    <div class="container-fluid">
       <div class="">
-        <h4 class="text-center text-success mb-4">ข้อมูล Transaction</h4>
+        <h4 class="text-center text-success mb-4 mt-3">ข้อมูล Transaction</h4>
         <div class="row">
           <div class="col-md-12">
             <date-range-picker
@@ -109,18 +109,63 @@
           </div>
         </div>
 
-        <!-- <h5 class="text-success text-left">รายการ</h5> -->
-        <!-- <button
-          @click="addNew"
-          class="btn btn-success d-inline-block float-right px-5"
-          data-toggle="modal"
-          data-target="#product"
-        >
-          เพิ่มสินค้า
-        </button> -->
+
       </div>
 
       <div class="mt-3 shadow"></div>
+    </div>
+    
+    <div class="mt-3 shadow">
+      <vue-good-table
+        :columns="columns"
+        :rows="Items"
+        :line-numbers="true"
+        styleClass="vgt-table striped bordered"
+        :search-options="{
+          enabled: true,
+          placeholder: 'ค้นหา',
+        }"
+        :pagination-options="{
+          enabled: true,
+        }"
+        compactMode
+      >
+        <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field == 'detail'">
+            <div
+              class="btn btn-success"
+              data-toggle="modal"
+              data-target="#detailModal"
+              @click="invoiceDetail(props.row)"
+            >
+              <i class="fa-solid fa-file-circle-plus"></i>
+            </div>
+          </span>
+          <span v-else-if="props.column.field == 'edit'">
+            <div
+              class="btn btn-warning"
+              @click="editItem(props.row)"
+              data-toggle="modal"
+              data-target="#detailModal"
+            >
+              <i class="fas fa-edit"></i>
+            </div>
+          </span>
+          <span v-else-if="props.column.field == 'delete'">
+            <div
+              class="btn btn-danger"
+              @click="editItem(props.row)"
+              data-toggle="modal"
+              data-target="#Item"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </div>
+          </span>
+          <span v-else>
+            {{ props.formattedRow[props.column.field] }}
+          </span>
+        </template>
+      </vue-good-table>
     </div>
 
     <!--Start Income  Modal -->
@@ -150,7 +195,7 @@
           <div class="modal-body">
             <vue-good-table
               :columns="columns"
-              :rows="products"
+              :rows="Items"
               :line-numbers="true"
               styleClass="vgt-table striped bordered"
               :search-options="{
@@ -166,14 +211,14 @@
                 <span v-if="props.column.field == 'edit'">
                   <div
                     class="btn btn-warning"
-                    @click="editProduct(props.row)"
+                    @click="editItem(props.row)"
                     data-toggle="modal"
-                    data-target="#product"
+                    data-target="#Item"
                   >
                     แก้ไข
                   </div>
                 </span>
-                <!-- @click="deleteProduct(props.row.pID)" -->
+                <!-- @click="deleteItem(props.row.pID)" -->
 
                 <span v-else-if="props.column.field == 'detail'">
                   <div
@@ -202,7 +247,7 @@
               Close
             </button>
             <button
-              @click="addProduct()"
+              @click="addItem()"
               type="button"
               class="btn btn-success"
               v-if="modal == 'new'"
@@ -210,7 +255,7 @@
               บันทึกสินค้า
             </button>
             <button
-              @click="updateProduct(product.pID)"
+              @click="updateItem(Item.pID)"
               type="button"
               class="btn btn-warning"
               v-if="modal == 'edit'"
@@ -256,7 +301,7 @@
                     <div
                       class=""
                       style="background: white"
-                      v-for="(course, index) in product.courseDetail"
+                      v-for="(course, index) in Item.courseDetail"
                       :key="index"
                     >
                       <div class="row">
@@ -277,7 +322,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model="course.courseName"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -293,7 +338,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.classType"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -309,7 +354,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.level"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -325,7 +370,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.price"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -341,7 +386,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.discount"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -357,7 +402,7 @@
                                 type="number"
                                 class="form-control"
                                 v-model.trim="course.amount"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -373,7 +418,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.teacherName"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -389,7 +434,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.wages"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -405,7 +450,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.startTime"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -421,7 +466,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.finishTime"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -437,7 +482,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.startDate"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -453,7 +498,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.endDate"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -469,7 +514,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.day.item"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -485,7 +530,7 @@
                                 type="text"
                                 class="form-control"
                                 v-model.trim="course.qty"
-                                readonly
+                                :disabled="disabled == 1"
                               />
                             </div>
                           </div>
@@ -510,11 +555,11 @@
                   role="tabpanel"
                 >
                   <b-card-body>
-                    <div class="my-2" >
+                    <div class="my-2">
                       <h5 class="text-center text-success mt-3">
                         ค่าหนังสือ - อุปกรณ์
                       </h5>
-                      
+
                       <div class="table-responsive">
                         <table
                           class="table table-bordered table-striped text-center"
@@ -526,11 +571,13 @@
                               <th>ราคา/หน่วย</th>
                               <th>ส่วนลด</th>
                               <th>รวม</th>
-                              
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="(item, index) in product.productDetail" :key="index">
+                            <tr
+                              v-for="(item, index) in Item.productDetail"
+                              :key="index"
+                            >
                               <td>{{ item.pName }}</td>
                               <td>{{ item.buyAmount }}</td>
                               <td>{{ item.price }}</td>
@@ -560,43 +607,41 @@
                   accordion="my-accordion"
                   role="tabpanel"
                 >
-                  <b-card-body> 
+                  <b-card-body>
                     <h5 class="text-center text-success mt-3">สรุปยอด</h5>
                     <div class="table-responsive">
-                        <table
-                          class="table table-bordered table-striped text-center"
-                        >
-                          <thead class="thead-light">
-                            <tr>
-                              <th>(1)รวมค่าเรียน</th>
-                              <th>(2)ค่าหนังสือหรืออุปกรณ์</th>
-                              <th>ค่าแรกเข้า</th>
-                              <th>รวมจำนวนเงินทั้งสิ้น</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>{{ product.subTotal }}</td>
-                              <td>{{ product.pSubtotal }}</td>
-                              <td>{{ product.fee }}</td>
-                              <td>{{ product.grandTotal }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <table
+                        class="table table-bordered table-striped text-center"
+                      >
+                        <thead class="thead-light">
+                          <tr>
+                            <th>(1)รวมค่าเรียน</th>
+                            <th>(2)ค่าหนังสือหรืออุปกรณ์</th>
+                            <th>ค่าแรกเข้า</th>
+                            <th>รวมจำนวนเงินทั้งสิ้น</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ Item.subTotal }}</td>
+                            <td>{{ Item.pSubtotal }}</td>
+                            <td>{{ Item.fee }}</td>
+                            <td>{{ Item.grandTotal }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group mt-2">
+                        <label for="usr" class="text-success">หมายเหตุ </label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          v-model.trim="Item.note"
+                          :disabled="disabled == 1"
+                        />
                       </div>
-                      <div class="col-md-6">
-                          <div class="form-group mt-2">
-                            <label for="usr" class="text-success"
-                              >หมายเหตุ
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              v-model.trim="product.note"
-                              readonly
-                            />
-                          </div>
-                        </div>
+                    </div>
                   </b-card-body>
                 </b-collapse>
               </b-card>
@@ -613,7 +658,7 @@
               Close
             </button>
             <button
-              @click="addProduct()"
+              @click="addItem()"
               type="button"
               class="btn btn-success"
               v-if="modal == 'new'"
@@ -621,7 +666,7 @@
               บันทึกสินค้า
             </button>
             <button
-              @click="updateProduct(product.pID)"
+              @click="updateItem(Item.pID)"
               type="button"
               class="btn btn-warning"
               v-if="modal == 'edit'"
@@ -644,7 +689,7 @@ import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import moment from "moment";
 
 export default {
-  name: "addProduct",
+  name: "addItem",
   components: { DateRangePicker },
   data() {
     const startDate = new Date();
@@ -728,12 +773,22 @@ export default {
           field: "detail",
           type: "text",
         },
+        {
+          label: "แก้ไข",
+          field: "edit",
+          type: "text",
+        },
+        {
+          label: "ลบ",
+          field: "delete",
+          type: "text",
+        },
       ],
 
       modal: null,
 
-      products: [],
-      product: {
+      Items: [],
+      Item: {
         pName: null,
         pCode: null,
         cost: null,
@@ -741,6 +796,7 @@ export default {
         quantity: null,
       },
       datatest: [],
+      disabled: 0,
     };
   },
   filters: {
@@ -751,7 +807,7 @@ export default {
 
   computed: {
     incomeTotal() {
-      var total = this.products.reduce((accumulator, item) => {
+      var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.grandTotal;
       }, 0);
       console.log(total);
@@ -760,8 +816,9 @@ export default {
   },
   methods: {
     invoiceDetail(detail) {
-      this.product = detail;
-      console.log(this.product);
+      this.Item = detail;
+      this.disabled = 1;
+      console.log(this.Item);
     },
     async getDatetest() {
       try {
@@ -773,9 +830,9 @@ export default {
           .where("invoiceTimestamp", ">=", startDateFormat)
           .where("invoiceTimestamp", "<=", endDateFormat)
           .onSnapshot((querySnapshot) => {
-            this.products = [];
+            this.Items = [];
             querySnapshot.forEach((doc) => {
-              let product = {
+              let Item = {
                 uid: doc.data().uid,
                 bankDetail: doc.data().bankDetail,
                 studentId: doc.data().studentId,
@@ -801,7 +858,7 @@ export default {
                 other: doc.data().other,
                 docId: doc.id,
               };
-              this.products.push(product);
+              this.Items.push(Item);
             });
           });
       } catch (err) {
@@ -813,7 +870,7 @@ export default {
       var endDateFormat = moment(this.pickerDates.endDate).format("x");
       console.log("start " + startDateFormat);
     },
-    deleteProduct(doc) {
+    deleteItem(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
         text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -825,7 +882,7 @@ export default {
       }).then((result) => {
         if (result.value) {
           // console.log(doc)
-          db.collection("products")
+          db.collection("Items")
             .doc(doc)
             .delete()
             .then(() => {
@@ -847,7 +904,7 @@ export default {
     },
 
     reset() {
-      this.product = {
+      this.Item = {
         pName: null,
         pCode: null,
         cost: null,
@@ -856,17 +913,17 @@ export default {
       };
     },
 
-    editProduct(product) {
+    editItem(Item) {
       this.modal = "edit";
-      // console.log(pId);
-      this.product = product;
+      this.Item = Item;
+      this.disabled = 0;
     },
 
-    updateProduct(docId) {
+    updateItem(docId) {
       // alert(docId)
-      db.collection("products")
+      db.collection("Items")
         .doc(docId)
-        .update(this.product)
+        .update(this.Item)
         .then(() => {
           Swal.fire({
             title: "อัพเดทข้อมูล",
@@ -875,14 +932,14 @@ export default {
             confirmButtonColor: "#30855c",
             confirmButtonText: "ตกลง",
           });
-          $("#product").modal("hide");
+          $("#Item").modal("hide");
           this.reset();
         });
     },
 
-    async addProduct() {
+    async addItem() {
       try {
-        await db.collection("products").add(this.product);
+        await db.collection("Items").add(this.Item);
         Swal.fire({
           title: "เรียบร้อย",
           text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
@@ -890,7 +947,7 @@ export default {
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
         });
-        $("#product").modal("hide");
+        $("#Item").modal("hide");
         this.reset();
       } catch (err) {
         Swal.fire({
@@ -909,10 +966,11 @@ export default {
       console.log(today);
       db.collection("invoiceData")
         .where("invoiceTime", "==", today)
+        .orderBy("invoiceNo", "desc")
         .onSnapshot((querySnapshot) => {
-          this.products = [];
+          this.Items = [];
           querySnapshot.forEach((doc) => {
-            let product = {
+            let Item = {
               uid: doc.data().uid,
               bankDetail: doc.data().bankDetail,
               studentId: doc.data().studentId,
@@ -938,8 +996,8 @@ export default {
               other: doc.data().other,
               docId: doc.id,
             };
-            this.products.push(product);
-            console.log(this.products);
+            this.Items.push(Item);
+            console.log(this.Items);
           });
         });
     },

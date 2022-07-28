@@ -28,9 +28,9 @@
             <option :selected="props.row.role.isAdmin" value="isAdmin">ADMIN</option>
           </select>
       </span> -->
-            <span v-if="props.column.field == 'otherprofile'">
+            <span v-if="props.column.field == 'fullProfile'">
               <div
-                class="btn btn-warning"
+                class="btn btn-secondary"
                 data-toggle="modal"
                 data-target="#profileModal"
                 @click="fullProfile(props.row)"
@@ -69,6 +69,34 @@
                 data-target="#RenevalModal"
               >
                 <i class="fas fa-table"></i>
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'edit'">
+              <div
+                class="btn btn-warning dropdown-toggle"
+                id="dropdownMenuButton"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fas fa-edit"></i>
+              </div>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <router-link
+                  to="/admin/account/incomeday"
+                  class="dropdown-item"
+                  href="#"
+                  >ข้อมูลวิชาเรียนและใบเสร็จ</router-link
+                >
+
+                <div
+                  class="dropdown-item btn"
+                  @click="editprofile(props.row)"
+                  data-toggle="modal"
+                  data-target="#profileModal"
+                >
+                  ข้อมูลส่วนตัว
+                </div>
               </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
@@ -282,7 +310,9 @@
                   border-right: 0;
                   border-bottom: 6px black double;
                 "
-              >{{pSubtotal}}</td>
+              >
+                {{ pSubtotal }}
+              </td>
             </tr>
           </table>
           <p><br /></p>
@@ -625,13 +655,19 @@
       <!-- OUTPUT -->
     </div>
 
-    <!--Start Modal เพิ่มเติม -->
+    <!--Start profileModal -->
     <div class="modal fade" id="profileModal">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
-            <h4 class="modal-title w-100 text-center text-success">
+            <h4
+              v-if="profileModal == 'edit'"
+              class="modal-title w-100 text-center text-warning"
+            >
+              แก้ไข ข้อมูลและประวัตินักเรียน
+            </h4>
+            <h4 v-else class="modal-title w-100 text-center text-success">
               ข้อมูลและประวัตินักเรียน
             </h4>
             <button type="button" class="close" data-dismiss="modal">
@@ -668,8 +704,9 @@
                     class="form-control"
                     placeholder="กรอกชื่อเล่น"
                     id="namePrefix"
-                    v-model.trim="profile.namePrefix"
-                    disabled
+                    :value="profile.namePrefix"
+                    :disabled="disabled == 1"
+                    @change="namePrefixHis(profile, $event)"
                   />
                 </div>
               </div>
@@ -682,8 +719,9 @@
                     class="form-control"
                     placeholder="กรอกชื่อเล่น"
                     id="nickName"
-                    v-model.trim="profile.nickName"
-                    disabled
+                    :value="profile.nickName"
+                    :disabled="disabled == 1"
+                    @change="stdProHis(profile, $event)"
                   />
                   <!-- <span> : {{ profile.nickName }}</span> -->
                 </div>
@@ -700,7 +738,7 @@
                     placeholder="กรอกชื่อจริง"
                     id="firstName"
                     v-model.trim="profile.firstName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -713,7 +751,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.lastName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -731,7 +769,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.birthday"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -744,7 +782,7 @@
                     placeholder="กรอกอีเมล์มี @"
                     id="อีเมล์"
                     v-model.trim="profile.email"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -762,7 +800,7 @@
                     placeholder="ไม่มีให้ใส่ - "
                     id="telephone"
                     v-model.trim="profile.telephone"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -777,7 +815,7 @@
                     placeholder="กรอกนามสกุล"
                     id="mobilephone"
                     v-model.trim="profile.mobilephone"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -798,7 +836,7 @@
                     placeholder="กรอกชื่อจริง"
                     id="firstName"
                     v-model.trim="profile.parentFirstName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                   <!-- <span> : {{ profile.firstName }}</span> -->
                 </div>
@@ -812,7 +850,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.parentLastName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                   <!-- <span> : {{ profile.lastName }}</span> -->
                 </div>
@@ -832,7 +870,7 @@
                     id="mobilephone"
                     v-model.trim="profile.parentMobilephone"
                     maxlength="10"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -845,7 +883,7 @@
                     placeholder="กรอกอีเมล์มี @"
                     id="อีเมล์"
                     v-model.trim="profile.parentEmail"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                   <!-- <span> : {{ profile.email }}</span> -->
                 </div>
@@ -864,7 +902,7 @@
                     placeholder="เกี่ยวข้องเป็น"
                     id="telephone"
                     v-model.trim="profile.parentAbout"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -898,7 +936,7 @@
                     placeholder="กรอกบ้านเลขที่ ตัวอย่าง 99/99 หมู่ 9"
                     id="อีเมล์"
                     v-model.trim="profile.address.addressNumber"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -913,7 +951,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="location"
                     v-model.trim="profile.address.location"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -929,7 +967,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.soi"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -942,7 +980,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.road"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -958,7 +996,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.district"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -971,7 +1009,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.amphoe"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -987,7 +1025,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.province"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -1000,7 +1038,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.zipcode"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -1019,7 +1057,7 @@
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
                     v-model.trim="profile.graduated.degree"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -1034,7 +1072,7 @@
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
                     v-model.trim="profile.graduated.university"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -1052,7 +1090,7 @@
                     placeholder="กรอกคณะที่จบ"
                     id="email"
                     v-model.trim="profile.graduated.faculty"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -1065,7 +1103,7 @@
                     placeholder="กรอกเอก/สาขาวิชา"
                     id="email"
                     v-model.trim="profile.graduated.major"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -1082,7 +1120,7 @@
                 rows="5"
                 id="comment"
                 v-model="profile.studyHis"
-                disabled
+                :disabled="disabled == 1"
               ></textarea>
             </div>
           </div>
@@ -1095,6 +1133,15 @@
               data-dismiss="modal"
             >
               Close
+            </button>
+
+            <button
+              @click="updateProfile(profile.uid)"
+              type="button"
+              class="btn btn-warning text-dark"
+              v-if="profileModal == 'edit'"
+            >
+              แก้ไข
             </button>
           </div>
         </div>
@@ -1861,9 +1908,8 @@
                               v-model="transactionTime"
                             /> -->
                             <!-- <date-picker v-model.trim="transactionTime" :config="options" locale="th"></date-picker> -->
-                          <!-- <Datepicker format="DD/MM/YYYY H:i:s"  v-model="transactionTime" @change="test(e)"></Datepicker> -->
-                          <DatetimePicker></DatetimePicker>
-
+                            <!-- <Datepicker format="DD/MM/YYYY H:i:s"  v-model="transactionTime" @change="test(e)"></Datepicker> -->
+                            <DatetimePicker></DatetimePicker>
                           </div>
                         </div>
                       </div>
@@ -2011,7 +2057,7 @@ export default {
         },
         {
           label: "โปร์ไฟล์",
-          field: "otherprofile",
+          field: "fullProfile",
           type: "text",
         },
         {
@@ -2027,6 +2073,11 @@ export default {
         {
           label: "ข้อมูลอื่นๆ",
           field: "data",
+          type: "text",
+        },
+        {
+          label: "แก้ไข",
+          field: "edit",
           type: "text",
         },
         {
@@ -2173,6 +2224,10 @@ export default {
       courseInfo: [],
       teacherId: null,
       teacherName: null,
+
+      profileModal: null,
+
+      disabled: 0,
     };
   },
 
@@ -2196,28 +2251,94 @@ export default {
       var total = this.subTotal + this.pSubtotal + parseInt(this.fee);
       return total;
     },
+    // clonedItems: function () {
+    //   return JSON.parse(JSON.stringify(this.profile));
+    // },
   },
+  // watch: {
+  //   clonedItems: function (newVal, oldVal) {
+  //     console.log(newVal);
+  //     console.log(oldVal);
+  //   },
+  // },
 
   methods: {
-    test(e){
+    namePrefixHis(profile, newValue) {
+
+      if (this.profile.namePrefix == profile.namePrefix) {
+        // alert("ข้อมูลใหม่" + newValue.target.value);
+        
+        var sfRef = db.collection("stdHis");
+        sfRef.add({
+          oldNamePrefix: profile.namePrefix,
+          newNamePrefix: newValue.target.value,
+          stdId:profile.studentId,
+          timeToChange: Date.now(),
+        });
+        this.profile.namePrefix = newValue.target.value;
+      }
+
+      // console.log("ข้อมูลเก่า " + profile);
+      // console.log("ข้อมูลใหม่ " + newValue.target.value);
+      // this.profile.namePrefix = newValue.target.value;
+    },
+    stdProHis(profile, newValue) {
+
+      if (this.profile.nickName == profile.nickName) {
+        // alert("ข้อมูลใหม่" + newValue.target.value);
+        
+        var sfRef = db.collection("stdHis");
+        sfRef.add({
+          oldNamePrefix: profile.nickName,
+          newNamePrefix: newValue.target.value,
+          stdId:profile.studentId,
+          timeToChange: Date.now(),
+        });
+        this.profile.nickName = newValue.target.value;
+      }
+
+      // console.log("ข้อมูลเก่า " + profile);
+      // console.log("ข้อมูลใหม่ " + newValue.target.value);
+      // this.profile.namePrefix = newValue.target.value;
+    },
+    updateProfile(uid) {
+      // console.log(this.profile);
+      db.collection("studentData")
+        .doc(uid)
+        .update(this.profile)
+        .then(() => {
+          Swal.fire({
+            title: "อัพเดทข้อมูล",
+            text: "ได้ทำการupdateสินค้าเรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+          // $("#product").modal("hide");
+        });
+      // try {
+      //   var batch = db.batch();
+
+      //   var sfRef = db.collection("studentData").doc(uid);
+      //   batch.update(sfRef, { population: 1000000 });
+      //   batch.commit();
+      //   console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+      // } catch (err) {
+      //   console.log(err);
+      // }
+    },
+    editprofile(profile) {
+      this.profileModal = "edit";
+      this.profile = profile;
+      this.disabled = 0;
+    },
+    test(e) {
       console.log(this.transactionTime);
     },
     reset() {
       location.reload();
     },
-    // setTeacherId(value) {
-    //   // console.log(value);
-    //   var selected = this.cTeacher[value];
-    //   console.log(selected);
-    //   this.teacherId = selected.uid;
-    //   this.teacherName = selected.fullName;
 
-    //   // console.log();
-
-    //   // this.selIdeaIndex = value;
-    //   // this.selIdeaIndex = {id: selectedIdea.uid , name : selectedIdea.fullName }
-    //   // console.log(this.selIdeaIndex);
-    // },
     activeCourse() {
       try {
         var batch = db.batch();
@@ -2335,8 +2456,8 @@ export default {
           other: this.other,
           note: this.note,
           transactionTime: this.transactionTime,
-          invoiceTime : moment(Date.now()).format('DD/MM/YYYY') ,
-          invoiceTimestamp : moment(Date.now()).format('x') ,
+          invoiceTime: moment(Date.now()).format("DD/MM/YYYY"),
+          invoiceTimestamp: moment(Date.now()).format("x"),
         };
 
         await db.collection("invoiceData").add(invoiceData);
@@ -2671,7 +2792,7 @@ export default {
         courseSelected: "",
         classTypeSelected: "",
         levelSelected: "",
-        priceSelected: 0,
+        priceSelected: "",
         teacherSelected: "",
         daySelected: "",
         discount: 0,
@@ -2724,7 +2845,9 @@ export default {
 
     fullProfile(profile) {
       // alert(profile.firstName);
+      this.profileModal = null;
       this.profile = profile;
+      this.disabled = 1;
     },
 
     getStudentData() {

@@ -6,7 +6,7 @@
         <!-- <h5 class="d-inline-block text-success">รายวิชาเรียน</h5> -->
         <button
           @click="addNew"
-          class="btn btn-secondary d-inline-block px-2"
+          class="btn btn-info d-inline-block px-2"
           data-toggle="modal"
           data-target="#courseTemplate"
         >
@@ -118,7 +118,7 @@
                     id="courseType"
                     v-model="course.class"
                   >
-                    <option disabled>เลือกรูปแบบการเรียน</option>
+                    <option disabled value="">เลือกรูปแบบการเรียน</option>
                     <option v-for="(item, index) in courseTemplate.courseType" :key="index">
                     {{ item }}
                   </option>
@@ -141,8 +141,8 @@
                     id="courseType"
                     v-model="course.beginRate"
                   >
-                    <option disabled>เลือกเรทราคา</option>
-                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    <option disabled value="">เลือกเรทราคา</option>
+                    <option v-for="(item, index) in courseTemplate.rate" :key="index" :value="item">
                     {{ item }}
                   </option>
                   </select>
@@ -537,19 +537,19 @@ export default {
 
       modal: null,
       courseTemplate: {
-        courseName: [],
-        courseType: [],
-        level: [],
-        rate: [],
+        // courseName: [],
+        // courseType: [],
+        // level: [],
+        // rate: [],
       },
       courses: [],
       course: {
-        courseName: null,
-        class: null,
-        beginRate: null,
-        mediumRate: null,
-        topRate: null,
-        teacherRate: null,
+        courseName: '',
+        class: '',
+        beginRate: '',
+        mediumRate: '',
+        topRate: '',
+        teacherRate: '',
       },
     };
   },
@@ -616,7 +616,7 @@ export default {
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
               });
-              this.chkAsset();
+              
             });
         }
       });
@@ -699,6 +699,7 @@ export default {
             couseId: doc.id,
           };
           this.courses.push(course);
+          console.log(this.courses);
         });
       });
     },

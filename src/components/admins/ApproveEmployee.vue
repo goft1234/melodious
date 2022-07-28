@@ -602,6 +602,9 @@ export default {
               this.$store.state.show = false;
             });
         }
+        else{
+          this.$store.state.show = false;
+        }
       });
     },
 

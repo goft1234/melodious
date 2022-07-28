@@ -99,7 +99,7 @@
                     </router-link>
                   </li>
                   <li class="bottom-line">
-                    <router-link to="/admin/transaction">
+                    <router-link to="/admin/account/overview">
                       <i class="fas fa-university"></i>
                       <span @click="hide">ระบบบัญชี</span>
                     </router-link>
