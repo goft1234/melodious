@@ -1191,7 +1191,7 @@
                             <button
                               type="button"
                               @click="deleteItem(index)"
-                              class="btn btn-secondary btn-circle btn-sm"
+                              class="btn btn-danger btn-circle btn-sm"
                             >
                               <i class="fas fa-times text-light"></i>
                             </button>
@@ -1205,23 +1205,12 @@
                             <label for="namePrefix" class="text-success"
                               >วิชาเรียน</label
                             >
-                            <select
-                              class="form-control"
-                              id="namePrefix"
+                            <vue-single-select
                               v-model="course.courseSelected"
-                            >
-                              <option disabled value="">
-                                เลือกวิชาที่เรียน
-                              </option>
-
-                              <option
-                                v-for="(item, subIndex) in course.courseName"
-                                :key="subIndex"
-                              >
-                                {{ item }}
-                              </option>
-                            </select>
-                            <!-- <span>courseSelected: {{ course.courseSelected }}</span> -->
+                              :options="course.courseName"
+                              placeholder="เลือกวิชาเรียน"
+                              class="text-success"
+                            ></vue-single-select>
                           </div>
                         </div>
 
@@ -1230,22 +1219,11 @@
                             <label for="nickName" class="text-success"
                               >รูปแบบการเรียน</label
                             >
-                            <select
-                              class="form-control"
-                              id="namePrefix"
+                            <vue-single-select
                               v-model="course.classTypeSelected"
-                            >
-                              <option disabled value="">
-                                เลือกรูปแบบการเรียน
-                              </option>
-                              <option
-                                v-for="(item, index) in course.courseType"
-                                :key="index"
-                              >
-                                {{ item }}
-                              </option>
-                            </select>
-                            <!-- <span>courseSelected: {{ course.classTypeSelected }}</span> -->
+                              :options="course.courseType"
+                              placeholder="รูปแบบการเรียน"
+                            ></vue-single-select>
                           </div>
                         </div>
 
@@ -1254,22 +1232,11 @@
                             <label for="namePrefix" class="text-success"
                               >Level ที่ลงเรียน</label
                             >
-                            <select
-                              class="form-control"
-                              id="namePrefix"
+                            <vue-single-select
                               v-model="course.levelSelected"
-                            >
-                              <option disabled value="">
-                                เลือกระดับที่เรียน
-                              </option>
-                              <option
-                                v-for="(item, index) in course.level"
-                                :key="index"
-                              >
-                                {{ item }}
-                              </option>
-                            </select>
-                            <!-- <span>courseSelected: {{ course.levelSelected }}</span> -->
+                              :options="course.level"
+                              placeholder="เลือกระดับที่เรียน"
+                            ></vue-single-select>
                           </div>
                         </div>
 
@@ -1278,22 +1245,11 @@
                             <label for="nickName" class="text-success"
                               >ราคา/คอร์ส</label
                             >
-                            <select
-                              class="form-control"
-                              id="namePrefix"
+                            <vue-single-select
                               v-model="course.priceSelected"
-                            >
-                              <option disabled value="">
-                                เลือก ราคา/คอร์ส
-                              </option>
-                              <option
-                                v-for="(item, index) in course.rate"
-                                :key="index"
-                              >
-                                {{ item }}
-                              </option>
-                            </select>
-                            <!-- <span>courseSelected: {{ course.priceSelected }}</span> -->
+                              :options="course.rate"
+                              placeholder="เลือก ราคา/คอร์ส"
+                            ></vue-single-select>
                           </div>
                         </div>
 
@@ -1787,7 +1743,7 @@
                                   @click="deleteProduct(index)"
                                   class="btn btn-danger btn-sm"
                                 >
-                                  ลบ
+                                  <i class="fas fa-times text-light"></i>
                                 </button>
                               </td>
                             </tr>
@@ -2086,6 +2042,8 @@ export default {
           type: "text",
         },
       ],
+      fruit: null,
+      fruits: ["peach", "pear", "apple", "orange"],
       profiles: [],
 
       profile: {
@@ -2219,7 +2177,7 @@ export default {
       carts: [],
       buyAmount: 0,
       pDiscount: 0,
-      fee: 300,
+
       confirm: false,
       courseInfo: [],
       teacherId: null,
@@ -2228,6 +2186,7 @@ export default {
       profileModal: null,
 
       disabled: 0,
+      fee: 300,
     };
   },
 
@@ -2264,15 +2223,14 @@ export default {
 
   methods: {
     namePrefixHis(profile, newValue) {
-
       if (this.profile.namePrefix == profile.namePrefix) {
         // alert("ข้อมูลใหม่" + newValue.target.value);
-        
+
         var sfRef = db.collection("stdHis");
         sfRef.add({
           oldNamePrefix: profile.namePrefix,
           newNamePrefix: newValue.target.value,
-          stdId:profile.studentId,
+          stdId: profile.studentId,
           timeToChange: Date.now(),
         });
         this.profile.namePrefix = newValue.target.value;
@@ -2282,16 +2240,16 @@ export default {
       // console.log("ข้อมูลใหม่ " + newValue.target.value);
       // this.profile.namePrefix = newValue.target.value;
     },
+    
     stdProHis(profile, newValue) {
-
       if (this.profile.nickName == profile.nickName) {
         // alert("ข้อมูลใหม่" + newValue.target.value);
-        
+
         var sfRef = db.collection("stdHis");
         sfRef.add({
           oldNamePrefix: profile.nickName,
           newNamePrefix: newValue.target.value,
-          stdId:profile.studentId,
+          stdId: profile.studentId,
           timeToChange: Date.now(),
         });
         this.profile.nickName = newValue.target.value;
@@ -2340,9 +2298,11 @@ export default {
     },
 
     activeCourse() {
+      // console.log(this.std.mobilephone);
       try {
         var batch = db.batch();
         this.courses.forEach((item) => {
+          
           let data = {
             uid: this.std.uid,
             studentId: this.std.studentId,
@@ -2366,10 +2326,11 @@ export default {
             startTime: item.startTime,
             wages: item.wages,
 
-            teacherName: item.teacherSelected.teacherName,
-            teacherId: item.teacherSelected.teacherId,
+            teacherName: item.teacherSelected,
+            // teacherId: item.teacherSelected.teacherId,
           };
-          batch.set(db.collection("courseActive").doc(), data);
+          
+            batch.set(db.collection("courseActive").doc(), data);
         });
 
         this.carts.forEach((item) => {
@@ -2402,6 +2363,7 @@ export default {
             firstName: this.std.firstName,
             lastName: this.std.lastName,
             nickName: this.std.nickName,
+            mobilephone: this.std.mobilephone,
             courseName: item.courseSelected,
             amount: item.amount,
             classType: item.classTypeSelected,

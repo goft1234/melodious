@@ -11,7 +11,10 @@ import 'popper.js'
 import './assets/app.scss'
 
 
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import {
+  BootstrapVue,
+  IconsPlugin
+} from 'bootstrap-vue'
 
 // Import Bootstrap and BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
@@ -26,7 +29,7 @@ import datePicker from 'vue-bootstrap-datetimepicker';
 import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
 Vue.use(datePicker);
 
-import  DatetimePicker  from '@livelybone/vue-datepicker';
+import DatetimePicker from '@livelybone/vue-datepicker';
 Vue.use('datetime-picker', DatetimePicker);
 
 
@@ -42,8 +45,11 @@ import 'vue-good-table/dist/vue-good-table.css'
 Vue.use(VueGoodTablePlugin);
 
 import Vuelidate from 'vuelidate'
-
 Vue.use(Vuelidate)
+
+import VueSingleSelect from "vue-single-select";
+Vue.component('vue-single-select', VueSingleSelect);
+
 
 const options = {
   name: '_blank',

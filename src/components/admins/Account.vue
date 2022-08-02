@@ -15,7 +15,7 @@
             <option value="overview">ภาพรวมทั้งหมด</option>
             <option value="incomeday">รายรับ - รายวัน</option>
             <option value="employee">รายรับ - รายเดือน</option>
-            <option value="teacher">ระบบบันทึกค่าใช้จ่ายแต่ละเดือน</option>
+            <option value="expense">ระบบบันทึกค่าใช้จ่ายแต่ละเดือน</option>
             <option value="teacher">รายจ่าย - รายวัน</option>
             <option value="employee">รายจ่าย - รายเดือน</option>
             <option value="teacher">สรุปยอดรายวัน</option>
@@ -50,6 +50,9 @@ export default {
       }
       else if(this.acccountPage == "income"){
         this.$router.replace("/admin/account/transaction");
+      }
+      else if(this.acccountPage == "expense"){
+        this.$router.replace("/admin/account/expense");
       }
     },
   },

@@ -507,7 +507,7 @@ export default {
       try {
         this.$store.state.show = true;
         var date = moment(Date.now()).day();
-        console.log(date);
+        console.log(Date.now());
         db.collection("courseActive")
           .where("day.dayNum", "==", date )
           .where("amount",">=",1 )

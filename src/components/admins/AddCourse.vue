@@ -66,7 +66,7 @@
 
     <!--Start The Modal -->
     <div class="modal fade" id="course">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
@@ -209,6 +209,29 @@
                     class="form-control"
                     id="courseType"
                     v-model="course.teacherRate"
+                  >
+                    <option disabled>เลือกเรทราคา</option>
+                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    {{ item }}
+                  </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >อัตราค่า ติวสอบ</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fas fa-medal"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="course.entranceRate"
                   >
                     <option disabled>เลือกเรทราคา</option>
                     <option v-for="(item, index) in courseTemplate.rate" :key="index">
@@ -524,6 +547,11 @@ export default {
           type: "text",
         },
         {
+          label: "ติวสอบ",
+          field: "entranceRate",
+          type: "text",
+        },
+        {
           label: "แก้ไข",
           field: "edit",
           type: "text",
@@ -550,6 +578,7 @@ export default {
         mediumRate: '',
         topRate: '',
         teacherRate: '',
+        entranceRate: '',
       },
     };
   },
@@ -696,6 +725,7 @@ export default {
             mediumRate: doc.data().mediumRate,
             topRate: doc.data().topRate,
             teacherRate: doc.data().teacherRate,
+            entranceRate : doc.data().entranceRate,
             couseId: doc.id,
           };
           this.courses.push(course);

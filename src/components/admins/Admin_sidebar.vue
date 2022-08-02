@@ -93,7 +93,7 @@
                     </router-link>
                   </li>
                   <li class="bottom-line">
-                    <router-link to="/admin">
+                    <router-link to="/admin/managetable">
                       <i class="fas fa-calendar-alt"></i>
                       <span @click="hide">ระบบจัดการหน้าปฏิทิน</span>
                     </router-link>

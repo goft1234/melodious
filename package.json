@@ -21,9 +21,11 @@
     "vue-good-table": "^2.21.11",
     "vue-html-to-paper": "^1.4.4",
     "vue-router": "^3.5.1",
+    "vue-single-select": "^1.1.0",
     "vue-thailand-address-autocomplete": "^0.1.1",
     "vue2-daterange-picker": "^0.6.8",
     "vuelidate": "^0.7.7",
+    "vuetify": "^2.6.8",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

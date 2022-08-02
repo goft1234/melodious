@@ -98,6 +98,11 @@ const routes = [
         name: 'attendance',
         component: () => import('../components/admins/Attendance.vue')
       },
+      {
+        path: 'managetable',
+        name: 'managetable',
+        component: () => import('../components/admins/ManageTable.vue')
+      },
 
       {
         path: 'account',
@@ -117,6 +122,11 @@ const routes = [
           path: 'incomeday',
           name: 'incomeday',
           component: () => import('../components/admins/IncomeDay.vue')
+        },
+        {
+          path: 'expense',
+          name: 'expense',
+          component: () => import('../components/admins/ExpenseTable.vue')
         },
       ]
       },
