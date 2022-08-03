@@ -2240,7 +2240,7 @@ export default {
       // console.log("ข้อมูลใหม่ " + newValue.target.value);
       // this.profile.namePrefix = newValue.target.value;
     },
-    
+
     stdProHis(profile, newValue) {
       if (this.profile.nickName == profile.nickName) {
         // alert("ข้อมูลใหม่" + newValue.target.value);
@@ -2302,7 +2302,6 @@ export default {
       try {
         var batch = db.batch();
         this.courses.forEach((item) => {
-          
           let data = {
             uid: this.std.uid,
             studentId: this.std.studentId,
@@ -2329,8 +2328,8 @@ export default {
             teacherName: item.teacherSelected,
             // teacherId: item.teacherSelected.teacherId,
           };
-          
-            batch.set(db.collection("courseActive").doc(), data);
+
+          batch.set(db.collection("courseActive").doc(), data);
         });
 
         this.carts.forEach((item) => {
@@ -2420,6 +2419,7 @@ export default {
           transactionTime: this.transactionTime,
           invoiceTime: moment(Date.now()).format("DD/MM/YYYY"),
           invoiceTimestamp: moment(Date.now()).format("x"),
+          canUpdate: false,
         };
 
         await db.collection("invoiceData").add(invoiceData);

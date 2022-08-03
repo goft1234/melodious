@@ -4,12 +4,12 @@
         <!-- <h4 class="text-center text-success mb-4">ลงข้อมูลสินค้า</h4> -->
         <h5 class="d-inline-block text-success"></h5>
         <router-link
-          to="/admin/account/invoicehistory"
+        to="/admin/account/incomeday"
           class="btn btn-success d-inline-block float-right px-1 "
           data-toggle="modal"
           data-target="#product"
         >
-          ประวัติการแก้ไข
+          ย้อนกลับ
         </router-link>
       </div>
     <div class="mt-3 shadow">
@@ -942,16 +942,16 @@ export default {
           field: "detail",
           type: "text",
         },
-        {
-          label: "แก้ไข",
-          field: "edit",
-          type: "text",
-        },
-        {
-          label: "ลบ",
-          field: "delete",
-          type: "text",
-        },
+        // {
+        //   label: "แก้ไข",
+        //   field: "edit",
+        //   type: "text",
+        // },
+        // {
+        //   label: "ลบ",
+        //   field: "delete",
+        //   type: "text",
+        // },
       ],
 
       carts: [],
@@ -1361,8 +1361,7 @@ export default {
       var today = moment(Date.now()).format("DD/MM/YYYY");
       // moment().toDate().getDate()
       console.log(today);
-      db.collection("invoiceData")
-        .where("invoiceTime", "==", today)
+      db.collection("invoiceHistory")
         .orderBy("invoiceNo", "desc")
         .onSnapshot((querySnapshot) => {
           this.itemDatas = [];

@@ -128,6 +128,11 @@ const routes = [
           name: 'expense',
           component: () => import('../components/admins/ExpenseTable.vue')
         },
+        {
+          path: 'invoicehistory',
+          name: 'invoicehistory',
+          component: () => import('../components/admins/InvoiceHistory.vue')
+        },
       ]
       },
     ],
