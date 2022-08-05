@@ -19,7 +19,7 @@
           }"
           compactMode
         >
-          <!-- props.row คือ profiles -->
+          <!-- props.row คือ doc.data() -->
           <template slot="table-row" slot-scope="props">
             <!-- <span v-if="props.column.field == 'role'">
           <select @change="changeRole(props.row.uid, $event)" class="custom-select">
@@ -205,11 +205,21 @@
             >
               <td>{{ index + 1 }}</td>
               <td>
-                วิชา-{{ course.courseSelected }} , ชั้นเรียน-{{
-                  course.classTypeSelected
-                }}({{ course.levelSelected }}) , วันที่เริ่มเรียน
-                {{ course.startDate }} , <br />
-                อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
+                <span v-if="course.courseSelected"
+                  >วิชา-{{ course.courseSelected }} ,</span
+                >
+                <span v-if="course.classTypeSelected"
+                  >ชั้นเรียน-{{ course.classTypeSelected }}({{
+                    course.levelSelected
+                  }}) ,
+                </span>
+                <span v-if="course.startDate">
+                  วันที่เริ่มเรียน-{{ course.startDate  }} ,
+                </span>
+                <br />
+                <span v-if="course.teacherSelected.teacherName">
+                   อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
+                </span>
               </td>
               <td>{{ course.qty }}</td>
               <td>{{ course.priceSelected }}</td>
@@ -370,9 +380,9 @@
           <table width="100%">
             <tr class="float-right">
               <td colspan="3">
-                _______________________________________
+                <h6>ลงชื่อ_______________________________________เจ้าหน้าที่/ผู้ดำเนินการ</h6>
                 <br />
-                <h6 class="text-center">ผู้รับเงิน</h6>
+                <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
               </td>
             </tr>
           </table>
@@ -387,7 +397,7 @@
           >
         </div>
         <!-- PAGE PACKING LIST -->
-        <!-- <div class="page" size="A4" style="page-break-after: always">
+        <div class="page" size="A4" style="page-break-after: always">
           <table
             width="100%"
             style="margin: 10px 0; border-bottom: 3px #000000 solid"
@@ -420,7 +430,7 @@
                 <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
               </td>
               <td class="text-right">
-                <h5>Inv.No. 8479</h5>
+                <h5>Inv.No. {{ invoiceNo }}</h5>
               </td>
             </tr>
           </table>
@@ -436,29 +446,27 @@
           <table width="100%">
             <tr class="text-center">
               <td class="text-left">
-                <h6>ชื่อ - นามสกุล เอกชัย ตั้งกวินคีตสกุล <br /></h6>
+                <h6>
+                  ชื่อ - นามสกุล {{ std.firstName }} {{ std.lastName }} <br />
+                </h6>
               </td>
-              <td class="text-left"><h6>ชื่อเล่น เวย์</h6></td>
-              <td class="text-center"><h6>รหัสนักเรียน : MMS001</h6></td>
-              <td class="text-right"><h6>วันที่ 17/12/2022</h6></td>
+              <td class="text-left">
+                <h6>ชื่อเล่น {{ std.nickName }}</h6>
+              </td>
+              <td class="text-center">
+                <h6>รหัสนักเรียน : {{ std.studentId }}</h6>
+              </td>
+              <td class="text-right">
+                <h6>วันที่ {{ day }}</h6>
+              </td>
             </tr>
           </table>
           <br />
-          <table width="100%">
+          <table width="100%" class="mb-2">
             <tr class="text-left">
-              <td>
-                (1):เพื่อชำระค่าเรียน
+              <td colspan="4">
+                (1):เพื่อชำระค่าเรียน <b>{{ paymentType }}</b>
                 <label for=""></label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" checked />
-                <label for=""> ลงทะเบียนใหม่</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for=""> ต่อคอร์สเรียน</label>
-              </td>
-              <td>
               </td>
             </tr>
           </table>
@@ -474,13 +482,33 @@
               <th style="width: 8%">ส่วนลด<br />Discount</th>
               <th style="width: 8%">รวมค่าเรียน<br />Total</th>
             </tr>
-            <tr>
-              <td style="height: 200px"></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+            <tr
+              v-for="(course, index) in courses"
+              :key="index"
+              class="text-center"
+            >
+              <td>{{ index + 1 }}</td>
+              <td>
+                <span v-if="course.courseSelected"
+                  >วิชา-{{ course.courseSelected }} ,</span
+                >
+                <span v-if="course.classTypeSelected"
+                  >ชั้นเรียน-{{ course.classTypeSelected }}({{
+                    course.levelSelected
+                  }}) ,
+                </span>
+                <span v-if="course.startDate">
+                  วันที่เริ่มเรียน-{{ course.startDate  }} ,
+                </span>
+                <br />
+                <span v-if="course.teacherSelected.teacherName">
+                   อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
+                </span>
+              </td>
+              <td>{{ course.qty }}</td>
+              <td>{{ course.priceSelected }}</td>
+              <td>{{ course.discount }}</td>
+              <td>{{ course.qty * course.priceSelected - course.discount }}</td>
             </tr>
             <tr>
               <td
@@ -507,44 +535,49 @@
                   border-right: 0;
                   border-bottom: 6px black double;
                 "
-              ></td>
+              >
+                {{ subTotal }}
+              </td>
             </tr>
           </table>
           <p><br /></p>
-          <table width="100%">
-            <tr class="text-left">
-              <td>(2):เพื่อชำระค่า</td>
-              <td>
-                <input type="checkbox" name="" value="" checked />
-                <label for="">หนังสือเรียน</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">อุปกรณ์การเรียน</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">อื่นๆ</label>
-              </td>
-            </tr>
-          </table>
+
+          <div class="mb-2">
+            (2):เพื่อชำระค่า
+            <span
+              v-for="(item, index) in selected"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
+                >หนังสือเรียน ,</b
+              >
+              <b v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
+                >อุปกรณ์การเรียน ,</b
+              >
+              <b v-if="item == 'อื่นๆ'" class="text-left pl-2">{{
+                payforDetail
+              }}</b>
+            </span>
+          </div>
 
           <table width="100%" class="table-bordered" style="text-align: center">
             <tr>
               <th style="width: 8%">ลำดับ<br />No.</th>
-              <th style="width: 56%">รายละเอียด<br />Enrolled Course</th>
+              <th style="width: 56%">รายละเอียด<br />Description</th>
               <th style="width: 8%">จำนวน<br />Qty.</th>
-              <th style="width: 12%">ราคาต่อหน่วย<br />Tuition fee</th>
+              <th style="width: 12%">ราคา/หน่วย<br />unit price</th>
               <th style="width: 8%">ส่วนลด<br />Discount</th>
-              <th style="width: 8%">รวมค่าเรียน<br />Total</th>
+              <th style="width: 8%">รวม<br />Total</th>
             </tr>
-            <tr>
-              <td style="height: 200px"></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+            <tr v-for="(item, index) in carts" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.pName }}</td>
+              <td>{{ item.buyAmount }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.pDiscount }}</td>
+              <td>{{ pSubtotal }}</td>
             </tr>
             <tr>
               <td
@@ -571,33 +604,31 @@
                   border-right: 0;
                   border-bottom: 6px black double;
                 "
-              ></td>
+              >
+                {{ pSubtotal }}
+              </td>
             </tr>
           </table>
           <p><br /></p>
-          <table width="100%">
-            <tr>
-              <td style="" colspan="4">
-                <p class="text-left">ชำระเงินโดย (Pay by)</p>
-              </td>
-            </tr>
-          </table>
-          <table width="100%">
-            <tr class="text-left">
-              <td>
-                <input type="checkbox" name="" value="" checked />
-                <label for="">เงินสด</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">เครดิตการ์ด</label>
-              </td>
-              <td>
-                <input type="checkbox" name="" value="" />
-                <label for="">โอนผ่านธนาคาร</label>
-              </td>
-            </tr>
-          </table>
+
+          <div class="mb-2">
+            ชำระเงินโดย (Pay by)
+            <span
+              v-for="(item, index) in payBy"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'เงินสด'" class="text-left pl-2">เงินสด ,</b>
+              <b v-if="item == 'เครดิตการ์ด'" class="text-left pl-2"
+                >เครดิตการ์ด ,</b
+              >
+              <b v-if="item == 'โอนผ่านธนาคาร'" class="text-left pl-2">{{
+                bankDetail
+              }}</b>
+            </span>
+          </div>
+
           <table width="100%" class="table-bordered" style="text-align: center">
             <tr>
               <th style="width: 25%">(1)รวมค่าเรียน<br />Totol Tuition Fee</th>
@@ -608,10 +639,10 @@
               <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
             </tr>
             <tr style="height: 50px">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{ subTotal }}</td>
+              <td>{{ pSubtotal }}</td>
+              <td>{{ fee }}</td>
+              <td>{{ grandTotal }}</td>
             </tr>
           </table>
           <br />
@@ -626,18 +657,16 @@
           <br />
           <table width="100%" style="1px solid black">
             <tr class="text-left">
-              <td colspan="4">
-                หมายเหตุ________________________________________________________________________________
-              </td>
+              <td colspan="4">หมายเหตุ {{ note }}</td>
             </tr>
           </table>
           <p><br /></p>
           <table width="100%">
             <tr class="float-right">
               <td colspan="3">
-                _______________________________________
+                <h6>ลงชื่อรับทราบ_______________________________________ผู้สมัคร/ผู้ปกครอง</h6>
                 <br />
-                <h6 class="text-center">ผู้สมัคร/ผู้ปกครอง</h6>
+                <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
               </td>
             </tr>
           </table>
@@ -650,8 +679,9 @@
           <span style="font-size: 10px"
             >MMS reserve all the rights to not refund the tuition fees.</span
           >
-        </div> -->
+        </div>
       </div>
+      
       <!-- OUTPUT -->
     </div>
 
@@ -1199,48 +1229,7 @@
                         </div>
                       </div>
                       <br />
-                      <div class="row">
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >วิชาเรียน</label
-                            >
-                            <vue-single-select
-                              v-model="course.courseSelected"
-                              :options="course.courseName"
-                              placeholder="เลือกวิชาเรียน"
-                              class="text-success"
-                            ></vue-single-select>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="nickName" class="text-success"
-                              >รูปแบบการเรียน</label
-                            >
-                            <vue-single-select
-                              v-model="course.classTypeSelected"
-                              :options="course.courseType"
-                              placeholder="รูปแบบการเรียน"
-                            ></vue-single-select>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >Level ที่ลงเรียน</label
-                            >
-                            <vue-single-select
-                              v-model="course.levelSelected"
-                              :options="course.level"
-                              placeholder="เลือกระดับที่เรียน"
-                            ></vue-single-select>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
+                      <!-- <div class="col-lg-6">
                           <div class="form-group">
                             <label for="nickName" class="text-success"
                               >ราคา/คอร์ส</label
@@ -1250,6 +1239,100 @@
                               :options="course.rate"
                               placeholder="เลือก ราคา/คอร์ส"
                             ></vue-single-select>
+                          </div>
+                        </div> -->
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >วิชาเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.courseSelected"
+                            >
+                              <option disabled value="">เลือก วิชาเรียน</option>
+                              <option
+                                v-for="(item, index) in course.courseName"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >รูปแบบการเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.classTypeSelected"
+                            >
+                              <option disabled value="">
+                                เลือก รูปแบบการเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.courseType"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >ระดับการเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.levelSelected"
+                            >
+                              <option disabled value="">
+                                เลือก ระดับการเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.level"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >อัตราค่าเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.priceSelected"
+                            >
+                              <option disabled value="">
+                                เลือก อัตราค่าเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.rate"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
                           </div>
                         </div>
 
@@ -1343,6 +1426,7 @@
                               <b-form-timepicker
                                 v-model="course.startTime"
                                 locale="th"
+                                placeholder="เลือก-เวลาเริ่มเรียน"
                               ></b-form-timepicker>
                               <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
                             </div>
@@ -1358,6 +1442,7 @@
                               <b-form-timepicker
                                 v-model="course.finishTime"
                                 locale="th"
+                                placeholder="เลือก-เวลาเลิกเรียน"
                               ></b-form-timepicker>
                               <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
                             </div>
@@ -1373,6 +1458,7 @@
                               <b-form-datepicker
                                 v-model="course.startDate"
                                 locale="th"
+                                placeholder="เลือก-วันที่เริ่มเรียน"
                               ></b-form-datepicker>
                               <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
                             </div>
@@ -1388,6 +1474,7 @@
                               <b-form-datepicker
                                 v-model="course.endDate"
                                 locale="th"
+                                placeholder="เลือก-วันที่เรียนจบ"
                               ></b-form-datepicker>
                               <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
                             </div>
@@ -1848,6 +1935,7 @@
                               type="text"
                               class="form-control"
                               id="usr"
+                              placeholder="กรอกรายการโปรโมชั่น"
                               v-model.trim="note"
                             />
                           </div>
@@ -1865,7 +1953,12 @@
                             /> -->
                             <!-- <date-picker v-model.trim="transactionTime" :config="options" locale="th"></date-picker> -->
                             <!-- <Datepicker format="DD/MM/YYYY H:i:s"  v-model="transactionTime" @change="test(e)"></Datepicker> -->
-                            <DatetimePicker></DatetimePicker>
+                            <!-- <DatetimePicker></DatetimePicker> -->
+                            <input
+                              type="datetime-local"
+                              class="form-control"
+                              v-model="transactionTime"
+                            />
                           </div>
                         </div>
                       </div>
@@ -2171,7 +2264,7 @@ export default {
         // lastName:null,
         // date: Daye.now()
       },
-      day: null,
+      day: moment().add(543, "year").format("LL"),
       invoiceNo: null,
 
       carts: [],
@@ -2191,8 +2284,9 @@ export default {
   },
 
   computed: {
+    
     dateFormat() {
-      return moment(this.startDate).format("DD/MM/YYYY");
+      return  moment(this.startDate).format("DD/MM/YYYY");
     },
     subTotal() {
       var total = this.courses.reduce((accumulator, item) => {
@@ -2645,7 +2739,7 @@ export default {
       console.log(std);
       // console.log(uid);
       // this.$router.push({ name: "addcourse", params: { uid } });
-      (this.day = moment(Date.now()).format("DD/MM/YYYY")), console.log();
+      // (this.day = moment(Date.now()).format("DD/MM/YYYY")), console.log();
       this.std = std;
     },
 
@@ -2805,6 +2899,40 @@ export default {
       });
     },
 
+    async getInvoiceId() {
+      try {
+        this.$store.state.show = true;
+        var ref = db.collection("invoiceId").doc("detail");
+        let doc = await ref.get();
+        if (!doc.exists) {
+          await ref.set(
+            {
+              invoiceNo: 1,
+            },
+            { merge: true }
+          );
+          location.reload();
+          this.$store.state.show = false;
+        }
+        let str = doc.data().invoiceNo.toString();
+        this.invoiceNo = str.padStart(3, "0");
+
+        console.log(this.invoiceNo);
+        this.activeCourse();
+
+        this.$store.state.show = false;
+      } catch (err) {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถดึงรหัสนักเรียนได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false;
+      }
+    },
+
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profileModal = null;
@@ -2872,40 +3000,6 @@ export default {
           });
       } catch (err) {
         console.log(err);
-        this.$store.state.show = false;
-      }
-    },
-
-    async getInvoiceId() {
-      try {
-        this.$store.state.show = true;
-        var ref = db.collection("invoiceId").doc("detail");
-        let doc = await ref.get();
-        if (!doc.exists) {
-          await ref.set(
-            {
-              invoiceNo: 1,
-            },
-            { merge: true }
-          );
-          location.reload();
-          this.$store.state.show = false;
-        }
-        let str = doc.data().invoiceNo.toString();
-        this.invoiceNo = str.padStart(3, "0");
-
-        console.log(this.invoiceNo);
-        this.activeCourse();
-
-        this.$store.state.show = false;
-      } catch (err) {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถดึงรหัสนักเรียนได้ กรุณาลองใหม่อีกครั้ง",
-          icon: "warning",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
         this.$store.state.show = false;
       }
     },

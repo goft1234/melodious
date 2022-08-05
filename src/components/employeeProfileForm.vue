@@ -369,7 +369,7 @@ export default {
       },
 
       imageName: null,
-      dateNow: moment(Date.now()).format("LL"),
+      dateNow: moment().add(543, 'year').format("LL"),
       detailOpen: false,
 
       profile: {
@@ -426,48 +426,57 @@ export default {
     },
 
     uploadImage() {
-      this.$store.state.show = true;
-      let file = this.imageName;
-      var storageRef = fb
-        .storage()
-        .ref("employeeImg/" + Math.random() + "_" + file.name);
+      if (this.imageName != null) {
+        this.$store.state.show = true;
+        let file = this.imageName;
+        var storageRef = fb
+          .storage()
+          .ref("employeeImg/" + Math.random() + "_" + file.name);
 
-      let uploadTask = storageRef.put(file);
+        let uploadTask = storageRef.put(file);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => {
-          // Handle unsuccessful uploads
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
-            icon: "warning",
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: "ตกลง",
-          });
-          this.$store.state.show = false;
-        },
-        () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            this.profile.image = downloadURL;
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {},
+          (error) => {
+            // Handle unsuccessful uploads
             Swal.fire({
-              title: "SUCCESS",
-              text: "อัพโหลดรูปภาพเรียบร้อย",
-              icon: "success",
-              confirmButtonColor: "#30855c",
+              title: "เกิดข้อผิดพลาด",
+              text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
+              icon: "warning",
+              confirmButtonColor: "#FF0000",
               confirmButtonText: "ตกลง",
             });
             this.$store.state.show = false;
-            this.detailOpen = true;
-          });
-        }
-      );
+          },
+          () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+              this.profile.image = downloadURL;
+              Swal.fire({
+                title: "SUCCESS",
+                text: "อัพโหลดรูปภาพเรียบร้อย",
+                icon: "success",
+                confirmButtonColor: "#30855c",
+                confirmButtonText: "ตกลง",
+              });
+              this.$store.state.show = false;
+              this.detailOpen = true;
+            });
+          }
+        );
+      } else {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
     },
     validateForm() {
       if (
         this.profile.image != "" &&
-
         this.profile.namePrefix != "" &&
         this.profile.nickName != "" &&
         this.profile.firstName != "" &&
@@ -476,7 +485,6 @@ export default {
         this.profile.birthday != "" &&
         this.profile.telephone != "" &&
         this.profile.mobilephone != "" &&
-
         this.profile.address.addressNumber != "" &&
         this.profile.address.location != "" &&
         this.profile.address.soi != "" &&
@@ -485,7 +493,6 @@ export default {
         this.profile.address.amphoe != "" &&
         this.profile.address.province != "" &&
         this.profile.address.zipcode != "" &&
-
         this.profile.graduated.degree != "" &&
         this.profile.graduated.university != "" &&
         this.profile.graduated.faculty != "" &&
@@ -519,8 +526,7 @@ export default {
             confirmButtonText: "ตกลง",
           });
 
-          fb
-            .auth()
+          fb.auth()
             .signOut()
             .then((_) => {
               this.$router.push("/pending");
@@ -547,5 +553,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

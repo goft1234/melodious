@@ -5,7 +5,6 @@
         <h4 class="text-center text-success mb-4">หลักสูตรและค่าเรียน</h4>
         <!-- <h5 class="d-inline-block text-success">รายวิชาเรียน</h5> -->
         <button
-          @click="addNew"
           class="btn btn-info d-inline-block px-2"
           data-toggle="modal"
           data-target="#courseTemplate"

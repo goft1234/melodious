@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import { db, fb } from "../firebase.js";
+import { fb } from "../firebase.js";
 import { required, minLength } from "vuelidate/lib/validators";
 
 export default {

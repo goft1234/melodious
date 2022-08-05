@@ -31,7 +31,7 @@
       </span> -->
             <span v-if="props.column.field == 'other'">
               <div
-                class="btn btn-warning"
+                class="btn btn-secondary"
                 data-toggle="modal"
                 data-target="#profileModal"
                 @click="fullProfile(props.row)"
@@ -39,11 +39,24 @@
                 <i class="fa-solid fa-user"></i>
               </div>
             </span>
-            <!-- <span v-else-if="props.column.field == 'schedule'">
-              <div class="btn btn-success" @click="scheduleTable(props.row)">
-                ตารางสอน
+            <span v-else-if="props.column.field == 'edit'">
+              <div
+                v-if="props.row.canUpdate == true"
+                class="btn btn-info"
+                @click="openEditModal(props.row)"
+              >
+                <!-- data-toggle="modal"
+              data-target="#invoiceModal" -->
+                <i class="fas fa-edit"></i>
               </div>
-            </span> -->
+              <div
+                v-else
+                class="btn btn-warning"
+                @click="editProfile(props.row)"
+              >
+                <i class="fas fa-edit"></i>
+              </div>
+            </span>
             <span v-else-if="props.column.field == 'delete'">
               <div
                 class="btn btn-danger"
@@ -52,9 +65,9 @@
                 <i class="fas fa-trash-alt"></i>
               </div>
             </span>
-            <!-- <span v-else>
-        {{props.formattedRow[props.column.field]}}
-      </span>       -->
+            <span v-else>
+              {{ props.formattedRow[props.column.field] }}
+            </span>
           </template>
         </vue-good-table>
       </div>
@@ -104,7 +117,7 @@
                     placeholder="กรอกชื่อเล่น"
                     id="namePrefix"
                     v-model.trim="profile.namePrefix"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -118,7 +131,7 @@
                     placeholder="กรอกชื่อเล่น"
                     id="nickName"
                     v-model.trim="profile.nickName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                   <!-- <span> : {{ profile.nickName }}</span> -->
                 </div>
@@ -135,7 +148,7 @@
                     placeholder="กรอกชื่อจริง"
                     id="firstName"
                     v-model.trim="profile.firstName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -148,7 +161,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.lastName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -166,7 +179,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.birthday"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -179,7 +192,7 @@
                     placeholder="กรอกอีเมล์มี @"
                     id="อีเมล์"
                     v-model.trim="profile.email"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -197,7 +210,7 @@
                     placeholder="ไม่มีให้ใส่ - "
                     id="telephone"
                     v-model.trim="profile.telephone"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -212,7 +225,7 @@
                     placeholder="กรอกนามสกุล"
                     id="mobilephone"
                     v-model.trim="profile.mobilephone"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -234,7 +247,7 @@
                     placeholder="กรอกบ้านเลขที่ ตัวอย่าง 99/99 หมู่ 9"
                     id="อีเมล์"
                     v-model.trim="profile.address.addressNumber"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -249,7 +262,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="location"
                     v-model.trim="profile.address.location"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -265,7 +278,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.soi"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -278,7 +291,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.road"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -294,7 +307,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.district"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -307,7 +320,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.amphoe"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -323,7 +336,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.province"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -336,7 +349,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.zipcode"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -357,7 +370,7 @@
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
                     v-model="profile.graduated.degree"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -370,7 +383,7 @@
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
                     v-model="profile.graduated.university"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -386,7 +399,7 @@
                     placeholder="กรอกคณะที่จบ"
                     id="email"
                     v-model="profile.graduated.faculty"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -399,7 +412,7 @@
                     placeholder="กรอกเอก/สาขาวิชา"
                     id="email"
                     v-model="profile.graduated.major"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -415,7 +428,7 @@
                 placeholder=""
                 id="email"
                 v-model="profile.subject"
-                disabled
+                :disabled="disabled == 1"
               />
             </div>
 
@@ -428,13 +441,21 @@
                 rows="5"
                 id="comment"
                 v-model="profile.workingProfile"
-                disabled
+                :disabled="disabled == 1"
               ></textarea>
             </div>
           </div>
 
           <!-- Modal footer -->
           <div class="modal-footer">
+            <button
+              @click="updateProfile(profile.uid)"
+              type="button"
+              class="btn btn-warning"
+              v-if="modal == 'edit'"
+            >
+              แก้ไข
+            </button>
             <button
               type="button"
               class="btn btn-secondary"
@@ -478,14 +499,14 @@ export default {
           field: "mobilephone",
           type: "text",
         },
-        // {
-        //   label: "วิชา",
-        //   field: "subject",
-        //   type: "text",
-        // },
         {
           label: "ข้อมูลอื่นๆ",
           field: "other",
+          type: "text",
+        },
+        {
+          label: "แก้ไข",
+          field: "edit",
           type: "text",
         },
         // {
@@ -536,10 +557,93 @@ export default {
         workingProfile: "",
         profileType: "employee",
       },
+      modal: null,
+      disabled: 0,
+      editPass: "123456",
+      allow: false,
     };
   },
 
   methods: {
+    fullProfile(profile) {
+      // alert(profile.firstName);
+      this.profile = profile;
+      this.disabled = 1;
+    },
+
+    updateProfile(uid) {
+      // alert(docId)
+      this.profile.canUpdate = false;
+      db.collection("employeeData")
+        .doc(uid)
+        .update(this.profile)
+        .then(() => {
+          Swal.fire({
+            title: "อัพเดทข้อมูล",
+            text: "ได้ทำการupdateข้อมูลเรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+          $("#profileModal").modal("hide");
+        });
+    },
+
+    openEditModal(profile) {
+      db.collection("employeeData")
+        .doc(profile.uid)
+        .onSnapshot((doc) => {
+          console.log("แก้ไขได้ป่าว", doc.data().canUpdate);
+          this.allow = doc.data().canUpdate;
+        });
+
+      if (this.allow == true) {
+        this.profile = profile;
+        this.modal = "edit";
+        this.disabled = 0;
+        $("#profileModal").modal("show");
+      }
+    },
+
+    async editProfile(profile) {
+      const { value: password } = await Swal.fire({
+        title: "กรอก Password",
+        input: "password",
+        icon: "question",
+        inputLabel: "Password",
+        inputPlaceholder: "กรอกรหัสเข้าแก้ไข",
+        confirmButtonColor: "#30855c",
+        inputAttributes: {
+          maxlength: 10,
+          autocapitalize: "off",
+          autocorrect: "off",
+        },
+      });
+
+      if (password == this.editPass) {
+        db.collection("employeeData")
+          .doc(profile.uid)
+          .set({ canUpdate: true }, { merge: true })
+          .then(() => {
+            Swal.fire({
+              title: "SUCCESS",
+              text: "ทำการแก้ไขข้อมูลได้",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+          });
+      } else {
+        Swal.fire({
+          title: "Password Not Collect",
+          text: "ไม่สามารถเข้าทำการแก้ไขข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "error",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
+    },
+
     deleteemployee(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
@@ -581,67 +685,67 @@ export default {
         });
     },
 
-    fullProfile(profile) {
-      // alert(profile.firstName);
-      this.profile = profile;
+    getData() {
+      db.collection("employeeData")
+        .where("role.isEmployee", "==", true)
+        .onSnapshot((querySnapshot) => {
+          this.profiles = [];
+          querySnapshot.forEach((doc) => {
+            // if(!doc.data().role.isAdmin)
+            // {
+            console.log(doc.data());
+            let profile = {
+              uid: doc.id,
+              addProfileAt: moment(doc.data().addProfileAt).format(
+                "DD/MM/YYYY HH:mm:ss"
+              ),
+              canUpdate : doc.data().canUpdate,
+              image: doc.data().image,
+
+              namePrefix: doc.data().namePrefix,
+              nickName: doc.data().nickName,
+              firstName: doc.data().firstName,
+              lastName: doc.data().lastName,
+              birthday: doc.data().birthday,
+              email: doc.data().email,
+              telephone: doc.data().telephone,
+              mobilephone: doc.data().mobilephone,
+              profileType: "employee",
+
+              address: {
+                addressNumber: doc.data().address.addressNumber,
+                location: doc.data().address.location,
+                soi: doc.data().address.soi,
+                road: doc.data().address.road,
+                district: doc.data().address.district,
+                amphoe: doc.data().address.amphoe,
+                province: doc.data().address.province,
+                zipcode: doc.data().address.zipcode,
+              },
+
+              graduated: {
+                degree: doc.data().graduated.degree,
+                university: doc.data().graduated.university,
+                faculty: doc.data().graduated.faculty,
+                major: doc.data().graduated.major,
+              },
+              workingProfile: doc.data().workingProfile,
+              commited: "พนักงาน",
+              empSalary: 0,
+            };
+            this.profiles.push(profile);
+            // this.$store.state.employeeApproveCount = this.profiles.length;
+            // }
+          });
+        });
     },
   },
 
   mounted() {
     window.scrollTo(0, 0);
-    db.collection("employeeData")
-      .where("role.isEmployee", "==", true)
-      .onSnapshot((querySnapshot) => {
-        this.profiles = [];
-        querySnapshot.forEach((doc) => {
-          // if(!doc.data().role.isAdmin)
-          // {
-          console.log(doc.data());
-          let profile = {
-            uid: doc.id,
-            addProfileAt: moment(doc.data().addProfileAt).format(
-              "DD/MM/YYYY HH:mm:ss"
-            ),
-            image: doc.data().image,
-            
-            namePrefix: doc.data().namePrefix,
-            nickName: doc.data().nickName,
-            firstName: doc.data().firstName,
-            lastName: doc.data().lastName,
-            birthday: doc.data().birthday,
-            email: doc.data().email,
-            telephone: doc.data().telephone,
-            mobilephone: doc.data().mobilephone,
-            profileType: "employee",
-
-            address: {
-              addressNumber: doc.data().address.addressNumber,
-              location: doc.data().address.location,
-              soi: doc.data().address.soi,
-              road: doc.data().address.road,
-              district: doc.data().address.district,
-              amphoe: doc.data().address.amphoe,
-              province: doc.data().address.province,
-              zipcode: doc.data().address.zipcode,
-            },
-
-            graduated: {
-              degree: doc.data().graduated.degree,
-              university: doc.data().graduated.university,
-              faculty: doc.data().graduated.faculty,
-              major: doc.data().graduated.major,
-            },
-            workingProfile: doc.data().workingProfile,
-            commited: "พนักงาน",
-          };
-          this.profiles.push(profile);
-          // this.$store.state.employeeApproveCount = this.profiles.length;
-          // }
-        });
-      });
+    this.getData();
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

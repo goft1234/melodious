@@ -30,12 +30,30 @@
       </span> -->
             <span v-if="props.column.field == 'other'">
               <div
-                class="btn btn-warning"
+                class="btn btn-secondary"
                 data-toggle="modal"
                 data-target="#profileModal"
                 @click="fullProfile(props.row)"
               >
                 <i class="fa-solid fa-user"></i>
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'edit'">
+              <div
+                v-if="props.row.canUpdate == true"
+                class="btn btn-info"
+                @click="openEditModal(props.row)"
+              >
+                <!-- data-toggle="modal"
+              data-target="#invoiceModal" -->
+                <i class="fas fa-edit"></i>
+              </div>
+              <div
+                v-else
+                class="btn btn-warning"
+                @click="editProfile(props.row)"
+              >
+                <i class="fas fa-edit"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'schedule'">
@@ -100,7 +118,7 @@
                     placeholder="กรอกชื่อเล่น"
                     id="namePrefix"
                     v-model.trim="profile.namePrefix"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -114,7 +132,7 @@
                     placeholder="กรอกชื่อเล่น"
                     id="nickName"
                     v-model.trim="profile.nickName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                   <!-- <span> : {{ profile.nickName }}</span> -->
                 </div>
@@ -131,7 +149,7 @@
                     placeholder="กรอกชื่อจริง"
                     id="firstName"
                     v-model.trim="profile.firstName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -144,7 +162,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.lastName"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -162,7 +180,7 @@
                     placeholder="กรอกนามสกุล"
                     id="lastName"
                     v-model.trim="profile.birthday"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -175,7 +193,7 @@
                     placeholder="กรอกอีเมล์มี @"
                     id="อีเมล์"
                     v-model.trim="profile.email"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -193,7 +211,7 @@
                     placeholder="ไม่มีให้ใส่ - "
                     id="telephone"
                     v-model.trim="profile.telephone"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -208,7 +226,7 @@
                     placeholder="กรอกนามสกุล"
                     id="mobilephone"
                     v-model.trim="profile.mobilephone"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -230,7 +248,7 @@
                     placeholder="กรอกบ้านเลขที่ ตัวอย่าง 99/99 หมู่ 9"
                     id="อีเมล์"
                     v-model.trim="profile.address.addressNumber"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -245,7 +263,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="location"
                     v-model.trim="profile.address.location"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -261,7 +279,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.soi"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -274,7 +292,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.road"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -290,7 +308,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.district"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -303,7 +321,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.amphoe"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -319,7 +337,7 @@
                     placeholder="ไม่มีใส่ - "
                     id="อีเมล์"
                     v-model.trim="profile.address.province"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -332,7 +350,7 @@
                     placeholder="กรอกชื่อ ถนน"
                     id="อีเมล์"
                     v-model.trim="profile.address.zipcode"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -353,7 +371,7 @@
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
                     v-model="profile.graduated.degree"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -366,7 +384,7 @@
                     placeholder="กรอกชื่อมหาวิทยาลัย"
                     id="email"
                     v-model="profile.graduated.university"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -382,7 +400,7 @@
                     placeholder="กรอกคณะที่จบ"
                     id="email"
                     v-model="profile.graduated.faculty"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -395,7 +413,7 @@
                     placeholder="กรอกเอก/สาขาวิชา"
                     id="email"
                     v-model="profile.graduated.major"
-                    disabled
+                    :disabled="disabled == 1"
                   />
                 </div>
               </div>
@@ -411,7 +429,7 @@
                 placeholder=""
                 id="email"
                 v-model="profile.subject"
-                disabled
+                :disabled="disabled == 1"
               />
             </div>
 
@@ -424,13 +442,21 @@
                 rows="5"
                 id="comment"
                 v-model="profile.workingProfile"
-                disabled
+                :disabled="disabled == 1"
               ></textarea>
             </div>
           </div>
 
           <!-- Modal footer -->
           <div class="modal-footer">
+            <button
+              @click="updateProfile(profile.uid)"
+              type="button"
+              class="btn btn-warning"
+              v-if="modal == 'edit'"
+            >
+              แก้ไข
+            </button>
             <button
               type="button"
               class="btn btn-secondary"
@@ -486,6 +512,11 @@ export default {
           type: "text",
         },
         {
+          label: "แก้ไข",
+          field: "edit",
+          type: "text",
+        },
+        {
           label: "ตารางสอน",
           field: "schedule",
           type: "text",
@@ -534,55 +565,94 @@ export default {
         workingProfile: "",
         profileType: "teacher",
       },
+
+      modal: null,
+      disabled: 0,
+      editPass: "123456",
+      allow: false,
     };
   },
 
   methods: {
-
-    deleteTeacher(uid) {
-      Swal.fire({
-        title: "ต้องการลบ?",
-        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#30855c",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "ตกลง ลบข้อมูล",
-      })
-        .then((result) => {
-          if (result.value) {
-            this.$store.state.show = true;
-            var del = functions.httpsCallable("deleteTeacher");
-            var data = { uid: uid };
-
-            del(data).then(() => {
-              Swal.fire({
-                title: "ทำการลบเรียบร้อย",
-                text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
-                icon: "success",
-                confirmButtonColor: "#30855c",
-                confirmButtonText: "ตกลง",
-              });
-              this.$store.state.show = false;
-            });
-          }
-        })
-        .catch((error) => {
-          console.log("Transaction failed: ", error);
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-            icon: "warning",
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: "ตกลง",
-          });
-          this.$store.state.show = false;
-        });
-    },
-
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profile = profile;
+      this.disabled = 1;
+    },
+
+    updateProfile(uid) {
+      // alert(docId)
+      this.profile.canUpdate = false;
+      db.collection("teacherData")
+        .doc(uid)
+        .update(this.profile)
+        .then(() => {
+          Swal.fire({
+            title: "อัพเดทข้อมูล",
+            text: "ได้ทำการupdateข้อมูลเรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+          $("#profileModal").modal("hide");
+          
+        });
+    },
+
+    openEditModal(profile) {
+      db.collection("teacherData")
+        .doc(profile.uid)
+        .onSnapshot((doc) => {
+          console.log("แก้ไขได้ป่าว", doc.data().canUpdate);
+          this.allow = doc.data().canUpdate;
+        });
+
+        if (this.allow == true) {
+            this.profile = profile;
+            this.modal = "edit";
+            this.disabled = 0;
+            $("#profileModal").modal("show");
+        
+        }
+    },
+
+    async editProfile(profile) {
+      const { value: password } = await Swal.fire({
+        title: "กรอก Password",
+        input: "password",
+        icon: "question",
+        inputLabel: "Password",
+        inputPlaceholder: "กรอกรหัสเข้าแก้ไข",
+        confirmButtonColor: "#30855c",
+        inputAttributes: {
+          maxlength: 10,
+          autocapitalize: "off",
+          autocorrect: "off",
+        },
+      });
+
+      if (password == this.editPass) {
+        db.collection("teacherData")
+          .doc(profile.uid)
+          .set({ canUpdate: true }, { merge: true })
+          .then(() => {
+            Swal.fire({
+              title: "SUCCESS",
+              text: "ทำการแก้ไขข้อมูลได้",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+          });
+      } else {
+        Swal.fire({
+          title: "Password Not Collect",
+          text: "ไม่สามารถเข้าทำการแก้ไขข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "error",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
     },
 
     getData() {
@@ -602,7 +672,7 @@ export default {
                   "DD/MM/YYYY HH:mm:ss"
                 ),
                 image: doc.data().image,
-
+                canUpdate: doc.data().canUpdate,
                 namePrefix: doc.data().namePrefix,
                 nickName: doc.data().nickName,
                 firstName: doc.data().firstName,
@@ -644,6 +714,47 @@ export default {
         this.$store.state.show = false;
       }
     },
+
+    deleteTeacher(uid) {
+      Swal.fire({
+        title: "ต้องการลบ?",
+        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#30855c",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ตกลง ลบข้อมูล",
+      })
+        .then((result) => {
+          if (result.value) {
+            this.$store.state.show = true;
+            var del = functions.httpsCallable("deleteTeacher");
+            var data = { uid: uid };
+
+            del(data).then(() => {
+              Swal.fire({
+                title: "ทำการลบเรียบร้อย",
+                text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
+                icon: "success",
+                confirmButtonColor: "#30855c",
+                confirmButtonText: "ตกลง",
+              });
+              this.$store.state.show = false;
+            });
+          }
+        })
+        .catch((error) => {
+          console.log("Transaction failed: ", error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        });
+    },
   },
 
   mounted() {
@@ -653,5 +764,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

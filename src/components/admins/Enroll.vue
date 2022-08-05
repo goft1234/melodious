@@ -2,7 +2,7 @@
   <div class="container jumbotron shadow">
     <h4 class="text-center text-success mb-3">ข้อมูลและประวัตินักเรียน</h4>
     <div class="row">
-      <div class="col-lg-12 ">
+      <div class="col-lg-12">
         <!-- <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuNfh5XEmL28p3fZftINhCjPR1g7V8IDWJ9-H58s0jyp4GMH_nWaRqFrRFu-6CJbaTdK0&usqp=CAU"
             id="preview"
@@ -502,7 +502,7 @@ export default {
       },
 
       imageName: null,
-      dateNow: moment(Date.now()).format("LL"),
+      dateNow: moment().add(543, 'year').format("LL"),
       detailOpen: false,
 
       profile: {
@@ -510,7 +510,7 @@ export default {
         studentId: "",
         image:
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuNfh5XEmL28p3fZftINhCjPR1g7V8IDWJ9-H58s0jyp4GMH_nWaRqFrRFu-6CJbaTdK0&usqp=CAU",
-        addProfileAt: null,
+        addProfileAt: Date.now(),
 
         namePrefix: "",
         nickName: "",
@@ -554,43 +554,53 @@ export default {
 
   methods: {
     uploadImage() {
-      this.$store.state.show = true;
-      let file = this.imageName;
-      var storageRef = fb
-        .storage()
-        .ref("studentImg/" + Math.random() + "_" + file.name);
+      if (this.imageName != null) {
+        this.$store.state.show = true;
+        let file = this.imageName;
+        var storageRef = fb
+          .storage()
+          .ref("studentImg/" + Math.random() + "_" + file.name);
 
-      let uploadTask = storageRef.put(file);
+        let uploadTask = storageRef.put(file);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => {
-          // Handle unsuccessful uploads
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
-            icon: "warning",
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: "ตกลง",
-          });
-          this.$store.state.show = false;
-        },
-        () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            this.profile.image = downloadURL;
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {},
+          (error) => {
+            // Handle unsuccessful uploads
             Swal.fire({
-              title: "SUCCESS",
-              text: "อัพโหลดรูปภาพเรียบร้อย",
-              icon: "success",
-              confirmButtonColor: "#30855c",
+              title: "เกิดข้อผิดพลาด",
+              text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
+              icon: "warning",
+              confirmButtonColor: "#FF0000",
               confirmButtonText: "ตกลง",
             });
             this.$store.state.show = false;
-            this.detailOpen = true;
-          });
-        }
-      );
+          },
+          () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+              this.profile.image = downloadURL;
+              Swal.fire({
+                title: "SUCCESS",
+                text: "อัพโหลดรูปภาพเรียบร้อย",
+                icon: "success",
+                confirmButtonColor: "#30855c",
+                confirmButtonText: "ตกลง",
+              });
+              this.$store.state.show = false;
+              this.detailOpen = true;
+            });
+          }
+        );
+      } else {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถอัพโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
     },
 
     onFileChange(e) {
@@ -629,54 +639,6 @@ export default {
         });
         this.$store.state.show = false;
       }
-    },
-
-    async getCourseTemplate() {
-      const doc = await db.collection("courseTemplate").doc("detail").get();
-      // if (doc.empty) {
-      //   console.log("No matching documents.");
-      //   return;
-      // }
-      this.cTemplate = doc.data().courseName;
-      this.cType = doc.data().courseType;
-      this.cLevel = doc.data().level;
-      this.cRate = doc.data().rate;
-
-      this.addNewItem();
-    },
-
-    async getTeacherData() {
-      let querySnapshot = await db.collection("teacherData").get();
-
-      this.tcDatas = [];
-      querySnapshot.forEach((doc) => {
-        let tcData = {
-          tcId: doc.data().uid,
-          tcFirstname: doc.data().fullName,
-          // tcLastname: doc.data().lastName,
-          // tcNickname: doc.data().nickName,
-        };
-        this.tcDatas.push(tcData);
-      });
-    },
-
-    addNewItem() {
-      this.courses.push({
-        courseSelected: "",
-        classTypeSelected: "",
-        levelSelected: "",
-        priceSelected: "",
-        teacherSelected: "",
-        courseName: this.cTemplate,
-        courseType: this.cType,
-        level: this.cLevel,
-        rate: this.cRate,
-      });
-      // console.log(this.courses);
-    },
-
-    deleteItem(index) {
-      this.courses.splice(index, 1);
     },
 
     select(address) {
@@ -752,7 +714,7 @@ export default {
         .collection("studentId")
         .doc("detail")
         .update({ stdId: firebase.firestore.FieldValue.increment(1) });
-        
+
       var addFunctions = functions.httpsCallable("StudentData");
       addFunctions(this.profile)
         .then(() => {
@@ -777,9 +739,6 @@ export default {
           });
           this.$store.state.show = false;
         });
-      // console.log(data.user.uid);
-      // this.$store.state.show = false;
-      // console.log(this.profile);
     },
   },
 

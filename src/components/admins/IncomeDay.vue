@@ -1,17 +1,17 @@
 <template>
   <div class="incomeDay">
     <div class="my-3">
-        <!-- <h4 class="text-center text-success mb-4">ลงข้อมูลสินค้า</h4> -->
-        <h5 class="d-inline-block text-success"></h5>
-        <router-link
-          to="/admin/account/invoicehistory"
-          class="btn btn-success d-inline-block float-right px-1 "
-          data-toggle="modal"
-          data-target="#product"
-        >
-          ประวัติการแก้ไข
-        </router-link>
-      </div>
+      <!-- <h4 class="text-center text-success mb-4">ลงข้อมูลสินค้า</h4> -->
+      <h5 class="d-inline-block text-success"></h5>
+      <router-link
+        to="/admin/account/invoicehistory"
+        class="btn btn-success d-inline-block float-right px-1"
+        data-toggle="modal"
+        data-target="#product"
+      >
+        ประวัติการแก้ไข
+      </router-link>
+    </div>
     <div class="mt-3 shadow">
       <vue-good-table
         :columns="columns"
@@ -123,7 +123,7 @@
                       </div>
                       <br />
                       <div class="row">
-                        <div class="col-lg-6">
+                        <!-- <div class="col-lg-6">
                           <div class="form-group">
                             <label for="namePrefix" class="text-success"
                               >วิชาเรียน</label
@@ -135,6 +135,31 @@
                               :disabled="disabled == 1"
                             ></vue-single-select>
                           </div>
+                        </div> -->
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >วิชาเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.courseName"
+                              :disabled="disabled == 1"
+                            >
+                              <option disabled value="">เลือก วิชาเรียน</option>
+                              <option
+                                v-for="(
+                                  item, index
+                                ) in course.courseTemplateName"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
                         </div>
 
                         <div class="col-lg-6">
@@ -142,40 +167,79 @@
                             <label for="nickName" class="text-success"
                               >รูปแบบการเรียน</label
                             >
-                            <vue-single-select
+                            <select
+                              class="form-control"
+                              id="namePrefix"
                               v-model="course.classType"
-                              :options="course.courseTemplateType"
-                              placeholder="รูปแบบการเรียน"
                               :disabled="disabled == 1"
-                            ></vue-single-select>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >Level ที่ลงเรียน</label
                             >
-                            <vue-single-select
-                              v-model="course.level"
-                              :options="course.courseTemplateLevel"
-                              placeholder="เลือกระดับที่เรียน"
-                              :disabled="disabled == 1"
-                            ></vue-single-select>
+                              <option disabled value="">
+                                เลือก รูปแบบการเรียน
+                              </option>
+                              <option
+                                v-for="(
+                                  item, index
+                                ) in course.courseTemplateType"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
                           </div>
                         </div>
 
                         <div class="col-lg-6">
                           <div class="form-group">
                             <label for="nickName" class="text-success"
-                              >ราคา/คอร์ส</label
+                              >ระดับการเรียน</label
                             >
-                            <vue-single-select
-                              v-model="course.price"
-                              :options="course.courseTemplateRate"
-                              placeholder="เลือก ราคา/คอร์ส"
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.level"
                               :disabled="disabled == 1"
-                            ></vue-single-select>
+                            >
+                              <option disabled value="">
+                                เลือก ระดับการเรียน
+                              </option>
+                              <option
+                                v-for="(
+                                  item, index
+                                ) in course.courseTemplateLevel"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >อัตราค่าเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.price"
+                              :disabled="disabled == 1"
+                            >
+                              <option disabled value="">
+                                เลือก อัตราค่าเรียน
+                              </option>
+                              <option
+                                v-for="(
+                                  item, index
+                                ) in course.courseTemplateRate"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
                           </div>
                         </div>
 
@@ -762,15 +826,24 @@
                             <label for="usr" class="text-success"
                               >วัน-เวลาที่ทำธุรกรรม
                             </label>
-                            <!-- <input
-                              type="text"
+                            <input type="text" class="form-control"  v-model="item.transactionTime" :disabled="disabled == 1">
+                          </div>
+                          <!-- {{item.transactionTime}} -->
+                        </div>
+                        <!-- v-if="modal == 'edit'" -->
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="comment" class="text-danger"
+                              >***รายละเอียดการแก้ไข</label
+                            >
+                            <textarea
+                              :disabled="disabled == 1"
                               class="form-control"
-                              id="usr"
-                              v-model="transactionTime"
-                            /> -->
-                            <!-- <date-picker v-model.trim="transactionTime" :config="options" locale="th"></date-picker> -->
-                            <!-- <Datepicker format="DD/MM/YYYY H:i:s"  v-model="transactionTime" @change="test(e)"></Datepicker> -->
-                            <!-- <DatetimePicker></DatetimePicker> -->
+                              rows="5"
+                              id="comment"
+                              placeholder='ใส่รายละเอียดการแก้ "แก้ไขอะไรไปบ้าง" '
+                              v-model.trim="editDetail"
+                            ></textarea>
                           </div>
                         </div>
                       </div>
@@ -929,7 +1002,7 @@ export default {
         },
         {
           label: "วันที่",
-          field: "invoiceTime",
+          field: "transactionTime",
           type: "text",
         },
         {
@@ -982,6 +1055,7 @@ export default {
       newQty: null,
       editPass: "123456",
       allow: false,
+      editDetail:'',
     };
   },
 
@@ -1112,6 +1186,7 @@ export default {
           transactionTime: this.item.transactionTime,
           invoiceTime: moment(Date.now()).format("DD/MM/YYYY"),
           invoiceTimestamp: moment(Date.now()).format("x"),
+          editDetail:this.editDetail,
         };
 
         await db
@@ -1167,50 +1242,50 @@ export default {
         .doc(detail.docId)
         .onSnapshot((doc) => {
           console.log("แก้ไขได้ป่าว", doc.data().canUpdate);
-          this.allow = doc.data().canUpdate ;
+          this.allow = doc.data().canUpdate;
         });
 
-        if(this.allow == true){
-          this.invoiceToDel = detail.invoiceNo;
-      this.item = detail;
-      this.modal = "edit";
-      this.disabled = 0;
-      $("#invoiceModal").modal("show");
-      this.carts = detail.productDetail;
+      if (this.allow == true) {
+        this.invoiceToDel = detail.invoiceNo;
+        this.item = detail;
+        this.modal = "edit";
+        this.disabled = 0;
+        $("#invoiceModal").modal("show");
+        this.carts = detail.productDetail;
 
-      db.collection("courseActive")
-        .where("invoiceNo", "==", detail.invoiceNo)
-        .onSnapshot((querySnapshot) => {
-          this.courses = [];
-          querySnapshot.forEach((doc) => {
-            let course = {
-              uid: doc.id,
-              amount: doc.data().amount,
-              classType: doc.data().classType,
-              courseName: doc.data().courseName,
-              day: doc.data().day,
-              discount: doc.data().discount,
-              endDate: doc.data().endDate,
-              finishTime: doc.data().finishTime,
-              level: doc.data().level,
-              price: doc.data().price,
-              qty: doc.data().qty,
-              startDate: doc.data().startDate,
-              startTime: doc.data().startTime,
-              teacherName: doc.data().teacherName,
-              wages: doc.data().wages,
+        db.collection("courseActive")
+          .where("invoiceNo", "==", detail.invoiceNo)
+          .onSnapshot((querySnapshot) => {
+            this.courses = [];
+            querySnapshot.forEach((doc) => {
+              let course = {
+                uid: doc.id,
+                amount: doc.data().amount,
+                classType: doc.data().classType,
+                courseName: doc.data().courseName,
+                day: doc.data().day,
+                discount: doc.data().discount,
+                endDate: doc.data().endDate,
+                finishTime: doc.data().finishTime,
+                level: doc.data().level,
+                price: doc.data().price,
+                qty: doc.data().qty,
+                startDate: doc.data().startDate,
+                startTime: doc.data().startTime,
+                teacherName: doc.data().teacherName,
+                wages: doc.data().wages,
 
-              courseTemplateName: this.cName,
-              courseTemplateType: this.cType,
-              courseTemplateLevel: this.cLevel,
-              courseTemplateRate: this.cRate,
-              courseTemplateTeacher: this.cTeacher,
-              courseTemplateDay: this.cDay,
-            };
-            this.courses.push(course);
+                courseTemplateName: this.cName,
+                courseTemplateType: this.cType,
+                courseTemplateLevel: this.cLevel,
+                courseTemplateRate: this.cRate,
+                courseTemplateTeacher: this.cTeacher,
+                courseTemplateDay: this.cDay,
+              };
+              this.courses.push(course);
+            });
           });
-        });
-        }
+      }
     },
 
     async editItem(detail) {
@@ -1237,7 +1312,7 @@ export default {
         var invoiceHisRef = db.collection("invoiceHistory").doc();
         batch.set(invoiceHisRef, detail);
 
-        batch.commit().then(()=> {
+        batch.commit().then(() => {
           Swal.fire({
             title: "SUCCESS",
             text: "ทำการแก้ไขข้อมูลได้",
@@ -1250,7 +1325,7 @@ export default {
         });
       } else {
         Swal.fire({
-          title: "เกิดข้อผิดพลาด",
+          title: "Password Not Collect",
           text: "ไม่สามารถเข้าทำการแก้ไขข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
           icon: "error",
           confirmButtonColor: "#FF0000",
@@ -1260,6 +1335,7 @@ export default {
     },
 
     invoiceDetail(detail) {
+      this.modal = null
       this.disabled = 1;
       this.item = detail;
       this.carts = detail.productDetail;
@@ -1285,6 +1361,7 @@ export default {
               startTime: doc.data().startTime,
               teacherName: doc.data().teacherName,
               wages: doc.data().wages,
+              transactionTime:doc.data().transactionTime,
 
               courseTemplateName: this.cName,
               courseTemplateType: this.cType,
@@ -1388,11 +1465,11 @@ export default {
               note: doc.data().note,
               payBy: doc.data().payBy,
               paymentFor: doc.data().paymentFor,
-              transactionTime: doc.data().transactionTime,
+              transactionTime: moment( doc.data().transactionTime).format('DD/MM/YY HH:mm'),
 
               other: doc.data().other,
               docId: doc.id,
-              canUpdate : doc.data().canUpdate,
+              canUpdate: doc.data().canUpdate,
             };
             this.itemDatas.push(Item);
             console.log("itemDatas  " + this.itemDatas);
@@ -1474,10 +1551,6 @@ export default {
         });
         console.log(this.carts);
       });
-      // console.log(newQty);
-      // batch.update(db.collection("products").doc(item.pID), {
-      //   quantity: newQty,
-      // });
     },
   },
 
