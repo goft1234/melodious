@@ -74,6 +74,16 @@ const routes = [
         component: () => import('../components/admins/StudentData.vue')
       },
       {
+        path: 'editinvoice',
+        name: 'editinvoice',
+        component: () => import('../components/admins/EditInvoice.vue')
+      },
+      {
+        path: 'invoicehistory',
+        name: 'invoicehistory',
+        component: () => import('../components/admins/InvoiceHistory.vue')
+      },
+      {
         path: 'enroll',
         name: 'enroll',
         component: () => import('../components/admins/Enroll.vue')
@@ -103,7 +113,6 @@ const routes = [
         name: 'managetable',
         component: () => import('../components/admins/ManageTable.vue')
       },
-
       {
         path: 'account',
         name: 'account',
@@ -124,14 +133,14 @@ const routes = [
           component: () => import('../components/admins/IncomeDay.vue')
         },
         {
+          path: 'incomemonth',
+          name: 'incomemonth',
+          component: () => import('../components/admins/IncomeMonth.vue')
+        },
+        {
           path: 'expense',
           name: 'expense',
           component: () => import('../components/admins/ExpenseTable.vue')
-        },
-        {
-          path: 'invoicehistory',
-          name: 'invoicehistory',
-          component: () => import('../components/admins/InvoiceHistory.vue')
         },
       ]
       },

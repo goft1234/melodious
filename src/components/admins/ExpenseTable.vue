@@ -1,67 +1,65 @@
 <template>
-  <div id="addcourse" class="shadow">
-    <div class="container-fluid jumbotron">
-      <div class="">
-        <h4 class="text-center text-success mb-4">หลักสูตรและค่าเรียน</h4>
-        <!-- <h5 class="d-inline-block text-success">รายวิชาเรียน</h5> -->
-        <button
-          @click="addNew"
-          class="btn btn-info d-inline-block px-2"
-          data-toggle="modal"
-          data-target="#expenseTemplate"
-        >
-          สร้างหมวดหมู่
-        </button>
-        <button
-          @click="addNew"
-          class="btn btn-success d-inline-block float-right px-3"
-          data-toggle="modal"
-          data-target="#modal1"
-        >
-          เพิ่มวิชาเรียน
-        </button>
-      </div>
+  <div id="addcourse">
+    <div class="my-3">
+      <h4 class="text-center text-success mb-4">บันทึกรายจ่าย</h4>
+      <!-- <h5 class="d-inline-block text-success">รายวิชาเรียน</h5> -->
+      <button
+        @click="addNew"
+        class="btn btn-info d-inline-block px-2"
+        data-toggle="modal"
+        data-target="#expenseTemplate"
+      >
+        สร้างหมวดหมู่
+      </button>
+      <button
+        @click="addNew"
+        class="btn btn-success d-inline-block float-right px-3"
+        data-toggle="modal"
+        data-target="#modal1"
+      >
+        เพิ่มรายการ
+      </button>
+    </div>
 
-      <div class="mt-3 shadow">
-        <vue-good-table
-          :columns="columns"
-          :rows="courses"
-          :line-numbers="true"
-          styleClass="vgt-table striped bordered"
-          :search-options="{
-            enabled: true,
-            placeholder: 'ค้นหา',
-          }"
-          :pagination-options="{
-            enabled: true,
-          }"
-          compactMode
-        >
-          <template slot="table-row" slot-scope="props">
-            <span v-if="props.column.field == 'edit'">
-              <div
-                class="btn btn-warning"
-                @click="editcourse(props.row)"
-                data-toggle="modal"
-                data-target="#course"
-              >
-                <i class="fas fa-edit"></i>
-              </div>
-            </span>
-            <span v-else-if="props.column.field == 'delete'">
-              <div
-                class="btn btn-danger"
-                @click="deletecourse(props.row.couseId)"
-              >
-                <i class="fas fa-trash-alt"></i>
-              </div>
-            </span>
-            <span v-else>
-              {{ props.formattedRow[props.column.field] }}
-            </span>
-          </template>
-        </vue-good-table>
-      </div>
+    <div class="mt-3 shadow">
+      <vue-good-table
+        :columns="columns"
+        :rows="itemDatas"
+        :line-numbers="true"
+        styleClass="vgt-table striped bordered"
+        :search-options="{
+          enabled: true,
+          placeholder: 'ค้นหา',
+        }"
+        :pagination-options="{
+          enabled: true,
+        }"
+        compactMode
+      >
+        <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field == 'edit'">
+            <div
+              class="btn btn-warning"
+              @click="editExpense(props.row)"
+              data-toggle="modal"
+              data-target="#modal1"
+            >
+              <i class="fas fa-edit"></i>
+            </div>
+          </span>
+          <span v-else-if="props.column.field == 'delete'">
+            <div
+              class="btn btn-danger"
+              @click="deletecourse(props.row.couseId)"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </div>
+          </span>
+          <span v-else>
+            {{ props.formattedRow[props.column.field] }}
+          </span>
+        </template>
+      </vue-good-table>
     </div>
 
     <!--Start The Modal -->
@@ -94,7 +92,7 @@
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
                   <span class="input-group-text">
-                    <i class="fas fa-music"></i>
+                    <i class="fas fa-calendar-alt"></i>
                   </span>
                 </div>
                 <input
@@ -113,7 +111,7 @@
                 <div class="input-group mb-2">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
-                      <i class="fas fa-users"></i>
+                      <i class="fas fa-object-ungroup"></i>
                     </span>
                   </div>
                   <select
@@ -137,7 +135,7 @@
                 <div class="input-group mb-2">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
-                      <i class="fas fa-star-half-alt"></i>
+                      <i class="fas fa-list-alt"></i>
                     </span>
                   </div>
                   <input
@@ -156,7 +154,7 @@
                 <div class="input-group mb-2">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
-                      <i class="fas fa-star"></i>
+                      <i class="fas fa-dollar-sign"></i>
                     </span>
                   </div>
                   <input
@@ -295,6 +293,8 @@
 
 <script>
 import { db } from "../../firebase";
+import moment from "moment";
+
 export default {
   name: "addcourse",
 
@@ -342,7 +342,7 @@ export default {
       },
       itemDatas: [],
       itemData: {
-        date: "",
+        date: moment().add('543','year').format('DD/MM/YYYY'),
         type: "",
         list: "",
         docId: "",
@@ -433,10 +433,10 @@ export default {
       };
     },
 
-    editcourse(course) {
+    editExpense(itemData) {
       this.modal = "edit";
       // console.log(couseId);
-      this.course = course;
+      this.itemData = itemData;
     },
 
     updatecourse(docId) {
@@ -485,7 +485,7 @@ export default {
         this.itemDatas = [];
         querySnapshot.forEach((doc) => {
           let itemData = {
-            date: moment(doc.data().date).format("DD/MM/YYYY"),
+            date:doc.data().date,
             type: doc.data().type,
             list: doc.data().list,
             amount: doc.data().amount,

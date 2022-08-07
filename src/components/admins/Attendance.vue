@@ -506,8 +506,8 @@ export default {
     getData() {
       try {
         this.$store.state.show = true;
-        var date = moment(Date.now()).day();
-        console.log(Date.now());
+        var date = moment().isoWeekday();
+        console.log(date);
         db.collection("courseActive")
           .where("day.dayNum", "==", date )
           .where("amount",">=",1 )

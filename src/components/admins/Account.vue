@@ -14,7 +14,7 @@
             <option disabled value="">เลือกเพื่อดูข้อมูลบัญชี</option>
             <option value="overview">ภาพรวมทั้งหมด</option>
             <option value="incomeday">รายรับ - รายวัน</option>
-            <option value="employee">รายรับ - รายเดือน</option>
+            <option value="incomemonth">รายรับ - รายเดือน</option>
             <option value="expense">ระบบบันทึกค่าใช้จ่ายแต่ละเดือน</option>
             <option value="teacher">รายจ่าย - รายวัน</option>
             <option value="employee">รายจ่าย - รายเดือน</option>
@@ -47,6 +47,9 @@ export default {
       }
       else if(this.acccountPage == "incomeday"){
         this.$router.replace("/admin/account/incomeday");
+      }
+      else if(this.acccountPage == "incomemonth"){
+        this.$router.replace("/admin/account/incomemonth");
       }
       else if(this.acccountPage == "income"){
         this.$router.replace("/admin/account/transaction");

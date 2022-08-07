@@ -83,7 +83,7 @@
               </div>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <router-link
-                  to="/admin/account/incomeday"
+                  to="/admin/editinvoice"
                   class="dropdown-item"
                   href="#"
                   >ข้อมูลวิชาเรียนและใบเสร็จ</router-link
@@ -214,11 +214,11 @@
                   }}) ,
                 </span>
                 <span v-if="course.startDate">
-                  วันที่เริ่มเรียน-{{ course.startDate  }} ,
+                  วันที่เริ่มเรียน-{{ course.startDate }} ,
                 </span>
                 <br />
                 <span v-if="course.teacherSelected.teacherName">
-                   อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
+                  อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
                 </span>
               </td>
               <td>{{ course.qty }}</td>
@@ -293,7 +293,7 @@
               <td>{{ item.buyAmount }}</td>
               <td>{{ item.price }}</td>
               <td>{{ item.pDiscount }}</td>
-              <td>{{ pSubtotal }}</td>
+              <td>{{ (item.buyAmount * item.price) - item.pDiscount }}</td>
             </tr>
             <tr>
               <td
@@ -380,7 +380,9 @@
           <table width="100%">
             <tr class="float-right">
               <td colspan="3">
-                <h6>ลงชื่อ_______________________________________เจ้าหน้าที่/ผู้ดำเนินการ</h6>
+                <h6>
+                  ลงชื่อ_______________________________________เจ้าหน้าที่/ผู้ดำเนินการ
+                </h6>
                 <br />
                 <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
               </td>
@@ -498,11 +500,11 @@
                   }}) ,
                 </span>
                 <span v-if="course.startDate">
-                  วันที่เริ่มเรียน-{{ course.startDate  }} ,
+                  วันที่เริ่มเรียน-{{ course.startDate }} ,
                 </span>
                 <br />
                 <span v-if="course.teacherSelected.teacherName">
-                   อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
+                  อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
                 </span>
               </td>
               <td>{{ course.qty }}</td>
@@ -577,7 +579,7 @@
               <td>{{ item.buyAmount }}</td>
               <td>{{ item.price }}</td>
               <td>{{ item.pDiscount }}</td>
-              <td>{{ pSubtotal }}</td>
+              <td>{{ (item.buyAmount * item.price) - item.pDiscount }}</td>
             </tr>
             <tr>
               <td
@@ -664,7 +666,9 @@
           <table width="100%">
             <tr class="float-right">
               <td colspan="3">
-                <h6>ลงชื่อรับทราบ_______________________________________ผู้สมัคร/ผู้ปกครอง</h6>
+                <h6>
+                  ลงชื่อรับทราบ_______________________________________ผู้สมัคร/ผู้ปกครอง
+                </h6>
                 <br />
                 <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
               </td>
@@ -681,7 +685,7 @@
           >
         </div>
       </div>
-      
+
       <!-- OUTPUT -->
     </div>
 
@@ -1567,6 +1571,22 @@
                             {{ props.row.quantity - props.row.buyAmount }}
                           </h6>
                         </span>
+                        <span
+                          v-else-if="
+                            props.column.field == 'price' &&
+                            props.row.pMode == 'อื่นๆ'
+                          "
+                        >
+                          <div class="form-group">
+                            <input
+                              type="number"
+                              class="form-control"
+                              placeholder="กรอกเป็นตัวเลข"
+                              min="0"
+                              v-model.trim="props.row.price"
+                            />
+                          </div>
+                        </span>
                         <span v-else-if="props.column.field == 'buy'">
                           <div class="form-group">
                             <input
@@ -1606,6 +1626,9 @@
                               <i class="fas fa-cart-arrow-down"></i>
                             </div>
                           </div>
+                        </span>
+                        <span v-else>
+                          {{ props.formattedRow[props.column.field] }}
                         </span>
                       </template>
                     </vue-good-table>
@@ -2284,29 +2307,29 @@ export default {
   },
 
   computed: {
-    
     dateFormat() {
-      return  moment(this.startDate).format("DD/MM/YYYY");
+      return moment(this.startDate).format("DD/MM/YYYY");
     },
+
     subTotal() {
       var total = this.courses.reduce((accumulator, item) => {
         return accumulator + item.priceSelected * item.qty - item.discount;
       }, 0);
       return total;
     },
+
     pSubtotal() {
       var ptotal = this.carts.reduce((accumulator, item) => {
         return accumulator + item.price * item.buyAmount - item.pDiscount;
       }, 0);
       return ptotal;
     },
+
     grandTotal() {
       var total = this.subTotal + this.pSubtotal + parseInt(this.fee);
       return total;
     },
-    // clonedItems: function () {
-    //   return JSON.parse(JSON.stringify(this.profile));
-    // },
+
   },
   // watch: {
   //   clonedItems: function (newVal, oldVal) {
@@ -2511,8 +2534,12 @@ export default {
           other: this.other,
           note: this.note,
           transactionTime: this.transactionTime,
-          invoiceTime: moment(Date.now()).format("DD/MM/YYYY"),
-          invoiceTimestamp: moment(Date.now()).format("x"),
+          invoiceTime: moment().format("DD/MM/YYYY"),
+          invoiceTimestamp: moment().format("x"),
+          invDayOfWeek : moment().isoWeekday(),
+          invDayOfMonth : moment().date(),
+          invMonth: moment().month() +1,
+          invYear: moment().year(),
           canUpdate: false,
         };
 
@@ -2758,6 +2785,7 @@ export default {
           querySnapshot.forEach((doc) => {
             let product = {
               pName: doc.data().pName,
+              pMode: doc.data().pMode,
               pCode: doc.data().pCode,
               cost: doc.data().cost,
               price: doc.data().price,

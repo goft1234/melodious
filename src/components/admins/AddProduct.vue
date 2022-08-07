@@ -3,10 +3,16 @@
     <div class="container-fluid jumbotron">
       <div class="">
         <h4 class="text-center text-success mb-4">ลงข้อมูลสินค้า</h4>
-        <h5 class="d-inline-block text-success">รายการสินค้า</h5>
+        <button
+          class="btn btn-info d-inline-block px-2"
+          data-toggle="modal"
+          data-target="#productTemplate"
+        >
+          สร้างหมวดหมู่
+        </button>
         <button
           @click="addNew"
-          class="btn btn-success d-inline-block float-right px-5"
+          class="btn btn-success d-inline-block float-right px-3"
           data-toggle="modal"
           data-target="#product"
         >
@@ -99,11 +105,37 @@
                 />
               </div>
 
+              <div class="form-group">
+                <label for="courseType" class="text-success mt-2"
+                  >หมวดหมู่สินค้า</label
+                >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fab fa-markdown"></i>
+                    </span>
+                  </div>
+                  <select
+                    class="form-control"
+                    id="courseType"
+                    v-model="product.pMode"
+                  >
+                    <option disabled value="">เลือกหมวดหมู่สินค้า</option>
+                    <option
+                      v-for="(item, index) in productTemplate.pMode"
+                      :key="index"
+                    >
+                      {{ item }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
               <h6 class="float-left text-success mt-2">รหัสสินค้า</h6>
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
                   <span class="input-group-text">
-                    <i class="fas fa-list-ol"></i>
+                    <i class="fas fa-barcode"></i>
                   </span>
                 </div>
                 <input
@@ -144,7 +176,7 @@
                 />
               </div>
 
-              <h6 class="float-left text-success mt-2">จำนวน</h6>
+              <h6 class="float-left text-success mt-2">จำนวนใน stock</h6>
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
                   <span class="input-group-text">
@@ -191,6 +223,95 @@
       </div>
     </div>
     <!--End The Modal -->
+
+    <!--Start The template Modal -->
+    <div class="modal fade" id="productTemplate">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title w-100 text-center text-secondary">
+              สร้างหมวดหมู่
+            </h4>
+
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <form v-on:submit.prevent>
+              <!-- <h6 class="float-left text-success">ชื่อวิชาเรียน/หลักสูตร</h6> -->
+              <label for="product_link" class="text-primary">
+                หมวดหมู่สินค้า
+              </label>
+              <b-form-tags
+                v-model="productTemplate.pMode"
+                no-outer-focus
+                tag-variant="success"
+                class="mb-4"
+              >
+                <template
+                  v-slot="{
+                    tags,
+                    inputAttrs,
+                    inputHandlers,
+                    tagVariant,
+                    addTag,
+                    removeTag,
+                  }"
+                >
+                  <b-input-group class="mb-2">
+                    <b-form-input
+                      v-bind="inputAttrs"
+                      v-on="inputHandlers"
+                      placeholder="กดปุ่มAdd หรือ กดEnter เพื่อเพิ่ม"
+                      class="form-control"
+                    ></b-form-input>
+                    <b-input-group-append>
+                      <b-button @click="addTag()" variant="success"
+                        >Add</b-button
+                      >
+                    </b-input-group-append>
+                  </b-input-group>
+                  <div class="d-inline-block" style="font-size: 1.3rem">
+                    <b-form-tag
+                      v-for="tag in tags"
+                      @remove="removeTag(tag)"
+                      :key="tag"
+                      :title="tag"
+                      :variant="tagVariant"
+                      class="mr-1"
+                      >{{ tag }}</b-form-tag
+                    >
+                  </div>
+                </template>
+              </b-form-tags>
+            </form>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              @click="updateKeyword()"
+              type="button"
+              class="btn btn-success"
+            >
+              บันทึกข้อมูล
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--End The template Modal -->
   </div>
 </template>
 
@@ -205,6 +326,11 @@ export default {
         {
           label: "ชื่อสินค้า",
           field: "pName",
+          type: "text",
+        },
+        {
+          label: "หมวดหมู่",
+          field: "pMode",
           type: "text",
         },
         {
@@ -242,16 +368,46 @@ export default {
       modal: null,
 
       products: [],
-      product: {
-        // pName: null,
-        // pCode: null,
-        // cost: null,
-        // price: null,
-        // quantity: null,
-      },
+      product: {},
+      productTemplate: {},
     };
   },
   methods: {
+    getProductTemplate() {
+      const userRef = db.collection("productTemplate");
+      const unsub = userRef.onSnapshot(
+        (docSnapshot) => {
+          if (docSnapshot.empty) {
+            console.log("No matching documents.");
+            return;
+          }
+          docSnapshot.forEach((doc) => {
+            this.productTemplate = doc.data();
+            // console.log(doc.id, "=>", doc.data());
+          });
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+    },
+
+    updateKeyword() {
+      db.collection("productTemplate")
+        .doc("detail")
+        .set(this.productTemplate, { merge: true })
+        .then(() => {
+          Swal.fire({
+            title: "อัพเดทเรียบร้อย",
+            text: "อัพเดท template เรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+          $("#productTemplate").modal("hide");
+        });
+    },
+
     deleteProduct(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
@@ -288,6 +444,7 @@ export default {
     reset() {
       this.product = {
         pName: null,
+        pMode: null,
         pCode: null,
         cost: null,
         price: null,
@@ -348,6 +505,7 @@ export default {
         querySnapshot.forEach((doc) => {
           let product = {
             pName: doc.data().pName,
+            pMode: doc.data().pMode,
             pCode: doc.data().pCode,
             cost: doc.data().cost,
             price: doc.data().price,
@@ -362,6 +520,7 @@ export default {
 
   mounted() {
     this.getProducts();
+    this.getProductTemplate();
     window.scrollTo(0, 0);
   },
 };

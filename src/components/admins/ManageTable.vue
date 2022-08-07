@@ -1,6 +1,9 @@
 <template>
     <div>
-        <h1>mytime {{myTime}}</h1>
+        <h1>Day of Week {{dayOfWeek}}</h1>
+        <h1>Month of year {{myMonth}}</h1>
+        <h1>day of month {{dayOfMonth}}</h1>
+        <h1>year {{year}}</h1>
     </div>
 </template>
 
@@ -12,7 +15,10 @@ export default {
 
     data() {
         return {
-            myTime:new Date().getDay(),
+            dayOfWeek: moment().isoWeekday(),
+            myMonth : moment().month() +1,
+            dayOfMonth : moment().date(),
+            year: moment().year(),
         };
     },
 
