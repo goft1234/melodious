@@ -21,14 +21,17 @@
         >
           <!-- props.row คือ doc.data() -->
           <template slot="table-row" slot-scope="props">
-            <!-- <span v-if="props.column.field == 'role'">
-          <select @change="changeRole(props.row.uid, $event)" class="custom-select">
-            <option :selected="props.row.role.isprofile" value="isprofile">profile</option>
-            <option :selected="props.row.role.isAgent" value="isAgent">AGENT</option>
-            <option :selected="props.row.role.isAdmin" value="isAdmin">ADMIN</option>
-          </select>
-      </span> -->
-            <span v-if="props.column.field == 'fullProfile'">
+            <span v-if="props.column.field == 'status'">
+              <select
+                @change="changeStatus(props.row.uid, $event)"
+                class="custom-select"
+              >
+                <option :selected="props.row.role.isStudent" value="isStudent">Active</option>
+                <option :selected="props.row.role.isInactive" value="isInactive">Inactive</option>
+                <option :selected="props.row.role.isDrop" value="isDrop">Drop</option>
+              </select>
+            </span>
+            <span v-else-if="props.column.field == 'fullProfile'">
               <div
                 class="btn btn-secondary"
                 data-toggle="modal"
@@ -293,7 +296,7 @@
               <td>{{ item.buyAmount }}</td>
               <td>{{ item.price }}</td>
               <td>{{ item.pDiscount }}</td>
-              <td>{{ (item.buyAmount * item.price) - item.pDiscount }}</td>
+              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
             </tr>
             <tr>
               <td
@@ -579,7 +582,7 @@
               <td>{{ item.buyAmount }}</td>
               <td>{{ item.price }}</td>
               <td>{{ item.pDiscount }}</td>
-              <td>{{ (item.buyAmount * item.price) - item.pDiscount }}</td>
+              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
             </tr>
             <tr>
               <td
@@ -740,7 +743,6 @@
                     id="namePrefix"
                     :value="profile.namePrefix"
                     :disabled="disabled == 1"
-                    @change="namePrefixHis(profile, $event)"
                   />
                 </div>
               </div>
@@ -755,7 +757,6 @@
                     id="nickName"
                     :value="profile.nickName"
                     :disabled="disabled == 1"
-                    @change="stdProHis(profile, $event)"
                   />
                   <!-- <span> : {{ profile.nickName }}</span> -->
                 </div>
@@ -2124,7 +2125,7 @@ export default {
         },
         {
           label: "สถานะ",
-          field: "subject",
+          field: "status",
           type: "text",
         },
         {
@@ -2329,7 +2330,6 @@ export default {
       var total = this.subTotal + this.pSubtotal + parseInt(this.fee);
       return total;
     },
-
   },
   // watch: {
   //   clonedItems: function (newVal, oldVal) {
@@ -2339,6 +2339,33 @@ export default {
   // },
 
   methods: {
+    changeStatus(uid, event) {
+      console.log(event.target.value);
+      var addMessage = functions.httpsCallable("ApproveStudent");
+      var data = { uid: uid, role: { [event.target.value]: true } };
+      addMessage(data)
+        .then((result) => {
+          // console.log(result);
+
+          Swal.fire({
+            title: "ทำการปรับสถานะเรียบร้อย",
+            text: "Admin ได้ทำการปรับสถานะ นักเรียน แล้วเรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+        })
+        .catch((error) => {
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+        });
+    },
+
     namePrefixHis(profile, newValue) {
       if (this.profile.namePrefix == profile.namePrefix) {
         // alert("ข้อมูลใหม่" + newValue.target.value);
@@ -2536,9 +2563,9 @@ export default {
           transactionTime: this.transactionTime,
           invoiceTime: moment().format("DD/MM/YYYY"),
           invoiceTimestamp: moment().format("x"),
-          invDayOfWeek : moment().isoWeekday(),
-          invDayOfMonth : moment().date(),
-          invMonth: moment().month() +1,
+          invDayOfWeek: moment().isoWeekday(),
+          invDayOfMonth: moment().date(),
+          invMonth: moment().month() + 1,
           invYear: moment().year(),
           canUpdate: false,
         };
@@ -3019,6 +3046,7 @@ export default {
                   major: doc.data().graduated.major,
                 },
 
+                role: doc.data().role,
                 studyHis: doc.data().studyHis,
                 commited: "นักเรียน",
               };

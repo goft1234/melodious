@@ -115,7 +115,7 @@ export default {
         if (user) {
           await fb.auth().onAuthStateChanged;
           var { claims } = await fb.auth().currentUser.getIdTokenResult();
-          // console.log(claims);
+          console.log(claims);
           if (claims.isRegisted) {
             this.$router.replace("/profile");
             // alert('isRegisted')
@@ -125,6 +125,15 @@ export default {
           } else if (claims.isAdmin) {
             this.$router.replace("/admin/approve");
             // alert('admin')
+          }else if (claims.isTeacher) {
+            this.$router.replace("/teacher/schedule");
+            // alert('admin')
+          }else if (claims.isStudent) {
+            this.$router.replace("/student/schedule");
+            // alert('student')
+          }
+          else{
+            this.$router.replace("/");
           }
           this.$store.state.show = false;
         }
@@ -162,32 +171,32 @@ export default {
     },
 
     async chkStatus() {
-      try {
-        this.$store.state.show = true;
-        let user = await fb.auth().onAuthStateChanged;
-        console.log(user);
-        if (user) {
-          let { claims } = await fb.auth().currentUser.getIdTokenResult();
-          console.log(claims);
-          if (claims.isRegisted) {
-            this.$router.replace("/profile");
-            // alert('isRegisted')
-          } else if (claims.isProfile) {
-            this.$router.replace("/pending");
-            // alert('isProfile')
-          } else if (claims.isAdmin) {
-            this.$router.replace("/admin/approve");
-            // alert('admin')
-          }
-          else{
-            this.$router.replace("/");
-          }
-          this.$store.state.show = false;
-        }
-      } catch (error) {
-        this.$router.replace("/");
-        this.$store.state.show = false;
-      }
+      // try {
+      //   this.$store.state.show = true;
+      //   let user = await fb.auth().onAuthStateChanged;
+      //   console.log(user);
+      //   if (user) {
+      //     let { claims } = await fb.auth().currentUser.getIdTokenResult();
+      //     console.log(claims);
+      //     if (claims.isRegisted) {
+      //       this.$router.replace("/profile");
+      //       // alert('isRegisted')
+      //     } else if (claims.isProfile) {
+      //       this.$router.replace("/pending");
+      //       // alert('isProfile')
+      //     } else if (claims.isAdmin) {
+      //       this.$router.replace("/admin/approve");
+      //       // alert('admin')
+      //     }
+      //     else{
+      //       this.$router.replace("/");
+      //     }
+      //     this.$store.state.show = false;
+      //   }
+      // } catch (error) {
+      //   this.$router.replace("/");
+      //   this.$store.state.show = false;
+      // }
     },
   },
 

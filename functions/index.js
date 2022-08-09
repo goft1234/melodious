@@ -89,6 +89,19 @@ exports.ApproveTeacher = functions.region(regionOpts).runWith(runtimeOpts).https
 
 });
 
+exports.ApproveStudent = functions.region(regionOpts).runWith(runtimeOpts).https.onCall(async (data, context) => {
+
+  // if (!context.auth.token.isAdmin) return
+  try {
+    var _ = await admin.auth().setCustomUserClaims(data.uid, data.role)
+    return db.collection("studentData").doc(data.uid).update({ role: data.role })
+  }
+  catch (error) {
+    console.log(error)
+  }
+
+});
+
 exports.ApproveEmployee = functions.region(regionOpts).runWith(runtimeOpts).https.onCall(async (data, context) => {
 
   // if (!context.auth.token.isAdmin) return

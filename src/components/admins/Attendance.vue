@@ -28,7 +28,7 @@
             <option :selected="props.row.role.isAdmin" value="isAdmin">ADMIN</option>
           </select>
       </span> -->
-       <!-- @click="fullProfile(props.row)" -->
+            <!-- @click="fullProfile(props.row)" -->
             <span v-if="props.column.field == 'attendance'">
               <div
                 class="btn btn-warning"
@@ -39,9 +39,9 @@
                 <i class="fas fa-table"></i>
               </div>
             </span>
-            <span v-else-if="props.column.field == 'schedule'">
-              <div class="btn btn-success" @click="scheduleTable(props.row)">
-                ตารางสอน
+            <span v-else-if="props.column.field == 'check'">
+              <div class="btn btn-success" @click="stdAttend(props.row)">
+                <i class="fas fa-check-circle"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
@@ -92,71 +92,99 @@
                       <div class="row text-left">
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            Inv No. <span class="text-success">{{profile.invoiceNo}}</span>
+                            Inv No.
+                            <span class="text-success">{{
+                              profile.invoiceNo
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            ชั้นเรียน <span class="text-success">{{profile.classType}}</span>
+                            ชั้นเรียน
+                            <span class="text-success">{{
+                              profile.classType
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            วันที่ <span class="text-success">{{profile.nowDate}}</span>
+                            วันที่
+                            <span class="text-success">{{
+                              profile.nowDate
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
                             ชื่อ-นามสกุล
                             <span class="text-success"
-                              >{{profile.firstName}} {{profile.lastName}}</span
+                              >{{ profile.firstName }}
+                              {{ profile.lastName }}</span
                             >
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
                             รหัสนักเรียน
-                            <span class="text-success">{{profile.studentId}}</span>
+                            <span class="text-success">{{
+                              profile.studentId
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            ชื่อเล่น <span class="text-success">{{profile.nickName}}</span>
+                            ชื่อเล่น
+                            <span class="text-success">{{
+                              profile.nickName
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
                             ชื่อ-นามสกุล ครู
-                            <span class="text-success"
-                              >{{profile.teacherName}}</span
-                            >
+                            <span class="text-success">{{
+                              profile.teacherfullName
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            วันเรียน <span class="text-success">{{profile.day}}</span>
+                            วันเรียน
+                            <span class="text-success">{{ profile.day }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
                             เวลาเรียน
-                            <span class="text-success">{{profile.startTime}}-{{profile.finishTime}}</span>
+                            <span class="text-success"
+                              >{{ profile.startTime }}-{{
+                                profile.finishTime
+                              }}</span
+                            >
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
                             เบอร์โทร
-                            <span class="text-success">{{profile.mobilephone}}</span>
+                            <span class="text-success">{{
+                              profile.mobilephone
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            วิชา <span class="text-success">{{profile.courseName}}</span>
+                            วิชา
+                            <span class="text-success">{{
+                              profile.courseName
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
-                            จำนวน ชม. <span class="text-success">{{profile.amount}}</span>
+                            จำนวน ชม.
+                            <span class="text-success">{{
+                              profile.amount
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -170,13 +198,17 @@
                         <div class="col-lg-4 col-md-6">
                           <div>
                             วันที่เริ่มเรียน
-                            <span class="text-success">{{profile.startDate}}</span>
+                            <span class="text-success">{{
+                              profile.startDate
+                            }}</span>
                           </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                           <div>
                             วันที่เรียนจบ
-                            <span class="text-success">{{profile.endDate}}</span>
+                            <span class="text-success">{{
+                              profile.endDate
+                            }}</span>
                           </div>
                         </div>
                       </div>
@@ -371,11 +403,11 @@ export default {
       columns: [
         {
           label: "ครู",
-          field: "teacherName",
+          field: "teacherName.teacherName",
           type: "text",
         },
         {
-          label: "นักเรียน/กลุ่ม",
+          label: "นักเรียน",
           field: "firstName",
           type: "text",
         },
@@ -400,8 +432,18 @@ export default {
           type: "text",
         },
         {
+          label: "เวลาเรียน",
+          field: "startTime",
+          type: "text",
+        },
+        {
           label: "บันทึก",
           field: "attendance",
+          type: "text",
+        },
+        {
+          label: "เช็คชื่อเข้าเรียน",
+          field: "check",
           type: "text",
         },
         {
@@ -416,7 +458,6 @@ export default {
         // amount: "",
         // addProfileAt: "",
         // image: null,
-
         // namePrefix: "",
         // nickName: "",
         // firstName: "",
@@ -425,7 +466,6 @@ export default {
         // email: "",
         // telephone: "",
         // mobilephone: "",
-
         // address: {
         //   addressNumber: "",
         //   location: "",
@@ -436,14 +476,12 @@ export default {
         //   province: "",
         //   zipcode: "",
         // },
-
         // graduated: {
         //   degree: "",
         //   university: "",
         //   faculty: "",
         //   major: "",
         // },
-
         // subject: "",
         // workingProfile: "",
         // profileType: "teacher",
@@ -452,6 +490,43 @@ export default {
   },
 
   methods: {
+    stdAttend(attend) {
+      Swal.fire({
+        title: "ยืนยันการเข้าเรียน",
+        text: "ยืนยันการอนุมัติ การเข้าเรียน",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#30855c",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยัน",
+      }).then( async (result) => {
+        if (result.value) {
+          this.$store.state.show = true;
+          var batch = db.batch();
+
+          var newAmount = attend.amount - 1;
+          var attendRef = db.collection("courseActive").doc(attend.courseId);
+          batch.set(attendRef, { amount: newAmount }, { merge: true });
+
+          var attendDataRef = db.collection("attendData").doc();
+          batch.set(attendDataRef, attend, { merge: true });
+
+          await batch.commit().then(() => {
+            Swal.fire({
+              title: "Success",
+              text: "ทำการลงชื่อเข้าเรียนเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            this.$store.state.show = false;
+          });
+        }
+        else{
+          this.$store.state.show = false;
+        }
+      });
+    },
     deleteTeacher(uid) {
       Swal.fire({
         title: "ต้องการลบ?",
@@ -498,7 +573,7 @@ export default {
       // console.log(profile.courseId);
       this.profile = profile;
     },
-    getDate(){
+    getDate() {
       var date = moment(Date.now()).day();
       console.log(date);
     },
@@ -509,8 +584,8 @@ export default {
         var date = moment().isoWeekday();
         console.log(date);
         db.collection("courseActive")
-          .where("day.dayNum", "==", date )
-          .where("amount",">=",1 )
+          .where("day.dayNum", "==", date)
+          .where("amount", ">=", 1)
           .onSnapshot((querySnapshot) => {
             this.profiles = [];
             querySnapshot.forEach((doc) => {
@@ -518,7 +593,7 @@ export default {
               // {
               // console.log(doc.data());
               let profile = {
-                nowDate : moment(Date.now()).format("ll"),
+                nowDate: moment(Date.now()).format("ll"),
                 courseId: doc.id,
                 amount: doc.data().amount,
                 classType: doc.data().classType,
@@ -526,21 +601,26 @@ export default {
                 day: doc.data().day.item,
                 discount: doc.data().discount,
                 endDate: moment(parseInt(doc.data().endDate)).format("ll"),
-                finishTime: moment(doc.data().finishTime,'HH:mm:ss').format('HH:mm'),
+                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
                 firstName: doc.data().firstName,
                 invoiceNo: doc.data().invoiceNo,
 
                 lastName: doc.data().lastName,
                 level: doc.data().level,
-                mobilephone:doc.data().mobilephone,
+                mobilephone: doc.data().mobilephone,
                 nickName: doc.data().nickName,
                 price: doc.data().price,
                 qty: doc.data().qty,
                 startDate: moment(parseInt(doc.data().startDate)).format("ll"),
-                startTime: moment(doc.data().startTime,'HH:mm:ss').format('HH:mm'),
+                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
                 studentId: doc.data().studentId,
                 teacherId: doc.data().teacherId,
                 teacherName: doc.data().teacherName,
+                teacherfullName : doc.data().teacherName.teacherName,
                 uid: doc.data().uid,
               };
               this.profiles.push(profile);

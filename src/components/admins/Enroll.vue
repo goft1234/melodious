@@ -716,7 +716,7 @@ export default {
         .update({ stdId: firebase.firestore.FieldValue.increment(1) });
 
       var addFunctions = functions.httpsCallable("StudentData");
-      addFunctions(this.profile)
+      await addFunctions(this.profile)
         .then(() => {
           Swal.fire({
             title: "ลงทะเบียนผู้ใช้งานเรียบร้อย",

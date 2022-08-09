@@ -118,35 +118,70 @@ const routes = [
         name: 'account',
         component: () => import('../components/admins/Account.vue'),
         children: [{
-          path: 'overview',
-          name: 'overview',
-          component: () => import('../components/admins/AccountOverview.vue')
-        }, 
-        {
-          path: 'transaction',
-          name: 'transaction',
-          component: () => import('../components/admins/Transaction.vue')
-        },
-        {
-          path: 'incomeday',
-          name: 'incomeday',
-          component: () => import('../components/admins/IncomeDay.vue')
-        },
-        {
-          path: 'incomemonth',
-          name: 'incomemonth',
-          component: () => import('../components/admins/IncomeMonth.vue')
-        },
-        {
-          path: 'expense',
-          name: 'expense',
-          component: () => import('../components/admins/ExpenseTable.vue')
-        },
-      ]
+            path: 'overview',
+            name: 'overview',
+            component: () => import('../components/admins/AccountOverview.vue')
+          },
+          {
+            path: 'transaction',
+            name: 'transaction',
+            component: () => import('../components/admins/Transaction.vue')
+          },
+          {
+            path: 'incomeday',
+            name: 'incomeday',
+            component: () => import('../components/admins/IncomeDay.vue')
+          },
+          {
+            path: 'incomemonth',
+            name: 'incomemonth',
+            component: () => import('../components/admins/IncomeMonth.vue')
+          },
+          {
+            path: 'expense',
+            name: 'expense',
+            component: () => import('../components/admins/ExpenseTable.vue')
+          },
+        ]
       },
     ],
   },
-
+  {
+    path: '/teacher',
+    name: 'teacher',
+    component: () => import('../views/teachers/Teacher'),
+    meta: {
+      requiresAuth: true
+    },
+    children: [{
+      path: 'schedule',
+      name: 'schedule',
+      component: () => import('../components/teachers/Schedule.vue')
+    },
+    {
+      path: 'profile',
+      name: 'profile',
+      component: () => import('../components/teachers/Profile.vue')
+    },]
+  },
+  {
+    path: '/student',
+    name: 'student',
+    component: () => import('../views/students/Student'),
+    meta: {
+      requiresAuth: true
+    },
+    children: [{
+      path: 'schedule',
+      name: 'schedule',
+      component: () => import('../components/students/Schedule.vue')
+    },
+    {
+      path: 'profile',
+      name: 'profile',
+      component: () => import('../components/students/Profile.vue')
+    },]
+  }
 
 ]
 
