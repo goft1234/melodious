@@ -1180,7 +1180,7 @@
             </button>
 
             <button
-              @click="updateProfile(profile.uid)"
+              @click="updateProfile(profile.userId)"
               type="button"
               class="btn btn-warning text-dark"
               v-if="profileModal == 'edit'"
@@ -2029,7 +2029,7 @@ export default {
       profiles: [],
 
       profile: {
-        uid: "",
+        userId: "",
         addProfileAt: "",
         image: null,
 
@@ -2266,10 +2266,10 @@ export default {
         });
     },
 
-    updateProfile(uid) {
+    updateProfile(userId) {
       // console.log(this.profile);
       db.collection("studentData")
-        .doc(uid)
+        .doc(userId)
         .update(this.profile)
         .then(() => {
           Swal.fire({
@@ -2305,13 +2305,14 @@ export default {
     },
 
     activeCourse() {
-      console.log(this.stdProfile.mobilephone);
+      // console.log(this.stdProfile);
       try {
         var batch = db.batch();
         this.courseReserv.forEach((item) => {
           let data = {
             classId:item.classId,
-            uid: this.stdProfile.uid,
+            userId: this.stdProfile.userId,
+
             studentId: this.stdProfile.studentId,
             firstName: this.stdProfile.firstName,
             lastName: this.stdProfile.lastName,
@@ -2322,18 +2323,18 @@ export default {
             classType: item.classType,
             invoiceNo: this.invoiceNo,
 
-            day: item.dayAttend,
-            discount: item.classDiscount,
+            dayAttend: item.dayAttend,
+            classDiscount: item.classDiscount,
             finishTime: item.finishTime,
             level: item.level,
             rate: item.rate,
-            qty: item.classQty,
+            classQty: item.classQty,
             startDate: moment(item.startDate).format("x"),
             endDate: moment(item.endDate).format("x"),
             startTime: item.startTime,
             wages: item.wages,
 
-            teacherName: item.teacherAtclass,
+            teacherAtclass: item.teacherAtclass,
           };
 
           batch.set(db.collection("courseActive").doc(), data);
@@ -2342,7 +2343,7 @@ export default {
         this.courseReserv.forEach((item)=>{
           // console.log(item.studentAtclass);
           let stdProfileInClass = {
-            uid: this.stdProfile.uid,
+            userId: this.stdProfile.userId,
             classId : item.classId,
             studentId: this.stdProfile.studentId,
             firstName: this.stdProfile.firstName,
@@ -2379,7 +2380,8 @@ export default {
         this.courseReserv.forEach((item) => {
           let data = {
             classId:item.classId,
-            uid: this.stdProfile.uid,
+            userId: this.stdProfile.userId,
+
             studentId: this.stdProfile.studentId,
             firstName: this.stdProfile.firstName,
             lastName: this.stdProfile.lastName,
@@ -2388,13 +2390,13 @@ export default {
             courseName: item.courseName,
             amount: item.amount,
             classType: item.classType,
-            day: item.dayAttend,
-            discount: item.classDiscount,
+            dayAttend: item.dayAttend,
+            classDiscount: item.classDiscount,
             endDate: item.endDate,
             finishTime: item.finishTime,
             level: item.level,
             rate: item.rate,
-            qty: item.classQty,
+            classQty: item.classQty,
             startDate: item.startDate,
             startTime: item.startTime,
             wages: item.wages,
@@ -2416,7 +2418,7 @@ export default {
         });
 
         let invoiceData = {
-          uid: this.stdProfile.uid,
+          userId: this.stdProfile.userId,
           studentId: this.stdProfile.studentId,
           firstName: this.stdProfile.firstName,
           lastName: this.stdProfile.lastName,
@@ -2882,7 +2884,7 @@ export default {
             querySnapshot.forEach((doc) => {
               // console.log(doc.data());
               let profile = {
-                uid: doc.id,
+                userId: doc.id,
                 studentId: doc.data().studentId,
                 addProfileAt: moment(doc.data().addProfileAt).format(
                   "DD/MM/YYYY HH:mm:ss"

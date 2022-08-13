@@ -584,7 +584,7 @@
               class="btn btn-success"
               v-if="modal == 'new'"
             >
-              บันทึกวิชาเรียน
+              สร้างห้องเรียน
             </button>
             <button
               @click="updatecourse(course.couseId)"

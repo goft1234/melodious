@@ -635,8 +635,8 @@ export default {
           });
       } else {
         Swal.fire({
-          title: "Password Not Collect",
-          text: "ไม่สามารถเข้าทำการแก้ไขข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+          title: "Incorrect password",
+          text: "รหัสเข้าแก้ไขไม่ถูกต้อง",
           icon: "error",
           confirmButtonColor: "#FF0000",
           confirmButtonText: "ตกลง",
@@ -739,11 +739,18 @@ export default {
           });
         });
     },
+    getEditPassword(){
+      db.collection('passEdit').doc('detail').onSnapshot((doc)=>{
+        this.editPass = doc.data().password;
+      })
+    }
+    
   },
 
   mounted() {
     window.scrollTo(0, 0);
     this.getData();
+    this.getEditPassword();
   },
 };
 </script>
