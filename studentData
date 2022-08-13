@@ -26,18 +26,9 @@
                 @change="changeStatus(props.row.uid, $event)"
                 class="custom-select"
               >
-                <option :selected="props.row.role.isStudent" value="isStudent">
-                  Active
-                </option>
-                <option
-                  :selected="props.row.role.isInactive"
-                  value="isInactive"
-                >
-                  Inactive
-                </option>
-                <option :selected="props.row.role.isDrop" value="isDrop">
-                  Drop
-                </option>
+                <option :selected="props.row.role.isStudent" value="isStudent">Active</option>
+                <option :selected="props.row.role.isInactive" value="isInactive">Inactive</option>
+                <option :selected="props.row.role.isDrop" value="isDrop">Drop</option>
               </select>
             </span>
             <span v-else-if="props.column.field == 'fullProfile'">
@@ -175,14 +166,14 @@
             <tr class="text-center">
               <td class="text-left">
                 <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                  ชื่อ - นามสกุล {{ std.firstName }} {{ std.lastName }} <br />
                 </h6>
               </td>
               <td class="text-left">
-                <h6>ชื่อเล่น {{ stdProfile.nickName }}</h6>
+                <h6>ชื่อเล่น {{ std.nickName }}</h6>
               </td>
               <td class="text-center">
-                <h6>รหัสนักเรียน : {{ stdProfile.studentId }}</h6>
+                <h6>รหัสนักเรียน : {{ std.studentId }}</h6>
               </td>
               <td class="text-right">
                 <h6>วันที่ {{ day }}</h6>
@@ -211,32 +202,32 @@
               <th style="width: 8%">รวมค่าเรียน<br />Total</th>
             </tr>
             <tr
-              v-for="(course, index) in courseReserv"
+              v-for="(course, index) in courses"
               :key="index"
               class="text-center"
             >
               <td>{{ index + 1 }}</td>
               <td>
-                <span v-if="course.courseName"
-                  >วิชา-{{ course.courseName }} ,</span
+                <span v-if="course.courseSelected"
+                  >วิชา-{{ course.courseSelected }} ,</span
                 >
-                <span v-if="course.classType"
-                  >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
+                <span v-if="course.classTypeSelected"
+                  >ชั้นเรียน-{{ course.classTypeSelected }}({{
+                    course.levelSelected
+                  }}) ,
                 </span>
                 <span v-if="course.startDate">
                   วันที่เริ่มเรียน-{{ course.startDate }} ,
                 </span>
                 <br />
-                <span v-if="course.teacherAtclass.teacherName">
-                  อาจารย์ผู้สอน-{{ course.teacherAtclass.teacherName }}
+                <span v-if="course.teacherSelected.teacherName">
+                  อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
                 </span>
               </td>
-              <td>{{ course.classQty }}</td>
-              <td>{{ course.rate }}</td>
-              <td>{{ course.classDiscount }}</td>
-              <td>
-                {{ course.classQty * course.rate - course.classDiscount }}
-              </td>
+              <td>{{ course.qty }}</td>
+              <td>{{ course.priceSelected }}</td>
+              <td>{{ course.discount }}</td>
+              <td>{{ course.qty * course.priceSelected - course.discount }}</td>
             </tr>
             <tr>
               <td
@@ -461,14 +452,14 @@
             <tr class="text-center">
               <td class="text-left">
                 <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                  ชื่อ - นามสกุล {{ std.firstName }} {{ std.lastName }} <br />
                 </h6>
               </td>
               <td class="text-left">
-                <h6>ชื่อเล่น {{ stdProfile.nickName }}</h6>
+                <h6>ชื่อเล่น {{ std.nickName }}</h6>
               </td>
               <td class="text-center">
-                <h6>รหัสนักเรียน : {{ stdProfile.studentId }}</h6>
+                <h6>รหัสนักเรียน : {{ std.studentId }}</h6>
               </td>
               <td class="text-right">
                 <h6>วันที่ {{ day }}</h6>
@@ -497,32 +488,32 @@
               <th style="width: 8%">รวมค่าเรียน<br />Total</th>
             </tr>
             <tr
-              v-for="(course, index) in courseReserv"
+              v-for="(course, index) in courses"
               :key="index"
               class="text-center"
             >
               <td>{{ index + 1 }}</td>
               <td>
-                <span v-if="course.courseName"
-                  >วิชา-{{ course.courseName }} ,</span
+                <span v-if="course.courseSelected"
+                  >วิชา-{{ course.courseSelected }} ,</span
                 >
-                <span v-if="course.classType"
-                  >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
+                <span v-if="course.classTypeSelected"
+                  >ชั้นเรียน-{{ course.classTypeSelected }}({{
+                    course.levelSelected
+                  }}) ,
                 </span>
                 <span v-if="course.startDate">
                   วันที่เริ่มเรียน-{{ course.startDate }} ,
                 </span>
                 <br />
-                <span v-if="course.teacherAtclass.teacherName">
-                  อาจารย์ผู้สอน-{{ course.teacherAtclass.teacherName }}
+                <span v-if="course.teacherSelected.teacherName">
+                  อาจารย์ผู้สอน-{{ course.teacherSelected.teacherName }}
                 </span>
               </td>
-              <td>{{ course.classQty }}</td>
-              <td>{{ course.rate }}</td>
-              <td>{{ course.classDiscount }}</td>
-              <td>
-                {{ course.classQty * course.rate - course.classDiscount }}
-              </td>
+              <td>{{ course.qty }}</td>
+              <td>{{ course.priceSelected }}</td>
+              <td>{{ course.discount }}</td>
+              <td>{{ course.qty * course.priceSelected - course.discount }}</td>
             </tr>
             <tr>
               <td
@@ -1223,80 +1214,328 @@
                   role="tabpanel"
                 >
                   <b-card-body>
-                    <div class="row mb-2">
-                      <div class="col-md-12">
-                        <a
-                          href="/admin/attendance"
-                          target="_blank"
-                          class="btn btn-info float-right"
-                          >สร้างห้องเรียน</a
-                        >
-                      </div>
-                    </div>
-                    <vue-good-table
-                      :columns="classRoomColumns"
-                      :rows="classrooms"
-                      :line-numbers="true"
-                      styleClass="vgt-table striped bordered"
-                      :search-options="{
-                        enabled: true,
-                        placeholder: 'ค้นหา',
-                      }"
-                      :pagination-options="{
-                        enabled: true,
-                      }"
-                      compactMode
+                    <div
+                      class="mt-3 p-3"
+                      style="background: #e9ecef"
+                      v-for="(course, index) in courses"
+                      :key="index"
                     >
-                      <template slot="table-row" slot-scope="props">
-                        <span v-if="props.column.field == 'classQty'">
-                          <input
-                            type="number"
-                            class="form-control"
-                            placeholder="กรอกเป็นตัวเลข"
-                            min="0"
-                            v-model.trim="props.row.classQty"
-                          />
-                        </span>
-                        <span v-else-if="props.column.field == 'classTime'">
-                          <h6>
-                            {{ props.row.startTime }} -
-                            {{ props.row.finishTime }}
-                          </h6>
-                        </span>
-                        <span v-else-if="props.column.field == 'classDiscount'">
-                          <div class="form-group">
-                            <input
-                              type="number"
-                              class="form-control"
-                              placeholder="กรอกเป็นตัวเลข"
-                              min="0"
-                              v-model.trim="props.row.classDiscount"
-                            />
-                          </div>
-                        </span>
-                        <span v-else-if="props.column.field == 'classTotal'">
-                          <h6>
-                            {{
-                              props.row.classQty * props.row.rate -
-                              props.row.classDiscount
-                            }}
-                          </h6>
-                        </span>
-                        <span v-else-if="props.column.field == 'cart'">
-                          <div class="form-group">
-                            <div
-                              class="btn btn-info"
-                              @click="buyCourse(props.row)"
+                      <div class="row">
+                        <div class="col-lg-12">
+                          <div class="mb-1 float-right">
+                            <button
+                              type="button"
+                              @click="deleteItem(index)"
+                              class="btn btn-danger btn-circle btn-sm"
                             >
-                              <i class="fas fa-cart-arrow-down"></i>
+                              <i class="fas fa-times text-light"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <br />
+                      <!-- <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >ราคา/คอร์ส</label
+                            >
+                            <vue-single-select
+                              v-model="course.priceSelected"
+                              :options="course.rate"
+                              placeholder="เลือก ราคา/คอร์ส"
+                            ></vue-single-select>
+                          </div>
+                        </div> -->
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >วิชาเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.courseSelected"
+                            >
+                              <option disabled value="">เลือก วิชาเรียน</option>
+                              <option
+                                v-for="(item, index) in course.courseName"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >รูปแบบการเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.classTypeSelected"
+                            >
+                              <option disabled value="">
+                                เลือก รูปแบบการเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.courseType"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >ระดับการเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.levelSelected"
+                            >
+                              <option disabled value="">
+                                เลือก ระดับการเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.level"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >อัตราค่าเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.priceSelected"
+                            >
+                              <option disabled value="">
+                                เลือก อัตราค่าเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.rate"
+                                :value="item"
+                                :key="index"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="namePrefix" class="text-success"
+                              >ส่วนลด โปรโมชั่น</label
+                            >
+                            <div class="form-group">
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="กรอกเป็นตัวเลข"
+                                min="0"
+                                v-model.trim="course.discount"
+                              />
                             </div>
                           </div>
-                        </span>
-                        <span v-else>
-                          {{ props.formattedRow[props.column.field] }}
-                        </span>
-                      </template>
-                    </vue-good-table>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="text-success"
+                              >จำนวนครั้ง / คอร์ส</label
+                            >
+                            <div class="form-group">
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="กรอกเป็นตัวเลข"
+                                v-model.trim="course.amount"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="nickName" class="text-success"
+                              >อาจารย์รายวิชา</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.teacherSelected"
+                            >
+                              <option disabled value="">
+                                เลือก อาจารย์รายวิชา
+                              </option>
+                              <option
+                                v-for="(item, index) in course.teacher"
+                                :value="{
+                                  teacherId: item.uid,
+                                  teacherName: item.fullName,
+                                }"
+                                :key="index"
+                              >
+                                {{ item.fullName }}
+                              </option>
+                            </select>
+                            <!-- <span
+                              >courseSelected:
+                              {{ course.teacherSelected }}</span
+                            > -->
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="namePrefix" class="text-success"
+                              >ค่าสอนของครู</label
+                            >
+                            <div class="form-group">
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="กรอกเป็นตัวเลข"
+                                min="0"
+                                v-model.trim="course.wages"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="text-success"
+                              >เริ่มเรียน เวลา</label
+                            >
+                            <div>
+                              <b-form-timepicker
+                                v-model="course.startTime"
+                                locale="th"
+                                placeholder="เลือก-เวลาเริ่มเรียน"
+                              ></b-form-timepicker>
+                              <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="text-success"
+                              >เลิกเรียน เวลา</label
+                            >
+                            <div>
+                              <b-form-timepicker
+                                v-model="course.finishTime"
+                                locale="th"
+                                placeholder="เลือก-เวลาเลิกเรียน"
+                              ></b-form-timepicker>
+                              <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="text-success"
+                              >วันที่เริ่มเรียน</label
+                            >
+                            <div>
+                              <b-form-datepicker
+                                v-model="course.startDate"
+                                locale="th"
+                                placeholder="เลือก-วันที่เริ่มเรียน"
+                              ></b-form-datepicker>
+                              <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="text-success"
+                              >วันที่เรียนจบ โดยประมาณ</label
+                            >
+                            <div>
+                              <b-form-datepicker
+                                v-model="course.endDate"
+                                locale="th"
+                                placeholder="เลือก-วันที่เรียนจบ"
+                              ></b-form-datepicker>
+                              <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="namePrefix" class="text-success"
+                              >วันที่เลือกเรียน</label
+                            >
+                            <select
+                              class="form-control"
+                              id="namePrefix"
+                              v-model="course.daySelected"
+                            >
+                              <option disabled value="">
+                                วันที่เลือกเรียน
+                              </option>
+                              <option
+                                v-for="(item, index) in course.day"
+                                :key="index"
+                                :value="{ dayNum: index + 1, item }"
+                              >
+                                {{ item }}
+                              </option>
+                            </select>
+                            <!-- <span>courseSelected: {{ course.daySelected }}</span> -->
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="form-group">
+                            <label for="" class="text-success"
+                              >จำนวนคอร์ส</label
+                            >
+                            <div class="form-group">
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="กรอกเป็นตัวเลข"
+                                min="1"
+                                v-model.trim="course.qty"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-center mt-3 mr-3">
+                        <button v-on:click="addNewItem" class="btn btn-success">
+                          เพิ่มวิชาเรียน
+                        </button>
+                      </div>
+                    </div>
                   </b-card-body>
                 </b-collapse>
               </b-card>
@@ -1456,24 +1695,24 @@
                           </thead>
                           <tbody>
                             <tr
-                              v-for="(course, index) in courseReserv"
+                              v-for="(course, index) in courses"
                               :key="index"
                               class="text-center"
                             >
-                              <td>{{ course.courseName }}</td>
-                              <td>{{ course.classQty }}</td>
-                              <td>{{ course.rate }}</td>
-                              <td>{{ course.classDiscount }}</td>
+                              <td>{{ course.courseSelected }}</td>
+                              <td>{{ course.qty }}</td>
+                              <td>{{ course.priceSelected }}</td>
+                              <td>{{ course.discount }}</td>
                               <td>
                                 {{
-                                  course.classQty * course.rate -
-                                  course.classDiscount
+                                  course.qty * course.priceSelected -
+                                  course.discount
                                 }}
                               </td>
                               <td>
                                 <button
                                   type="button"
-                                  @click="deleteCourse(index)"
+                                  @click="deleteItem(index)"
                                   class="btn btn-danger btn-sm"
                                 >
                                   <i class="fas fa-times text-light"></i>
@@ -1853,115 +2092,11 @@ export default {
   components: {},
   data() {
     return {
-      classRoomColumns: [
-        {
-          label: "ครู",
-          field: "teacherAtclass.teacherName",
-          type: "text",
-        },
-        // {
-        //   label: "นักเรียน",
-        //   field: "studentAtClass",
-        //   type: "text",
-        // },
-        // {
-        //   label: "รหัสนักเรียน",
-        //   field: "studentId",
-        //   type: "text",
-        // },
-        {
-          label: "วิชา",
-          field: "courseName",
-          type: "text",
-        },
-        {
-          label: "ประเภท",
-          field: "classType",
-          type: "text",
-        },
-        {
-          label: "ระดับ",
-          field: "level",
-          type: "text",
-        },
-        {
-          label: "เวลาเรียน",
-          field: "classTime",
-          type: "text",
-        },
-        {
-          label: "ราคา/คอร์ส",
-          field: "rate",
-          type: "text",
-        },
-        {
-          label: "จำนวนคอร์ส",
-          field: "classQty",
-          type: "number",
-        },
-        {
-          label: "ส่วนลด",
-          field: "classDiscount",
-          type: "number",
-        },
-        {
-          label: "รวม",
-          field: "classTotal",
-          type: "number",
-        },
-        {
-          label: "cart",
-          field: "cart",
-          type: "number",
-        },
-      ],
-      pColumns: [
-        {
-          label: "ชื่อสินค้า",
-          field: "pName",
-          type: "text",
-        },
-        {
-          label: "รหัสสินค้า",
-          field: "pCode",
-          type: "text",
-        },
-        {
-          label: "ราคาทุน",
-          field: "cost",
-          type: "text",
-        },
-        {
-          label: "ราคาขาย",
-          field: "price",
-          type: "text",
-        },
-        {
-          label: "คงเหลือ",
-          field: "quantity",
-          type: "text",
-        },
-        {
-          label: "จำนวนสั่งซื้อ",
-          field: "buy",
-          type: "number",
-        },
-        {
-          label: "ส่วนลด",
-          field: "pDiscount",
-          type: "number",
-        },
-        {
-          label: "รวม",
-          field: "total",
-          type: "number",
-        },
-        {
-          label: "cart",
-          field: "cart",
-          type: "number",
-        },
-      ],
+      // options: [
+      //   { text: "หนังสือเรียน", value: "หนังสือเรียน" },
+      //   { text: "อุปกรณ์การเรียน", value: "อุปกรณ์การเรียน" },
+      //   { text: "อื่นๆ", value: "อื่นๆ" },
+      // ],
       columns: [
         {
           label: "รหัส",
@@ -2064,6 +2199,54 @@ export default {
         profileType: "student",
       },
 
+      pColumns: [
+        {
+          label: "ชื่อสินค้า",
+          field: "pName",
+          type: "text",
+        },
+        {
+          label: "รหัสสินค้า",
+          field: "pCode",
+          type: "text",
+        },
+        {
+          label: "ราคาทุน",
+          field: "cost",
+          type: "text",
+        },
+        {
+          label: "ราคาขาย",
+          field: "price",
+          type: "text",
+        },
+        {
+          label: "คงเหลือ",
+          field: "quantity",
+          type: "text",
+        },
+        {
+          label: "จำนวนสั่งซื้อ",
+          field: "buy",
+          type: "number",
+        },
+        {
+          label: "ส่วนลด",
+          field: "pDiscount",
+          type: "number",
+        },
+        {
+          label: "รวม",
+          field: "total",
+          type: "number",
+        },
+        {
+          label: "cart",
+          field: "cart",
+          type: "number",
+        },
+      ],
+
       courses: [],
       products: [],
 
@@ -2098,12 +2281,12 @@ export default {
       cTeacher: [],
       cDay: ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"],
 
-      stdProfile: {
-        // stdProfileId:null,
+      std: {
+        // stdId:null,
         // nickName:null,
         // firstName:null,
         // lastName:null,
-        // date: Date.now()
+        // date: Daye.now()
       },
       day: moment().add(543, "year").format("LL"),
       invoiceNo: null,
@@ -2121,10 +2304,6 @@ export default {
 
       disabled: 0,
       fee: 300,
-
-      courseReserv: [],
-      classrooms: [],
-      studentTest: [],
     };
   },
 
@@ -2134,8 +2313,8 @@ export default {
     },
 
     subTotal() {
-      var total = this.courseReserv.reduce((accumulator, item) => {
-        return accumulator + item.rate * item.classQty - item.classDiscount;
+      var total = this.courses.reduce((accumulator, item) => {
+        return accumulator + item.priceSelected * item.qty - item.discount;
       }, 0);
       return total;
     },
@@ -2160,87 +2339,8 @@ export default {
   // },
 
   methods: {
-    async buyCourse(data) {
-      // data มีค่า = classroom ใน getClassroom()
-      this.courseReserv.push(data);
-      Swal.fire({
-        title: "SUCCESS",
-        text: "เพิ่มคอร์สเรียนแล้วเรียบร้อย",
-        icon: "success",
-        confirmButtonColor: "#30855c",
-        confirmButtonText: "ตกลง",
-      });
-      // console.log(data.studentAtclass);
-      // this.studentTest = data.studentAtclass;
-      // let stdProfileInClass = {
-      //     uid: this.stdProfile.uid,
-      //     studentId: this.stdProfile.studentId,
-      //     firstName: this.stdProfile.firstName,
-      //     lastName: this.stdProfile.lastName,
-      //     nickName: this.stdProfile.nickName,
-      //     dateAtClass: Date.now(),
-      //   };
-      // this.studentTest.push(stdProfileInClass)
-      // console.log(this.studentTest);
-      // try {
-      //   this.courseReserv.push(data);
-      //   let ref = db.collection("classroom").doc(data.classId);
-
-      //   let stdProfileInClass = {
-      //     uid: this.stdProfile.uid,
-      //     studentId: this.stdProfile.studentId,
-      //     firstName: this.stdProfile.firstName,
-      //     lastName: this.stdProfile.lastName,
-      //     nickName: this.stdProfile.nickName,
-      //     dateAtClass: Date.now(),
-      //   };
-
-      //   await ref.update({
-      //     student: firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
-      //   });
-      //   Swal.fire({
-      //     title: "SUCCESS",
-      //     text: "เพิ่มคอร์สเรียนแล้วเรียบร้อย",
-      //     icon: "success",
-      //     confirmButtonColor: "#30855c",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // } catch (err) {
-      //   console.log(err);
-      // }
-    },
-
-    async deleteCourse(index) {
-      // console.log(course.studentAtclass);
-      this.courseReserv.splice(index, 1);
-      Swal.fire({
-        title: "SUCCESS",
-        text: "ยกเลิกคอร์สเรียนแล้วเรียบร้อย",
-        icon: "success",
-        confirmButtonColor: "#30855c",
-        confirmButtonText: "ตกลง",
-      });
-      // try {
-
-      //   let ref = db.collection("classroom").doc(course.classId);
-
-      //   await ref.update({
-      //     student: course.studentAtclass
-      //   });
-      //   Swal.fire({
-      //     title: "SUCCESS",
-      //     text: "ยกเลิกคอร์สเรียนแล้วเรียบร้อย",
-      //     icon: "success",
-      //     confirmButtonColor: "#30855c",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // } catch (err) {
-      //   console.log(err);
-      // }
-    },
-
     changeStatus(uid, event) {
-      // console.log(event.target.value);
+      console.log(event.target.value);
       var addMessage = functions.httpsCallable("ApproveStudent");
       var data = { uid: uid, role: { [event.target.value]: true } };
       addMessage(data)
@@ -2266,6 +2366,43 @@ export default {
         });
     },
 
+    namePrefixHis(profile, newValue) {
+      if (this.profile.namePrefix == profile.namePrefix) {
+        // alert("ข้อมูลใหม่" + newValue.target.value);
+
+        var sfRef = db.collection("stdHis");
+        sfRef.add({
+          oldNamePrefix: profile.namePrefix,
+          newNamePrefix: newValue.target.value,
+          stdId: profile.studentId,
+          timeToChange: Date.now(),
+        });
+        this.profile.namePrefix = newValue.target.value;
+      }
+
+      // console.log("ข้อมูลเก่า " + profile);
+      // console.log("ข้อมูลใหม่ " + newValue.target.value);
+      // this.profile.namePrefix = newValue.target.value;
+    },
+
+    stdProHis(profile, newValue) {
+      if (this.profile.nickName == profile.nickName) {
+        // alert("ข้อมูลใหม่" + newValue.target.value);
+
+        var sfRef = db.collection("stdHis");
+        sfRef.add({
+          oldNamePrefix: profile.nickName,
+          newNamePrefix: newValue.target.value,
+          stdId: profile.studentId,
+          timeToChange: Date.now(),
+        });
+        this.profile.nickName = newValue.target.value;
+      }
+
+      // console.log("ข้อมูลเก่า " + profile);
+      // console.log("ข้อมูลใหม่ " + newValue.target.value);
+      // this.profile.namePrefix = newValue.target.value;
+    },
     updateProfile(uid) {
       // console.log(this.profile);
       db.collection("studentData")
@@ -2305,58 +2442,43 @@ export default {
     },
 
     activeCourse() {
-      console.log(this.stdProfile.mobilephone);
+      // console.log(this.std.mobilephone);
       try {
         var batch = db.batch();
-        this.courseReserv.forEach((item) => {
+        this.courses.forEach((item) => {
           let data = {
-            classId:item.classId,
-            uid: this.stdProfile.uid,
-            studentId: this.stdProfile.studentId,
-            firstName: this.stdProfile.firstName,
-            lastName: this.stdProfile.lastName,
-            nickName: this.stdProfile.nickName,
-            mobilephone: this.stdProfile.mobilephone,
-            courseName: item.courseName,
+            uid: this.std.uid,
+            studentId: this.std.studentId,
+            firstName: this.std.firstName,
+            lastName: this.std.lastName,
+            nickName: this.std.nickName,
+            mobilephone: this.std.mobilephone,
+            courseName: item.courseSelected,
             amount: item.amount,
-            classType: item.classType,
+            classType: item.classTypeSelected,
             invoiceNo: this.invoiceNo,
 
-            day: item.dayAttend,
-            discount: item.classDiscount,
+            day: item.daySelected,
+            discount: item.discount,
             finishTime: item.finishTime,
-            level: item.level,
-            rate: item.rate,
-            qty: item.classQty,
+            level: item.levelSelected,
+            price: item.priceSelected,
+            qty: item.qty,
             startDate: moment(item.startDate).format("x"),
             endDate: moment(item.endDate).format("x"),
             startTime: item.startTime,
             wages: item.wages,
 
-            teacherName: item.teacherAtclass,
+            teacherName: item.teacherSelected,
+            // teacherId: item.teacherSelected.teacherId,
           };
 
           batch.set(db.collection("courseActive").doc(), data);
         });
 
-        this.courseReserv.forEach((item)=>{
-          // console.log(item.studentAtclass);
-          let stdProfileInClass = {
-            uid: this.stdProfile.uid,
-            classId : item.classId,
-            studentId: this.stdProfile.studentId,
-            firstName: this.stdProfile.firstName,
-            lastName: this.stdProfile.lastName,
-            nickName: this.stdProfile.nickName,
-            dateAtClass: Date.now(),            
-          };
-          batch.update(db.collection("classroom").doc(item.classId), {
-            student: firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
-          });
-        })
-
         this.carts.forEach((item) => {
           var newQty = item.quantity - item.buyAmount;
+          console.log(newQty);
           batch.update(db.collection("products").doc(item.pID), {
             quantity: newQty,
           });
@@ -2365,6 +2487,7 @@ export default {
         batch.commit();
         console.log("เพิ่มคอร์สเรียนเรียบร้อย");
 
+        //  this.carts = [];
         this.addInvoice();
       } catch (err) {
         console.log(err);
@@ -2376,30 +2499,29 @@ export default {
       // $('#addCourseModal').modal('hide')
       try {
         this.courseInfo = [];
-        this.courseReserv.forEach((item) => {
+        this.courses.forEach((item) => {
           let data = {
-            classId:item.classId,
-            uid: this.stdProfile.uid,
-            studentId: this.stdProfile.studentId,
-            firstName: this.stdProfile.firstName,
-            lastName: this.stdProfile.lastName,
-            nickName: this.stdProfile.nickName,
-            mobilephone: this.stdProfile.mobilephone,
-            courseName: item.courseName,
+            uid: this.std.uid,
+            studentId: this.std.studentId,
+            firstName: this.std.firstName,
+            lastName: this.std.lastName,
+            nickName: this.std.nickName,
+            mobilephone: this.std.mobilephone,
+            courseName: item.courseSelected,
             amount: item.amount,
-            classType: item.classType,
-            day: item.dayAttend,
-            discount: item.classDiscount,
+            classType: item.classTypeSelected,
+            day: item.daySelected,
+            discount: item.discount,
             endDate: item.endDate,
             finishTime: item.finishTime,
-            level: item.level,
-            rate: item.rate,
-            qty: item.classQty,
+            level: item.levelSelected,
+            price: item.priceSelected,
+            qty: item.qty,
             startDate: item.startDate,
             startTime: item.startTime,
             wages: item.wages,
-            teacherName: item.teacherAtclass.teacherName,
-            teacherId: item.teacherAtclass.teacherId,
+            teacherName: item.teacherSelected.teacherName,
+            teacherId: item.teacherSelected.teacherId,
           };
 
           this.courseInfo.push(data);
@@ -2416,11 +2538,11 @@ export default {
         });
 
         let invoiceData = {
-          uid: this.stdProfile.uid,
-          studentId: this.stdProfile.studentId,
-          firstName: this.stdProfile.firstName,
-          lastName: this.stdProfile.lastName,
-          nickName: this.stdProfile.nickName,
+          uid: this.std.uid,
+          studentId: this.std.studentId,
+          firstName: this.std.firstName,
+          lastName: this.std.lastName,
+          nickName: this.std.nickName,
           payBy: this.payBy,
           payforDetail: this.payforDetail,
           bankDetail: this.bankDetail,
@@ -2458,9 +2580,8 @@ export default {
         });
         this.updateInvoiceId();
       } catch (err) {
-        console.log(err);
         Swal.fire({
-          title: "add Invoice เกิดข้อผิดพลาด",
+          title: "Add Course เกิดข้อผิดพลาด",
           text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
           icon: "error",
           confirmButtonColor: "#FF0000",
@@ -2531,11 +2652,11 @@ export default {
       //   this.courseInfo = [];
       //   this.courses.forEach((item) => {
       //     let data = {
-      //       uid: this.stdProfile.uid,
-      //       studentId: this.stdProfile.studentId,
-      //       firstName: this.stdProfile.firstName,
-      //       lastName: this.stdProfile.lastName,
-      //       nickName: this.stdProfile.nickName,
+      //       uid: this.std.uid,
+      //       studentId: this.std.studentId,
+      //       firstName: this.std.firstName,
+      //       lastName: this.std.lastName,
+      //       nickName: this.std.nickName,
       //       courseName: item.courseSelected,
       //       amount: item.amount,
       //       classType: item.classTypeSelected,
@@ -2566,11 +2687,11 @@ export default {
       //   });
 
       //   let invoiceData = {
-      //     uid: this.stdProfile.uid,
-      //     studentId: this.stdProfile.studentId,
-      //     firstName: this.stdProfile.firstName,
-      //     lastName: this.stdProfile.lastName,
-      //     nickName: this.stdProfile.nickName,
+      //     uid: this.std.uid,
+      //     studentId: this.std.studentId,
+      //     firstName: this.std.firstName,
+      //     lastName: this.std.lastName,
+      //     nickName: this.std.nickName,
       //     payBy: this.payBy,
       //     invoiceNo: invoiceNo,
       //     paymentType: this.paymentType,
@@ -2608,8 +2729,7 @@ export default {
     },
 
     addToCart(product) {
-      // console.log(product);
-      // ---- product มีค่า = product ใน getProducts()
+      console.log(product);
       this.carts.push(product);
       // console.log(this.carts);
       // console.log(product.pID);
@@ -2655,7 +2775,7 @@ export default {
         confirmButtonColor: "#30855c",
         confirmButtonText: "ตกลง",
       });
-      // console.log(this.carts);
+      console.log(this.carts);
     },
 
     decimalDigits(value) {
@@ -2669,21 +2789,19 @@ export default {
       // this.reset()
     },
 
-    addcourse(stdProfile) {
-      // console.log(stdProfile);
+    addcourse(std) {
+      console.log(std);
       // console.log(uid);
       // this.$router.push({ name: "addcourse", params: { uid } });
       // (this.day = moment(Date.now()).format("DD/MM/YYYY")), console.log();
-      
-      // stdProfile มีค่าเท่ากับ profile ใน getStudentData()
-      this.stdProfile = stdProfile;
+      this.std = std;
     },
 
     addToInvoice() {
       let data = {
-        studentId: this.stdProfile.studentId,
+        studentId: this.std.studentId,
       };
-      // console.log(data);
+      console.log(data);
     },
 
     async getProducts() {
@@ -2768,6 +2886,11 @@ export default {
       }
     },
 
+    deleteItem(index) {
+      console.log(index);
+      this.courses.splice(index, 1);
+    },
+
     deleteProduct(index) {
       // console.log(index);
       this.carts.splice(index, 1);
@@ -2800,7 +2923,7 @@ export default {
         teacher: this.cTeacher,
         day: this.cDay,
       });
-      // console.log(this.courses);
+      console.log(this.courses);
     },
 
     deleteTeacher(doc) {
@@ -2849,7 +2972,7 @@ export default {
         let str = doc.data().invoiceNo.toString();
         this.invoiceNo = str.padStart(3, "0");
 
-        // console.log(this.invoiceNo);
+        console.log(this.invoiceNo);
         this.activeCourse();
 
         this.$store.state.show = false;
@@ -2880,7 +3003,7 @@ export default {
           .onSnapshot((querySnapshot) => {
             this.profiles = [];
             querySnapshot.forEach((doc) => {
-              // console.log(doc.data());
+              console.log(doc.data());
               let profile = {
                 uid: doc.id,
                 studentId: doc.data().studentId,
@@ -2936,54 +3059,6 @@ export default {
         this.$store.state.show = false;
       }
     },
-
-    getClassroom() {
-      try {
-        this.$store.state.show = true;
-        var date = moment().isoWeekday();
-        // console.log(date);
-        db.collection("classroom")
-          // .where("day.dayNum", "==", date)
-          .orderBy("createdAt", "desc")
-          .onSnapshot((querySnapshot) => {
-            this.classrooms = [];
-            querySnapshot.forEach((doc) => {
-              // if(!doc.data().role.isAdmin)
-              // {
-              // console.log(doc.data());
-              let classroom = {
-                nowDate: moment().format("ll"),
-                classId: doc.id,
-                amount: doc.data().amount,
-                classType: doc.data().classType,
-                courseName: doc.data().courseName,
-                dayAttend: doc.data().dayAttend,
-                endDate: moment(parseInt(doc.data().endDate)).format("ll"),
-                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
-                  "HH:mm"
-                ),
-                level: doc.data().level,
-                rate: doc.data().rate,
-                startDate: moment(parseInt(doc.data().startDate)).format("ll"),
-                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
-                  "HH:mm"
-                ),
-                studentAtclass: doc.data().student,
-                teacherAtclass: doc.data().teacherAtclass,
-                wages: doc.data().wages,
-                classQty: 0,
-                classDiscount: 0,
-              };
-              this.classrooms.push(classroom);
-              console.log(this.classrooms);
-            });
-            this.$store.state.show = false;
-          });
-      } catch (err) {
-        console.log(err);
-        this.$store.state.show = false;
-      }
-    },
   },
 
   mounted() {
@@ -2994,7 +3069,6 @@ export default {
     this.getStudentData();
     this.getCourseTemplate();
     this.getProducts();
-    this.getClassroom();
   },
   // ขั้นตอนการทำงาน confirmInvoice() ->  getInvoiceId() ->
   // activeCourse() -> ตัดสต็อค -> addInvoice()
@@ -3055,11 +3129,134 @@ div.page[size="A4"] {
     display: none !important;
   }
 }
-.fullscreen {
-  margin: 0;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
-}
 </style>
+
+
+
+
+
+                    <div class="mt-3">
+                      <div class="row text-left">
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            Inv No.
+                            <span class="text-success">{{
+                              profile.invoiceNo
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            ชั้นเรียน
+                            <span class="text-success">{{
+                              profile.classType
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            วันที่
+                            <span class="text-success">{{
+                              profile.nowDate
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            ชื่อ-นามสกุล
+                            <span class="text-success"
+                              >{{ profile.firstName }}
+                              {{ profile.lastName }}</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            รหัสนักเรียน
+                            <span class="text-success">{{
+                              profile.studentId
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            ชื่อเล่น
+                            <span class="text-success">{{
+                              profile.nickName
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            ชื่อ-นามสกุล ครู
+                            <span class="text-success">{{
+                              profile.teacherfullName
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            วันเรียน
+                            <span class="text-success">{{ profile.day }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            เวลาเรียน
+                            <span class="text-success"
+                              >{{ profile.startTime }}-{{
+                                profile.finishTime
+                              }}</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            เบอร์โทร
+                            <span class="text-success">{{
+                              profile.mobilephone
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            วิชา
+                            <span class="text-success">{{
+                              profile.courseName
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            จำนวน ชม.
+                            <span class="text-success">{{
+                              profile.amount
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            โปรโมชั่น
+                            <span class="text-success"
+                              >เซตเสือน้อย5%แถมฟรี1ครั้ง</span
+                            >
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            วันที่เริ่มเรียน
+                            <span class="text-success">{{
+                              profile.startDate
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            วันที่เรียนจบ
+                            <span class="text-success">{{
+                              profile.endDate
+                            }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
