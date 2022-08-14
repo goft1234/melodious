@@ -595,6 +595,7 @@ export default {
           let data = {
             uid: user.uid,
             fullName: user.fullName,
+            mobilephone: user.mobilephone,
           };
 
           return db

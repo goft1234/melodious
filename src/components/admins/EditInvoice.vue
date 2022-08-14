@@ -81,6 +81,583 @@
         </vue-good-table>
       </div>
 
+                <!-- print invoice -->
+      <div class="col" id="InvPckPrint" style="display: none">
+        <div class="page" size="A4" style="page-break-after: always">
+          <table
+            width="100%"
+            style="margin: 10px 0; border-bottom: 3px #000000 solid"
+          >
+            <tr>
+              <td
+                class="text-center"
+                style="
+                  font-weight: bolder;
+                  font-size: 1.75em;
+                  padding-top: 10px;
+                "
+              >
+                <img
+                  src="https://www.mmsmelodious.info/images/logo/medium-1594270995740.png"
+                  alt="Logo"
+                  style="width: 150px"
+                />
+              </td>
+              <td colspan="2" class="text-center">
+                <h4>โรงเรียนสอนดนตรี เมโลดิอุส</h4>
+                <h5>Melodious Music School</h5>
+                <p>
+                  188/77-78 หมู่4 ชั้น2 ถ.หนามแดง-บางพลี ต.บางพลีใหญ่ อ.บางพลี
+                  จ.สมุทราปราการ 10540
+                </p>
+                <p>
+                  Tel. 02-183-9700 , 087-022-0277 , 091-5588700 Fax. 02-183-7492
+                </p>
+                <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
+              </td>
+              <td class="text-right">
+                <h5>Inv.No. {{ invoiceToDel }}</h5>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%">
+            <tr>
+              <td style="" colspan="4">
+                <p class="text-left">ได้รับเงินจาก (Received from)</p>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%">
+            <tr class="text-center">
+              <td class="text-left">
+                <h6>
+                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                </h6>
+              </td>
+              <td class="text-left">
+                <h6>ชื่อเล่น {{ stdProfile.nickName }}</h6>
+              </td>
+              <td class="text-center">
+                <h6>รหัสนักเรียน : {{ stdProfile.studentId }}</h6>
+              </td>
+              <td class="text-right">
+                <h6>วันที่ {{ day }}</h6>
+              </td>
+            </tr>
+          </table>
+          <br />
+          <table width="100%" class="mb-2">
+            <tr class="text-left">
+              <td colspan="4">
+                (1):เพื่อชำระค่าเรียน <b>{{ item.paymentType }}</b>
+                <label for=""></label>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%" class="table-bordered" style="text-align: center">
+            <tr>
+              <th style="width: 8%">ลำดับ<br />No.</th>
+              <th style="width: 56%">
+                รายละเอียดวิชาเรียน<br />Enrolled Course
+              </th>
+              <th style="width: 8%">จำนวน<br />Qty.</th>
+              <th style="width: 12%">ค่าเรียนต่อคอร์ส<br />Tuition fee</th>
+              <th style="width: 8%">ส่วนลด<br />Discount</th>
+              <th style="width: 8%">รวมค่าเรียน<br />Total</th>
+            </tr>
+            <tr
+              v-for="(course, index) in coursesActive"
+              :key="index"
+              class="text-center"
+            >
+              <td>{{ index + 1 }}</td>
+              <td>
+                <span v-if="course.courseName"
+                  >วิชา-{{ course.courseName }} ,</span
+                >
+                <span v-if="course.classType"
+                  >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
+                </span>
+                <span v-if="course.startDate">
+                  วันที่เริ่มเรียน-{{ course.startDate }} ,
+                </span>
+                <br />
+                <span v-if="course.teacherAtclass.teacherName">
+                  อาจารย์ผู้สอน-{{ course.teacherAtclass.teacherName }}
+                </span>
+              </td>
+              <td>{{ course.classQty }}</td>
+              <td>{{ course.rate }}</td>
+              <td>{{ course.classDiscount }}</td>
+              <td>
+                {{ course.classQty * course.rate - course.classDiscount }}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="3"
+              ></td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="2"
+              >
+                รวมค่าเรียนทั้งสิ้น <br />Totol
+              </td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+              >
+                {{ subTotal }}
+              </td>
+            </tr>
+          </table>
+          <p><br /></p>
+
+          <div class="mb-2">
+            (2):เพื่อชำระค่า
+            <span
+              v-for="(item, index) in item.paymentFor"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
+                >หนังสือเรียน ,</b
+              >
+              <b v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
+                >อุปกรณ์การเรียน ,</b
+              >
+              <b v-if="item == 'อื่นๆ'" class="text-left pl-2">{{
+                payforDetail
+              }}</b>
+            </span>
+          </div>
+
+          <table width="100%" class="table-bordered" style="text-align: center">
+            <tr>
+              <th style="width: 8%">ลำดับ<br />No.</th>
+              <th style="width: 56%">รายละเอียด<br />Description</th>
+              <th style="width: 8%">จำนวน<br />Qty.</th>
+              <th style="width: 12%">ราคา/หน่วย<br />unit price</th>
+              <th style="width: 8%">ส่วนลด<br />Discount</th>
+              <th style="width: 8%">รวม<br />Total</th>
+            </tr>
+            <tr v-for="(item, index) in carts" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.pName }}</td>
+              <td>{{ item.buyAmount }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.pDiscount }}</td>
+              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="3"
+              ></td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="2"
+              >
+                รวมค่าเรียนทั้งสิ้น <br />Totol
+              </td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+              >
+                {{ pSubtotal }}
+              </td>
+            </tr>
+          </table>
+          <p><br /></p>
+
+          <div class="mb-2">
+            ชำระเงินโดย (Pay by)
+            <span
+              v-for="(item, index) in item.payBy"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'เงินสด'" class="text-left pl-2">เงินสด ,</b>
+              <b v-if="item == 'เครดิตการ์ด'" class="text-left pl-2"
+                >เครดิตการ์ด ,</b
+              >
+              <b v-if="item == 'โอนผ่านธนาคาร'" class="text-left pl-2">{{
+                bankDetail
+              }}</b>
+            </span>
+          </div>
+
+          <table width="100%" class="table-bordered" style="text-align: center">
+            <tr>
+              <th style="width: 25%">(1)รวมค่าเรียน<br />Totol Tuition Fee</th>
+              <th style="width: 25%">
+                (2)ค่าหนังสือหรืออุปกรณ์<br />Total Amount
+              </th>
+              <th style="width: 25%">ค่าแรกเข้า<br />Enrollment fee</th>
+              <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
+            </tr>
+            <tr style="height: 50px">
+              <td>{{ subTotal }}</td>
+              <td>{{ pSubtotal }}</td>
+              <td>{{ fee }}</td>
+              <td>{{ grandTotal }}</td>
+            </tr>
+          </table>
+          <br />
+          <table width="100%" style="1px solid black">
+            <tr class="text-left">
+              <td colspan="4">
+                จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)
+                Baht.______________________________________________________
+              </td>
+            </tr>
+          </table>
+          <br />
+          <table width="100%" style="1px solid black">
+            <tr class="text-left">
+              <td colspan="4">หมายเหตุ {{ item.note }}</td>
+            </tr>
+          </table>
+          <p><br /></p>
+          <table width="100%">
+            <tr class="float-right">
+              <td colspan="3">
+                <h6>
+                  ลงชื่อ_______________________________________เจ้าหน้าที่/ผู้ดำเนินการ
+                </h6>
+                <br />
+                <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
+              </td>
+            </tr>
+          </table>
+          <br />
+          <i style="font-size: 10px"
+            >โรงเรียนดนตรี เมโลดิอุส
+            ขอสงวนสิทธิ์ที่จะไม่คืนค่าเรียนแก่ผู้สมัครไม่ว่ากรณีใดๆทั้งสิ้น</i
+          >
+          <br />
+          <span style="font-size: 10px"
+            >MMS reserve all the rights to not refund the tuition fees.</span
+          >
+        </div>
+        <!-- PAGE PACKING LIST -->
+        <div class="page" size="A4" style="page-break-after: always">
+          <table
+            width="100%"
+            style="margin: 10px 0; border-bottom: 3px #000000 solid"
+          >
+            <tr>
+              <td
+                class="text-center"
+                style="
+                  font-weight: bolder;
+                  font-size: 1.75em;
+                  padding-top: 10px;
+                "
+              >
+                <img
+                  src="https://www.mmsmelodious.info/images/logo/medium-1594270995740.png"
+                  alt="Logo"
+                  style="width: 150px"
+                />
+              </td>
+              <td colspan="2" class="text-center">
+                <h4>โรงเรียนสอนดนตรี เมโลดิอุส</h4>
+                <h5>Melodious Music School</h5>
+                <p>
+                  188/77-78 หมู่4 ชั้น2 ถ.หนามแดง-บางพลี ต.บางพลีใหญ่ อ.บางพลี
+                  จ.สมุทราปราการ 10540
+                </p>
+                <p>
+                  Tel. 02-183-9700 , 087-022-0277 , 091-5588700 Fax. 02-183-7492
+                </p>
+                <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
+              </td>
+              <td class="text-right">
+                <h5>Inv.No. {{ invoiceToDel }}</h5>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%">
+            <tr>
+              <td style="" colspan="4">
+                <p class="text-left">ได้รับเงินจาก (Received from)</p>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%">
+            <tr class="text-center">
+              <td class="text-left">
+                <h6>
+                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                </h6>
+              </td>
+              <td class="text-left">
+                <h6>ชื่อเล่น {{ stdProfile.nickName }}</h6>
+              </td>
+              <td class="text-center">
+                <h6>รหัสนักเรียน : {{ stdProfile.studentId }}</h6>
+              </td>
+              <td class="text-right">
+                <h6>วันที่ {{ day }}</h6>
+              </td>
+            </tr>
+          </table>
+          <br />
+          <table width="100%" class="mb-2">
+            <tr class="text-left">
+              <td colspan="4">
+                (1):เพื่อชำระค่าเรียน <b>{{ item.paymentType }}</b>
+                <label for=""></label>
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%" class="table-bordered" style="text-align: center">
+            <tr>
+              <th style="width: 8%">ลำดับ<br />No.</th>
+              <th style="width: 56%">
+                รายละเอียดวิชาเรียน<br />Enrolled Course
+              </th>
+              <th style="width: 8%">จำนวน<br />Qty.</th>
+              <th style="width: 12%">ค่าเรียนต่อคอร์ส<br />Tuition fee</th>
+              <th style="width: 8%">ส่วนลด<br />Discount</th>
+              <th style="width: 8%">รวมค่าเรียน<br />Total</th>
+            </tr>
+            <tr
+              v-for="(course, index) in coursesActive"
+              :key="index"
+              class="text-center"
+            >
+              <td>{{ index + 1 }}</td>
+              <td>
+                <span v-if="course.courseName"
+                  >วิชา-{{ course.courseName }} ,</span
+                >
+                <span v-if="course.classType"
+                  >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
+                </span>
+                <span v-if="course.startDate">
+                  วันที่เริ่มเรียน-{{ course.startDate }} ,
+                </span>
+                <br />
+                <span v-if="course.teacherAtclass.teacherName">
+                  อาจารย์ผู้สอน-{{ course.teacherAtclass.teacherName }}
+                </span>
+              </td>
+              <td>{{ course.classQty }}</td>
+              <td>{{ course.rate }}</td>
+              <td>{{ course.classDiscount }}</td>
+              <td>
+                {{ course.classQty * course.rate - course.classDiscount }}
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="3"
+              ></td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="2"
+              >
+                รวมค่าเรียนทั้งสิ้น <br />Totol
+              </td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+              >
+                {{ subTotal }}
+              </td>
+            </tr>
+          </table>
+          <p><br /></p>
+
+          <div class="mb-2">
+            (2):เพื่อชำระค่า
+            <span
+              v-for="(item, index) in item.paymentFor"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
+                >หนังสือเรียน ,</b
+              >
+              <b v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
+                >อุปกรณ์การเรียน ,</b
+              >
+              <b v-if="item == 'อื่นๆ'" class="text-left pl-2">{{
+                payforDetail
+              }}</b>
+            </span>
+          </div>
+
+          <table width="100%" class="table-bordered" style="text-align: center">
+            <tr>
+              <th style="width: 8%">ลำดับ<br />No.</th>
+              <th style="width: 56%">รายละเอียด<br />Description</th>
+              <th style="width: 8%">จำนวน<br />Qty.</th>
+              <th style="width: 12%">ราคา/หน่วย<br />unit price</th>
+              <th style="width: 8%">ส่วนลด<br />Discount</th>
+              <th style="width: 8%">รวม<br />Total</th>
+            </tr>
+            <tr v-for="(item, index) in carts" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.pName }}</td>
+              <td>{{ item.buyAmount }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.pDiscount }}</td>
+              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="3"
+              ></td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+                colspan="2"
+              >
+                รวมค่าเรียนทั้งสิ้น <br />Totol
+              </td>
+              <td
+                style="
+                  border-left: 0;
+                  border-right: 0;
+                  border-bottom: 6px black double;
+                "
+              >
+                {{ pSubtotal }}
+              </td>
+            </tr>
+          </table>
+          <p><br /></p>
+
+          <div class="mb-2">
+            ชำระเงินโดย (Pay by)
+            <span
+              v-for="(item, index) in item.payBy"
+              :key="index"
+              colspan="4"
+              style="display: inline-block"
+            >
+              <b v-if="item == 'เงินสด'" class="text-left pl-2">เงินสด ,</b>
+              <b v-if="item == 'เครดิตการ์ด'" class="text-left pl-2"
+                >เครดิตการ์ด ,</b
+              >
+              <b v-if="item == 'โอนผ่านธนาคาร'" class="text-left pl-2">{{
+                bankDetail
+              }}</b>
+            </span>
+          </div>
+
+          <table width="100%" class="table-bordered" style="text-align: center">
+            <tr>
+              <th style="width: 25%">(1)รวมค่าเรียน<br />Totol Tuition Fee</th>
+              <th style="width: 25%">
+                (2)ค่าหนังสือหรืออุปกรณ์<br />Total Amount
+              </th>
+              <th style="width: 25%">ค่าแรกเข้า<br />Enrollment fee</th>
+              <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
+            </tr>
+            <tr style="height: 50px">
+              <td>{{ subTotal }}</td>
+              <td>{{ pSubtotal }}</td>
+              <td>{{ fee }}</td>
+              <td>{{ grandTotal }}</td>
+            </tr>
+          </table>
+          <br />
+          <table width="100%" style="1px solid black">
+            <tr class="text-left">
+              <td colspan="4">
+                จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)
+                Baht.______________________________________________________
+              </td>
+            </tr>
+          </table>
+          <br />
+          <table width="100%" style="1px solid black">
+            <tr class="text-left">
+              <td colspan="4">หมายเหตุ {{ item.note }}</td>
+            </tr>
+          </table>
+          <p><br /></p>
+          <table width="100%">
+            <tr class="float-right">
+              <td colspan="3">
+                <h6>
+                  ลงชื่อรับทราบ_______________________________________ผู้สมัคร/ผู้ปกครอง
+                </h6>
+                <br />
+                <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
+              </td>
+            </tr>
+          </table>
+          <br />
+          <i style="font-size: 10px"
+            >โรงเรียนดนตรี เมโลดิอุส
+            ขอสงวนสิทธิ์ที่จะไม่คืนค่าเรียนแก่ผู้สมัครไม่ว่ากรณีใดๆทั้งสิ้น</i
+          >
+          <br />
+          <span style="font-size: 10px"
+            >MMS reserve all the rights to not refund the tuition fees.</span
+          >
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+
       <!-- Start Detail modal -->
       <div class="modal fade" id="invoiceModal">
         <div class="modal-dialog modal-xl">
@@ -954,23 +1531,7 @@
                     </div>
                   </div>
 
-                  <div class="row text-center">
-                    <div class="col-md-12">
-                      <!-- <button
-                            class="btn btn-danger no-print ml-3"
-                            @click="reset"
-                          >
-                            <i class="fas fa-redo"></i> Reset/ยกเลิก
-                          </button> -->
-                      <button
-                        v-if="confirm"
-                        class="btn btn-warning no-print ml-3"
-                        @click="print"
-                      >
-                        <i class="fas fa-print"></i> Print
-                      </button>
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
               <!--End แสดงเพื่อ ดูรายลเอียดอย่างเดียว set modal = null -->
@@ -1006,6 +1567,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -1202,6 +1764,7 @@ export default {
       cRate: [],
       cTeacher: [],
       cDay: ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"],
+      day: moment().add(543, "year").format("LL"),
 
       course: {},
       coursesActive: [],
@@ -1283,6 +1846,14 @@ export default {
       });
     },
 
+    print() {
+      // Pass the element id here
+      // window.print();
+      this.$htmlToPaper("InvPckPrint");
+      // this.carts = [];
+      // this.reset()
+    },
+
     // *** updateData *** //
     async canUpdateStatus(detail) {
       const { value: password } = await Swal.fire({
@@ -1331,7 +1902,7 @@ export default {
     },
 
     async confirmInvoice() {
-      console.log(this.coursesActive);
+      // console.log(this.coursesActive);
       try {
         var batch = db.batch();
         this.coursesActive.forEach(async (course) => {
@@ -1345,12 +1916,12 @@ export default {
             classType: course.classType,
             courseName: course.courseName,
             dayAttend: course.dayAttend,
-            endDate: moment(course.endDate).format("x"),
+            endDate: course.endDate,
             finishTime: moment(course.finishTime).format("x"),
             level: course.level,
             nowDate: Date.now(),
             rate: course.rate,
-            startDate: moment(course.startDate).format("x"),
+            startDate: course.startDate,
             startTime: moment(course.startTime).format("x"),
             teacherAtclass: course.teacherAtclass,
             wages: course.wages,
@@ -1431,13 +2002,13 @@ export default {
             classType: course.classType,
             courseName: course.courseName,
             dayAttend: course.dayAttend,
-            endDate: moment(course.endDate).format("x"),
+            endDate: course.endDate,
             finishTime: moment(course.finishTime).format("x"),
             level: course.level,
             nowDate: Date.now(),
 
             rate: course.rate,
-            startDate: moment(course.startDate).format("x"),
+            startDate: course.startDate,
             startTime: moment(course.startTime).format("x"),
             teacherAtclass: course.teacherAtclass,
             wages: course.wages,
@@ -1493,7 +2064,7 @@ export default {
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
         });
-        // this.updateInvoiceId();
+        this.confirm = true;
       } catch (err) {
         console.log("error form Add course" + err);
         Swal.fire({
@@ -1851,7 +2422,7 @@ export default {
                 ),
                 level: doc.data().level,
                 rate: doc.data().rate,
-                startDate: moment(parseInt(doc.data().startDate)).format("ll"),
+                startDate: doc.data().startDate,
                 startTime: moment(doc.data().startTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),
@@ -1896,9 +2467,9 @@ export default {
   },
 
   computed: {
-    dateFormat() {
-      return moment(this.startDate).format("DD/MM/YYYY");
-    },
+    // dateFormat() {
+    //   return moment(this.startDate).format("DD/MM/YYYY");
+    // },
 
     subTotal() {
       var total = this.coursesActive.reduce((accumulator, item) => {

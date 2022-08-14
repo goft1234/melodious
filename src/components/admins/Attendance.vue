@@ -14,7 +14,7 @@
           @click="addNew"
           class="btn btn-success d-inline-block float-right px-3"
           data-toggle="modal"
-          data-target="#course"
+          data-target="#addClassroomModal"
         >
           สร้างห้องเรียน
         </button>
@@ -49,25 +49,27 @@
               <div
                 class="btn btn-warning"
                 data-toggle="modal"
-                data-target="#profileModal"
+                data-target="#classroomDetailModal"
                 @click="fullProfile(props.row)"
               >
                 <i class="fas fa-table"></i>
               </div>
             </span>
             <span v-else-if="props.column.field == 'studentAtClass'">
-              <div v-for="(item,index) in props.row.studentAtClass" :key="index">
-                <h6>{{item.firstName}}</h6>
+              <div
+                v-for="(item, index) in props.row.studentAtClass"
+                :key="index"
+              >
+                <h6>{{ item.firstName }}</h6>
               </div>
- 
-              
             </span>
             <span v-else-if="props.column.field == 'studentId'">
-              <div v-for="(item,index) in props.row.studentAtClass" :key="index">
-                <h6>{{item.studentId}}</h6>
+              <div
+                v-for="(item, index) in props.row.studentAtClass"
+                :key="index"
+              >
+                <h6>{{ item.studentId }}</h6>
               </div>
- 
-              
             </span>
             <span v-else-if="props.column.field == 'check'">
               <div class="btn btn-success" @click="stdAttend(props.row)">
@@ -88,7 +90,7 @@
     </div>
 
     <!-- The Modal -->
-    <div class="modal fade" id="profileModal">
+    <div class="modal fade" id="classroomDetailModal">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <!-- Modal Header -->
@@ -112,21 +114,294 @@
                 </b-card-header>
                 <b-collapse
                   id="accordion-1"
-                  visible
                   accordion="my-accordion"
                   role="tabpanel"
                 >
+                  <div class="row mt-2">
+                    <div class="col-md-12">
+                      <h5 class="text-center text-success">ผู้เรียน</h5>
+                    </div>
+                  </div>
                   <b-card-body>
-                    <!-- style="background: #e9ecef" -->
+                    <div
+                      v-for="(item, index) in classroom.studentAtClass"
+                      :key="index.userId"
+                      class="mb-3"
+                    >
+                      <div class="card-body" style="background: #e9ecef">
+                        <h6 class="card-title text-center text-success">
+                          INVOICE NUMBER (INV.No.) {{ item.invoiceNo }}
+                        </h6>
+                        <p class="card-text">
+                          ชื่อ - นามสกุล
+                          <span class="text-success"
+                            >{{ item.firstName }} {{ item.lastName }}</span
+                          >
+                        </p>
+                        <p class="card-text">
+                          ชื่อเล่น
+                          <span class="text-success">{{ item.nickName }}</span>
+                        </p>
+                        <p class="card-text">
+                          รหัสนักเรียน
+                          <span class="text-success">{{ item.studentId }}</span>
+                        </p>
+                        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+                      </div>
+                    </div>
 
+                    <form v-on:submit.prevent class="mt-3">
+                      <div class="p-3" style="background: #f2f2f2">
+                        <div class="row">
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="nickName" class="text-success"
+                                >วิชาเรียน</label
+                              >
+                              <select
+                                class="form-control"
+                                id="namePrefix"
+                                v-model="classroom.courseName"
+                                :disabled="disabled == 1"
+                              >
+                                <option disabled value="">
+                                  เลือก วิชาเรียน
+                                </option>
+                                <option
+                                  v-for="(item, index) in courseNameTemplate"
+                                  :value="item"
+                                  :key="index"
+                                >
+                                  {{ item }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="nickName" class="text-success"
+                                >รูปแบบการเรียน</label
+                              >
+                              <select
+                                class="form-control"
+                                id="namePrefix"
+                                v-model="classroom.classType"
+                                :disabled="disabled == 1"
+                              >
+                                <option disabled value="">
+                                  เลือก รูปแบบการเรียน
+                                </option>
+                                <option
+                                  v-for="(item, index) in courseTypeTemplate"
+                                  :value="item"
+                                  :key="index"
+                                >
+                                  {{ item }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="nickName" class="text-success"
+                                >ระดับการเรียน</label
+                              >
+                              <select
+                                class="form-control"
+                                id="namePrefix"
+                                v-model="classroom.level"
+                                :disabled="disabled == 1"
+                              >
+                                <option disabled value="">
+                                  เลือก ระดับการเรียน
+                                </option>
+                                <option
+                                  v-for="(item, index) in levelTemplate"
+                                  :value="item"
+                                  :key="index"
+                                >
+                                  {{ item }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="nickName" class="text-success"
+                                >อาจารย์รายวิชา</label
+                              >
+                              <select
+                                class="form-control"
+                                id="namePrefix"
+                                v-model="classroom.teacherAtclass"
+                                :disabled="disabled == 1"
+                              >
+                                <option disabled value="">
+                                  เลือก อาจารย์รายวิชา
+                                </option>
+                                <option
+                                  v-for="(item, index) in teacherTemplate"
+                                  :value="{
+                                    teacherId: item.uid,
+                                    teacherName: item.fullName,
+                                    teacherTel: item.mobilephone,
+                                  }"
+                                  :key="index"
+                                >
+                                  {{ item.fullName }}
+                                </option>
+                              </select>
+                              <!-- <span
+                              >courseSelected:
+                              {{ classroom.teacherAtclass }}</span
+                            > -->
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="" class="text-success"
+                                >เริ่มเรียน เวลา</label
+                              >
+                              <div>
+                                <b-form-timepicker
+                                  v-model="classroom.startTime"
+                                  locale="th"
+                                  placeholder="เลือก-เวลาเริ่มเรียน"
+                                  :disabled="disabled == 1"
+                                ></b-form-timepicker>
+                                <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="" class="text-success"
+                                >เลิกเรียน เวลา</label
+                              >
+                              <div>
+                                <b-form-timepicker
+                                  v-model="classroom.finishTime"
+                                  locale="th"
+                                  placeholder="เลือก-เวลาเลิกเรียน"
+                                  :disabled="disabled == 1"
+                                ></b-form-timepicker>
+                                <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="" class="text-success"
+                                >วันที่เริ่มเรียน</label
+                              >
+                              <div>
+                                <b-form-datepicker
+                                  v-model="classroom.startDate"
+                                  locale="th"
+                                  placeholder="เลือก-วันที่เริ่มเรียน"
+                                  :disabled="disabled == 1"
+                                ></b-form-datepicker>
+                                <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="" class="text-success"
+                                >วันที่เรียนจบ โดยประมาณ</label
+                              >
+                              <div>
+                                <b-form-datepicker
+                                  v-model="classroom.endDate"
+                                  locale="th"
+                                  placeholder="เลือก-วันที่เรียนจบ"
+                                  :disabled="disabled == 1"
+                                ></b-form-datepicker>
+                                <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="namePrefix" class="text-success"
+                                >วันที่เลือกเรียน</label
+                              >
+                              <select
+                                class="form-control"
+                                id="namePrefix"
+                                v-model="classroom.dayAttend"
+                                :disabled="disabled == 1"
+                              >
+                                <option disabled value="">
+                                  วันที่เลือกเรียน
+                                </option>
+                                <option
+                                  v-for="(item, index) in dayTemplate"
+                                  :key="index"
+                                  :value="{ dayNum: index + 1, item }"
+                                  :disabled="disabled == 1"
+                                >
+                                  {{ item }}
+                                </option>
+                              </select>
+                              <!-- <span>courseSelected: {{ course.daySelected }}</span> -->
+                            </div>
+                          </div>
+
+                          <div class="col-lg-6">
+                            <div class="form-group">
+                              <label for="" class="text-success"
+                                >จำนวนครั้ง / คอร์ส</label
+                              >
+                              <div class="form-group">
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  placeholder="กรอกเป็นตัวเลข"
+                                  v-model.trim="classroom.amount"
+                                  :disabled="disabled == 1"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
                   </b-card-body>
+                  <div class="row float-right mb-2">
+                    <!-- bug*** -->
+                    <div class="col mr-3 text-center">
+                      <button
+                        @click="editClassroom(classroom)"
+                        class="btn btn-warning"
+                        v-if="canEdit == false"
+                      >
+                        แก้ไข
+                      </button>
+                      <button
+                        v-else
+                        @click="updateClassroom(classroom.classId)"
+                        class="btn btn-success"
+                      >
+                        บันทึก
+                      </button>
+                    </div>
+                  </div>
                 </b-collapse>
               </b-card>
 
               <b-card no-body class="mb-1">
                 <b-card-header header-tag="header" class="p-1" role="tab">
                   <b-button block v-b-toggle.accordion-2 variant="success"
-                    >บันทึกการสอน</b-button
+                    >บันทึกการสอน - การเข้าเรียน</b-button
                   >
                 </b-card-header>
                 <b-collapse
@@ -134,125 +409,101 @@
                   accordion="my-accordion"
                   role="tabpanel"
                 >
-                  <b-card-body> </b-card-body>
+                  <b-card-body> 
+                    <pre>
+                      <div v-for="(obj,index) in classHistory" :key="index">
+                        {{obj.learningTime}}
+                      </div>
+                      
+                    </pre>
+                  </b-card-body>
                 </b-collapse>
               </b-card>
 
               <b-card no-body class="mb-1">
                 <b-card-header header-tag="header" class="p-1" role="tab">
                   <b-button block v-b-toggle.accordion-3 variant="success"
-                    >แก้ไข</b-button
+                    >สร้างชั่วโมงเรียน</b-button
                   >
                 </b-card-header>
                 <b-collapse
                   id="accordion-3"
+                  visible
                   accordion="my-accordion"
                   role="tabpanel"
                 >
-                  <b-card-body> </b-card-body>
+                  <b-card-body>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="" class="text-success">วันที่</label>
+                          <div>
+                            <b-form-datepicker
+                              v-model="classroom.learningTime"
+                              locale="th"
+                              placeholder="เลือก-วันที่"
+                            ></b-form-datepicker>
+                            <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="nickName" class="text-success"
+                            >อาจารย์รายวิชา</label
+                          >
+                          <select
+                            class="form-control"
+                            id="namePrefix"
+                            v-model="classroom.teacherAtclass"
+                          >
+                            <option disabled value="">
+                              เลือก อาจารย์รายวิชา
+                            </option>
+                            <option
+                              v-for="(item, index) in teacherTemplate"
+                              :value="{
+                                teacherId: item.uid,
+                                teacherName: item.fullName,
+                                teacherTel: item.mobilephone,
+                              }"
+                              :key="index"
+                            >
+                              {{ item.fullName }}
+                            </option>
+                          </select>
+                          <!-- <span
+                              >courseSelected:
+                              {{ classroom.teacherAtclass }}</span
+                            > -->
+                        </div>
+                      </div>
+
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                          <label for="nickName" class="text-success"
+                            >หมายเหตุ</label
+                          >
+                          <textarea
+                            class="form-control"
+                            id="exampleFormControlTextarea1"
+                            rows="5"
+                            placeholder="ใส่รายละเอียดเมื่อมีการแก้ไข ย้ายวัน-เวลา หรือเปลี่ยนครูเข้าสอนแทน"
+                            v-model.trim="classroom.commentThisTime"
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                        <div class="col text-center">
+                          <div @click="addClassroomHis(classroom)"  class="btn btn-success px-3">
+                            เพิ่มข้อมูล
+                          </div>
+                        </div>
+                      </div>
+                  </b-card-body>
                 </b-collapse>
               </b-card>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12">
-                <!-- Button to Open the Modal -->
-                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                        Open modal
-                </button> -->
-              </div>
-            </div>
-
-            <!-- <div class="table-responsive-lg">
-              <table
-                class="table table-bordered table-striped mt-3 text-center"
-              >
-                <thead>
-                  <tr class="bg-success text-light">
-                    <th>วันที่</th>
-                    <th>นักเรียน</th>
-                    <th>อาจารย์</th>
-                    <th>รายละเอียด</th>
-                    <th>รายเซ็นต์</th>
-                    <th>Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="justify-content-center align-center">
-                    <td>19มี.ค.65</td>
-                    <td>A</td>
-                    <td class="text-left">
-                      <div class="form-check">
-                        <label class="form-check-label">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            value=""
-                          />มา
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <label class="form-check-label">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            value=""
-                          />ไม่มา
-                        </label>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="form-group">
-                        <label for="comment">Comment:</label>
-                        <textarea
-                          class="form-control"
-                          rows="5"
-                          id="comment"
-                        ></textarea>
-                      </div>
-                    </td>
-                    <td>Doe</td>
-                    <td>john@example.com</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div> -->
-            <!-- <h6 class="float-right text-success">12/27/2022</h6> -->
-            <div class="card mt-3">
-              <div class="card-footer">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label for="namePrefix" class="text-success"
-                        >วันที่</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="กรอกชื่อเล่น"
-                        id="namePrefix"
-                        v-model.trim="profile.namePrefix"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label for="nickName" class="text-success">วันที่</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="กรอกชื่อเล่น"
-                        id="nickName"
-                        v-model.trim="profile.nickName"
-                        disabled
-                      />
-                      <!-- <span> : {{ profile.nickName }}</span> -->
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -272,7 +523,7 @@
     <!-- </b-overlay> -->
 
     <!--Start The Classroom Modal -->
-    <div class="modal fade" id="course">
+    <div class="modal fade" id="addClassroomModal">
       <div class="modal-dialog modal-dialog-scrollable modal-xl">
         <div class="modal-content">
           <!-- Modal Header -->
@@ -421,6 +672,7 @@
                           :value="{
                             teacherId: item.uid,
                             teacherName: item.fullName,
+                            teacherTel: item.mobilephone,
                           }"
                           :key="index"
                         >
@@ -701,22 +953,25 @@ export default {
         // workingProfile: "",
         // profileType: "teacher",
       },
-      
+
       classroom: {
-        courseName: "",
+        classId: "",
+        amount: 12,
         classType: "",
+        courseName: "",
+        createdAt: "",
+        dayAttend: "",
+        endDate: "",
+        finishTime: "",
         level: "",
         rate: 0,
-        teacherAtclass: "",
-        dayAttend: "",
-        amount: 12,
-        startTime: "",
-        wages: 0,
-        finishTime: "",
         startDate: "",
-        endDate: "",
-        createdAt: Date.now(),
-        studentAtClass:[],
+        startTime: "",
+        studentAtClass: [],
+        teacherAtclass: "",
+        wages: 0,
+
+        nowDate: Date.now(),
       },
 
       courseNameTemplate: [],
@@ -724,14 +979,51 @@ export default {
       levelTemplate: [],
       rateTemplate: [],
       teacherTemplate: [],
-      dayTemplate: ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"],
+      dayTemplate: [
+        "จันทร์",
+        "อังคาร",
+        "พุธ",
+        "พฤหัส",
+        "ศุกร์",
+        "เสาร์",
+        "อาทิตย์",
+      ],
 
       modal: null,
-      classrooms:[],
+      classrooms: [],
+      disabled: 0,
+      canEdit: false,
+      commentThisTime:'',
+
+      classHistory : [],
     };
   },
 
   methods: {
+    async addClassroomHis(classroom){
+      console.log(classroom);
+      try{
+        await db.collection('AttendanceHistory').add(classroom)
+        Swal.fire({
+          title: "เพิ่มข้อมูลเรียบร้อย",
+          text: "ได้ทำการเพิ่มข้อมูลแล้วเรียบร้อย",
+          icon: "success",
+          confirmButtonColor: "#30855c",
+          confirmButtonText: "ตกลง",
+        });
+        classroom.commentThisTime = null
+        classroom.learningTime = null
+
+      }catch(err){
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
+          icon: "error",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
+    },
     stdAttend(attend) {
       Swal.fire({
         title: "ยืนยันการเข้าเรียน",
@@ -769,16 +1061,54 @@ export default {
       });
     },
 
-    reset() {
-      // this.course = {
-      //   courseName: null,
-      //   class: null,
-      //   beginRate: null,
-      //   mediumRate: null,
-      //   topRate: null,
-      //   teacherRate: null,
-      // };
+    editClassroom(detail) {
+      console.log(detail);
+      // this.profileModal = "edit";
+      // this.profile = profile;
+      this.canEdit = true;
+      this.disabled = 0;
     },
+
+    updateClassroom(classId) {
+      db.collection("classroom")
+        .doc(classId)
+        .update(this.classroom)
+        .then(() => {
+          Swal.fire({
+            title: "อัพเดทข้อมูล",
+            text: "ได้ทำการupdateสินค้าเรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+          // $("#product").modal("hide");
+          this.disabled = 1;
+          this.canEdit = false;
+        });
+    },
+
+    reset() {
+      this.classroom = {
+        classId: "",
+        amount: 12,
+        classType: "",
+        courseName: "",
+        createdAt: "",
+        dayAttend: "",
+        endDate: "",
+        finishTime: "",
+        level: "",
+        rate: 0,
+        startDate: "",
+        startTime: "",
+        studentAtClass: [],
+        teacherAtclass: "",
+        wages: 0,
+
+        nowDate: Date.now(),
+      };
+    },
+
     async addClassroom() {
       try {
         await db.collection("classroom").add(this.classroom);
@@ -846,10 +1176,25 @@ export default {
         });
     },
 
-    fullProfile(profile) {
+    fullProfile(detail) {
       // alert(profile.firstName);
-      // console.log(profile.courseId);
-      this.profile = profile;
+      // console.log(detail.classId);
+      this.classroom = detail;
+      this.disabled = 1;
+      
+      db.collection('AttendanceHistory').where("classId", "==", detail.classId).onSnapshot((querySnapshot)=>{
+          this.classHistory = []
+          querySnapshot.forEach((doc)=>{
+            let classHis = {
+                docId:doc.id,
+                studentAtClass: doc.data().studentAtClass,
+                learningTime : doc.data().learningTime,
+                commentThisTime: doc.data().commentThisTime,
+                teacherAtclass :doc.data().teacherAtclass,
+            }
+            this.classHistory.push(classHis);
+          })
+      })
     },
     getDate() {
       var date = moment(Date.now()).day();
@@ -870,7 +1215,7 @@ export default {
         this.rateTemplate = doc.data().rate;
         this.teacherTemplate = doc.data().teacher;
 
-        // console.log(this.cTeacher);
+        console.log(this.teacherTemplate);
         // this.addNewItem();
         this.$store.state.show = false;
       } catch (err) {
@@ -902,33 +1247,25 @@ export default {
               let classroom = {
                 nowDate: moment().format("ll"),
                 classId: doc.id,
+
                 amount: doc.data().amount,
                 classType: doc.data().classType,
                 courseName: doc.data().courseName,
+                createdAt: doc.data().createdAt,
                 dayAttend: doc.data().dayAttend,
-                endDate: moment(parseInt(doc.data().endDate)).format("ll"),
+                endDate: doc.data().endDate,
                 finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),
-                // firstName: doc.data().firstName,
-                // invoiceNo: doc.data().invoiceNo,
-
-                // lastName: doc.data().lastName,
                 level: doc.data().level,
-                // mobilephone: doc.data().mobilephone,
-                // nickName: doc.data().nickName,
                 rate: doc.data().rate,
-                // qty: doc.data().qty,
-                startDate: moment(parseInt(doc.data().startDate)).format("ll"),
+                startDate: doc.data().startDate,
                 startTime: moment(doc.data().startTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),
-                studentAtClass:doc.data().student,
-                // studentId: doc.data().studentId,
-                // teacherId: doc.data().teacherId,
+                studentAtClass: doc.data().student,
                 teacherAtclass: doc.data().teacherAtclass,
-                // teacherfullName: doc.data().teacherName.teacherName,
-                // uid: doc.data().uid,
+                wages: doc.data().wages,
               };
               this.classrooms.push(classroom);
               console.log(this.classrooms);
@@ -960,8 +1297,7 @@ export default {
 
   mounted() {
     this.getCourseTemplate();
-    this.getClassroom(),
-    window.scrollTo(0, 0);
+    this.getClassroom(), window.scrollTo(0, 0);
     // this.getData();
   },
 };

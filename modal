@@ -1,0 +1,329 @@
+    <!--Start The Classroom Modal -->
+    <div class="modal fade" id="addClassroomModal">
+      <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4
+              v-if="modal == 'new'"
+              class="modal-title w-100 text-center text-success"
+            >
+              สร้างห้องเรียน
+            </h4>
+            <h4
+              v-if="modal == 'edit'"
+              class="modal-title w-100 text-center text-warning"
+            >
+              แก้ไขวิชาเรียน
+            </h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <form v-on:submit.prevent>
+              <!-- <h6 class="float-left text-success mb-2">ชื่อวิชาเรียน/หลักสูตร</h6> -->
+              <div class="p-3" style="background: #e9ecef">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="nickName" class="text-success"
+                        >วิชาเรียน</label
+                      >
+                      <select
+                        class="form-control"
+                        id="namePrefix"
+                        v-model="classroom.courseName"
+                      >
+                        <option disabled value="">เลือก วิชาเรียน</option>
+                        <option
+                          v-for="(item, index) in courseNameTemplate"
+                          :value="item"
+                          :key="index"
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="nickName" class="text-success"
+                        >รูปแบบการเรียน</label
+                      >
+                      <select
+                        class="form-control"
+                        id="namePrefix"
+                        v-model="classroom.classType"
+                      >
+                        <option disabled value="">เลือก รูปแบบการเรียน</option>
+                        <option
+                          v-for="(item, index) in courseTypeTemplate"
+                          :value="item"
+                          :key="index"
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="nickName" class="text-success"
+                        >ระดับการเรียน</label
+                      >
+                      <select
+                        class="form-control"
+                        id="namePrefix"
+                        v-model="classroom.level"
+                      >
+                        <option disabled value="">เลือก ระดับการเรียน</option>
+                        <option
+                          v-for="(item, index) in levelTemplate"
+                          :value="item"
+                          :key="index"
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="nickName" class="text-success"
+                        >อัตราค่าเรียน</label
+                      >
+                      <select
+                        class="form-control"
+                        id="namePrefix"
+                        v-model="classroom.rate"
+                      >
+                        <option disabled value="">เลือก อัตราค่าเรียน</option>
+                        <option
+                          v-for="(item, index) in rateTemplate"
+                          :value="item"
+                          :key="index"
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="namePrefix" class="text-success"
+                        >ส่วนลด โปรโมชั่น</label
+                      >
+                      <div class="form-group">
+                        <input
+                          type="number"
+                          class="form-control"
+                          placeholder="กรอกเป็นตัวเลข"
+                          min="0"
+                          v-model.trim="classroom.discount"
+                        />
+                      </div>
+                    </div>
+                  </div> -->
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="nickName" class="text-success"
+                        >อาจารย์รายวิชา</label
+                      >
+                      <select
+                        class="form-control"
+                        id="namePrefix"
+                        v-model="classroom.teacherAtclass"
+                      >
+                        <option disabled value="">เลือก อาจารย์รายวิชา</option>
+                        <option
+                          v-for="(item, index) in teacherTemplate"
+                          :value="{
+                            teacherId: item.uid,
+                            teacherName: item.fullName,
+                            teacherTel: item.mobilephone,
+                          }"
+                          :key="index"
+                        >
+                          {{ item.fullName }}
+                        </option>
+                      </select>
+                      <!-- <span
+                              >courseSelected:
+                              {{ course.teacherAtclass }}</span
+                            > -->
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="namePrefix" class="text-success"
+                        >ค่าสอนของครู</label
+                      >
+                      <div class="form-group">
+                        <input
+                          type="number"
+                          class="form-control"
+                          placeholder="กรอกเป็นตัวเลข"
+                          min="0"
+                          v-model.trim="classroom.wages"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="" class="text-success">เริ่มเรียน เวลา</label>
+                      <div>
+                        <b-form-timepicker
+                          v-model="classroom.startTime"
+                          locale="th"
+                          placeholder="เลือก-เวลาเริ่มเรียน"
+                        ></b-form-timepicker>
+                        <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="" class="text-success">เลิกเรียน เวลา</label>
+                      <div>
+                        <b-form-timepicker
+                          v-model="classroom.finishTime"
+                          locale="th"
+                          placeholder="เลือก-เวลาเลิกเรียน"
+                        ></b-form-timepicker>
+                        <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="" class="text-success"
+                        >วันที่เริ่มเรียน</label
+                      >
+                      <div>
+                        <b-form-datepicker
+                          v-model="classroom.startDate"
+                          locale="th"
+                          placeholder="เลือก-วันที่เริ่มเรียน"
+                        ></b-form-datepicker>
+                        <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="" class="text-success"
+                        >วันที่เรียนจบ โดยประมาณ</label
+                      >
+                      <div>
+                        <b-form-datepicker
+                          v-model="classroom.endDate"
+                          locale="th"
+                          placeholder="เลือก-วันที่เรียนจบ"
+                        ></b-form-datepicker>
+                        <!-- <div class="mt-2">Value: '{{ value }}'</div> -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="namePrefix" class="text-success"
+                        >วันที่เลือกเรียน</label
+                      >
+                      <select
+                        class="form-control"
+                        id="namePrefix"
+                        v-model="classroom.dayAttend"
+                      >
+                        <option disabled value="">วันที่เลือกเรียน</option>
+                        <option
+                          v-for="(item, index) in dayTemplate"
+                          :key="index"
+                          :value="{ dayNum: index + 1, item }"
+                        >
+                          {{ item }}
+                        </option>
+                      </select>
+                      <!-- <span>courseSelected: {{ course.daySelected }}</span> -->
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="" class="text-success"
+                        >จำนวนครั้ง / คอร์ส</label
+                      >
+                      <div class="form-group">
+                        <input
+                          type="number"
+                          class="form-control"
+                          placeholder="กรอกเป็นตัวเลข"
+                          v-model.trim="classroom.amount"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="" class="text-success">จำนวนคอร์ส</label>
+                      <div class="form-group">
+                        <input
+                          type="number"
+                          class="form-control"
+                          placeholder="กรอกเป็นตัวเลข"
+                          min="1"
+                          v-model.trim="classroom.qty"
+                        />
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              @click="addClassroom()"
+              type="button"
+              class="btn btn-success"
+              v-if="modal == 'new'"
+            >
+              สร้างห้องเรียน
+            </button>
+            <button
+              @click="updatecourse(course.couseId)"
+              type="button"
+              class="btn btn-warning"
+              v-if="modal == 'edit'"
+            >
+              แก้ไข
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--End The Modal -->

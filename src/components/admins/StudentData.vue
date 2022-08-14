@@ -1,5 +1,5 @@
 <template>
-  <div id="teacher" class="shadow">
+  <div id="studentData" class="shadow">
     <div class="container-fluid jumbotron">
       <div class="">
         <h4 class="text-center text-success mb-4">ข้อมูลนักเรียน</h4>
@@ -2116,6 +2116,7 @@ export default {
       courseInfo: [],
       teacherId: null,
       teacherName: null,
+      teacherTel : null,
 
       profileModal: null,
 
@@ -2125,13 +2126,14 @@ export default {
       courseReserv: [],
       classrooms: [],
       studentTest: [],
+      commentThisTime:'',
     };
   },
 
   computed: {
-    dateFormat() {
-      return moment(this.startDate).format("DD/MM/YYYY");
-    },
+    // dateFormat() {
+    //   return moment(this.startDate).format("DD/MM/YYYY");
+    // },
 
     subTotal() {
       var total = this.courseReserv.reduce((accumulator, item) => {
@@ -2162,6 +2164,7 @@ export default {
   methods: {
     async buyCourse(data) {
       // data มีค่า = classroom ใน getClassroom()
+      console.log(data.startDate);
       this.courseReserv.push(data);
       Swal.fire({
         title: "SUCCESS",
@@ -2329,8 +2332,8 @@ export default {
             level: item.level,
             rate: item.rate,
             classQty: item.classQty,
-            startDate: moment(item.startDate).format("x"),
-            endDate: moment(item.endDate).format("x"),
+            startDate: moment(item.startDate).format('x'),
+            endDate: moment(item.endDate).format('x'),
             startTime: item.startTime,
             wages: item.wages,
 
@@ -2349,6 +2352,7 @@ export default {
             firstName: this.stdProfile.firstName,
             lastName: this.stdProfile.lastName,
             nickName: this.stdProfile.nickName,
+            invoiceNo : this.invoiceNo,
             dateAtClass: Date.now(),            
           };
           batch.update(db.collection("classroom").doc(item.classId), {
@@ -2400,8 +2404,10 @@ export default {
             startDate: item.startDate,
             startTime: item.startTime,
             wages: item.wages,
-            teacherName: item.teacherAtclass.teacherName,
-            teacherId: item.teacherAtclass.teacherId,
+            teacherAtclass: item.teacherAtclass,
+            // teacherName: item.teacherAtclass.teacherName,
+            // teacherId: item.teacherAtclass.teacherId,
+            // teacherTel : item.teacherAtclass.mobilephone ,
           };
 
           this.courseInfo.push(data);
@@ -2741,34 +2747,34 @@ export default {
       }
     },
 
-    async getCourseTemplate() {
-      try {
-        this.$store.state.show = true;
-        const doc = await db.collection("courseTemplate").doc("detail").get();
-        if (doc.empty) {
-          console.log("No matching documents.");
-          return;
-        }
-        this.cName = doc.data().courseName;
-        this.cType = doc.data().courseType;
-        this.cLevel = doc.data().level;
-        this.cRate = doc.data().rate;
-        this.cTeacher = doc.data().teacher;
+    // async getCourseTemplate() {
+    //   try {
+    //     this.$store.state.show = true;
+    //     const doc = await db.collection("courseTemplate").doc("detail").get();
+    //     if (doc.empty) {
+    //       console.log("No matching documents.");
+    //       return;
+    //     }
+    //     this.cName = doc.data().courseName;
+    //     this.cType = doc.data().courseType;
+    //     this.cLevel = doc.data().level;
+    //     this.cRate = doc.data().rate;
+    //     this.cTeacher = doc.data().teacher;
 
-        console.log(this.cTeacher);
-        this.addNewItem();
-        this.$store.state.show = false;
-      } catch (err) {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาดที่ระบบ",
-          text: "ไม่สามารถดึงข้อมูล course เรียนได้ กรุณาลองใหม่อีกครั้ง",
-          icon: "warning",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-        this.$store.state.show = false;
-      }
-    },
+    //     // console.log(this.cTeacher);
+    //     // this.addNewItem();
+    //     this.$store.state.show = false;
+    //   } catch (err) {
+    //     Swal.fire({
+    //       title: "เกิดข้อผิดพลาดที่ระบบ",
+    //       text: "ไม่สามารถดึงข้อมูล course เรียนได้ กรุณาลองใหม่อีกครั้ง",
+    //       icon: "warning",
+    //       confirmButtonColor: "#FF0000",
+    //       confirmButtonText: "ตกลง",
+    //     });
+    //     this.$store.state.show = false;
+    //   }
+    // },
 
     deleteProduct(index) {
       // console.log(index);
@@ -2777,33 +2783,33 @@ export default {
 
     addNewProduct() {},
 
-    addNewItem() {
-      this.courses.push({
-        courseSelected: "",
-        classTypeSelected: "",
-        levelSelected: "",
-        priceSelected: "",
-        teacherSelected: "",
-        daySelected: "",
-        discount: 0,
-        amount: 12,
-        startTime: "",
-        wages: 0,
-        finishTime: "",
-        startDate: "",
-        endDate: "",
-        qty: 1,
-        // endDate:  moment(this.startDate).add(3,'M').format('YYYY-MM-DD'),
+    // addNewItem() {
+    //   this.courses.push({
+    //     courseSelected: "",
+    //     classTypeSelected: "",
+    //     levelSelected: "",
+    //     priceSelected: "",
+    //     teacherSelected: "",
+    //     daySelected: "",
+    //     discount: 0,
+    //     amount: 12,
+    //     startTime: "",
+    //     wages: 0,
+    //     finishTime: "",
+    //     startDate: "",
+    //     endDate: "",
+    //     qty: 1,
+    //     // endDate:  moment(this.startDate).add(3,'M').format('YYYY-MM-DD'),
 
-        courseName: this.cName,
-        courseType: this.cType,
-        level: this.cLevel,
-        rate: this.cRate,
-        teacher: this.cTeacher,
-        day: this.cDay,
-      });
-      // console.log(this.courses);
-    },
+    //     courseName: this.cName,
+    //     courseType: this.cType,
+    //     level: this.cLevel,
+    //     rate: this.cRate,
+    //     teacher: this.cTeacher,
+    //     day: this.cDay,
+    //   });
+    //   // console.log(this.courses);
+    // },
 
     deleteTeacher(doc) {
       Swal.fire({
@@ -2960,13 +2966,13 @@ export default {
                 classType: doc.data().classType,
                 courseName: doc.data().courseName,
                 dayAttend: doc.data().dayAttend,
-                endDate: moment(parseInt(doc.data().endDate)).format("ll"),
+                endDate:doc.data().endDate,
                 finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),
                 level: doc.data().level,
                 rate: doc.data().rate,
-                startDate: moment(parseInt(doc.data().startDate)).format("ll"),
+                startDate: doc.data().startDate,
                 startTime: moment(doc.data().startTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),
@@ -2994,7 +3000,7 @@ export default {
 
   created() {
     this.getStudentData();
-    this.getCourseTemplate();
+    // this.getCourseTemplate();
     this.getProducts();
     this.getClassroom();
   },
