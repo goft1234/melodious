@@ -3,6 +3,30 @@
     <div class="container-fluid jumbotron">
       <div class="">
         <h4 class="text-center text-success mb-4">บันทึกการเข้าเรียน</h4>
+        <div class="row mb-2">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <select
+              class="form-control"
+              id="namePrefix"
+              v-model="setDaySelect"
+              @change="setDay()"
+            >
+              <option disabled value="">
+                เลือกเพื่อดูตารางเรียน - สอนรายวัน
+              </option>
+              <option value="0">ทั้งหมด (Everyday)</option>
+              <option value="1">วันจันทร์ (Monday)</option>
+              <option value="2">วันอังคาร (Tuesday)</option>
+              <option value="3">วันพุธ (Wednesday)</option>
+              <option value="4">วันพฤหัสบดี (Thursday)</option>
+              <option value="5">วันศุกร์ (Friday )</option>
+              <option value="6">วันเสาร์ (Saturday)</option>
+              <option value="7">วันอาทิตย์ (Sunday)</option>
+            </select>
+          </div>
+          <div class="col-md-3"></div>
+        </div>
         <button
           class="btn btn-info d-inline-block px-2"
           data-toggle="modal"
@@ -91,7 +115,7 @@
 
     <!-- The Modal -->
     <div class="modal fade" id="classroomDetailModal">
-      <div class="modal-dialog modal-xl">
+      <div class="modal-dialog modal-dialog-scrollable modal-xl">
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
@@ -146,7 +170,18 @@
                           รหัสนักเรียน
                           <span class="text-success">{{ item.studentId }}</span>
                         </p>
-                        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+                        <div class="row justify-content-center">
+                          <div class="col text-center">
+                            <button
+                              @click="stdInClassDetail(item)"
+                              class="btn btn-primary"
+                              data-toggle="modal"
+                              data-target="#StudentInClassModal"
+                            >
+                              รายละเอียด
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -409,13 +444,206 @@
                   accordion="my-accordion"
                   role="tabpanel"
                 >
-                  <b-card-body> 
-                    <pre>
+                  <b-card-body>
+                    <div
+                      style="border: 1px solid green"
+                      class="card mb-2"
+                      v-for="(obj, index) in classHistory"
+                      :key="index"
+                    >
+                      <div class="card-body">
+                        <h6 class="text-center text-success">
+                          ครั้งที่{{ index + 1 }} วันที่ {{ obj.learningTime }}
+                        </h6>
+                        <div class="form-group row">
+                          <label
+                            for="name"
+                            class="col-sm-3 col-form-label text-success"
+                            >ครูผู้สอน</label
+                          >
+                          <div class="col-sm-9">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="name"
+                              :value="obj.teacherAtclass.teacherName"
+                              readonly
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label
+                            for="description"
+                            class="col-sm-3 col-form-label text-success"
+                            >รายละเอียดการสอน</label
+                          >
+                          <div class="col-sm-9">
+                            <textarea
+                              class="form-control"
+                              id="description"
+                              rows="5"
+                              disabled
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <div class="form-group row">
+                          <div class="col-sm-7">
+                            <div class="form-group row">
+                              <label
+                                for="description"
+                                class="col-sm-5 col-form-label text-success"
+                                >หมายเหตุ</label
+                              >
+                              <div class="col-sm-7">
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  :value="obj.commentThisTime"
+                                  disabled
+                                />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label
+                                for="description"
+                                class="col-sm-5 col-form-label text-success"
+                                >นักเรียนที่เข้าเรียน</label
+                              >
+                              <div class="col-sm-7">
+                                <div
+                                  v-for="(item, idx) in obj.studentYes"
+                                  :key="idx"
+                                >
+                                  <div class="input-group mb-3">
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      placeholder="First Name"
+                                      :value="item.firstName"
+                                      disabled
+                                    />
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      placeholder="Last Name"
+                                      :value="item.lastName"
+                                      disabled
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label
+                                for="description"
+                                class="col-sm-5 col-form-label text-success"
+                                >นักเรียนทั้งหมด</label
+                              >
+                              <div class="col-sm-7">
+                                <div
+                                  v-for="(item, idx) in obj.studentAtClass"
+                                  :key="idx"
+                                >
+                                  <div class="input-group mb-3">
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      placeholder="First Name"
+                                      :value="item.firstName"
+                                    />
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      placeholder="Last Name"
+                                      :value="item.lastName"
+                                    />
+                                    <div class="input-group-append">
+                                      <button
+                                        @click="studentChk(item, idx, obj)"
+                                        class="btn btn-success"
+                                        type="submit"
+                                      >
+                                        <i class="fas fa-check-circle"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-5">
+                            <div class="promotion-image-container">
+                              <img :src="attendancePic" class="img-thumbnail" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead class="thead-light">
+                          <tr class="text-center">
+                            <th>วันที่</th>
+                            <th>นักเรียนทั้งหมด</th>
+                            <th>นักเรียนที่มา</th>
+                            <th>อาจารย์</th>
+                            <th>รายละเอียดการสอน</th>
+                            <th>ลายเซนต์</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(obj, index) in classHistory" :key="index">
+                            <td>
+                              ครั้งที่{{ index + 1 }} <br />{{
+                                obj.learningTime
+                              }}
+                            </td>
+                            <td>
+                              <p
+                                v-for="(item, idx) in obj.studentAtClass"
+                                :key="idx"
+                              >
+                                {{ item.firstName }} {{ item.lastName }}
+                                <button
+                                  @click="studentChk(item, idx, obj)"
+                                  class="btn btn-success"
+                                >
+                                  <i class="fas fa-check-circle"></i>
+                                </button>
+                              </p>
+                            </td>
+                            <td>
+                              <p
+                                v-for="(item, idx) in obj.studentYes"
+                                :key="idx"
+                              >
+                                {{ item.firstName }} {{ item.lastName }}
+                              </p>
+                            </td>
+                            <td>{{ obj.teacherAtclass.teacherName }}</td>
+                            <td>
+                              <div class="form-group">
+                                <label for="comment">Comment:</label>
+                                <textarea
+                                  class="form-control"
+                                  rows="5"
+                                  id="comment"
+                                ></textarea>
+                              </div>
+                            </td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div> -->
+                    <!-- <pre>
                       <div v-for="(obj,index) in classHistory" :key="index">
                         {{obj.learningTime}}
                       </div>
                       
-                    </pre>
+                    </pre> -->
                   </b-card-body>
                 </b-collapse>
               </b-card>
@@ -495,12 +723,15 @@
                       </div>
                     </div>
                     <div class="row">
-                        <div class="col text-center">
-                          <div @click="addClassroomHis(classroom)"  class="btn btn-success px-3">
-                            เพิ่มข้อมูล
-                          </div>
+                      <div class="col text-center">
+                        <div
+                          @click="addClassroomHis(classroom)"
+                          class="btn btn-success px-3"
+                        >
+                          เพิ่มข้อมูล
                         </div>
                       </div>
+                    </div>
                   </b-card-body>
                 </b-collapse>
               </b-card>
@@ -851,12 +1082,130 @@
       </div>
     </div>
     <!--End The Modal -->
+
+    <!-- The Modal -->
+    <div class="modal fade" id="StudentInClassModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <!-- <div class="modal-header">
+            <h4 class="modal-title">รายละเอียดในคอร์สเรียน</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div> -->
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div class="p-3" style="background: #f2f2f2">
+              <div class="row" v-for="(item, index) in stdInClass" :key="index">
+                <div class="mt-3">
+                  <div class="row text-left">
+                    <div class="col-lg-4 col-md-6">
+                      <div>
+                        ชม.คงเหลือ
+                        <span class="text-success">{{ item.amount }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                      <div>
+                        วิชา
+                        <span class="text-success">{{ item.courseName }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                      <div>
+                        ชั้นเรียน
+                        <span class="text-success">{{ item.classType }}</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                      <div>
+                        ชั้นเรียน
+                        <span class="text-success">{{ item.level }}</span>
+                      </div>
+                    </div>
+
+                    <!-- <div class="col-lg-4 col-md-6">
+                          <div>
+                            ชื่อเล่น
+                            <span class="text-success">{{
+                              item.nickName
+                            }}</span>
+                          </div>
+                        </div> -->
+
+                    <div class="col-lg-4 col-md-6">
+                      <div>
+                        วันเรียน
+                        <span class="text-success">{{
+                          item.dayAttend.item
+                        }}</span>
+                      </div>
+                    </div>
+                    <!-- <div class="col-lg-4 col-md-6">
+                          <div>
+                            เวลาเรียน
+                            <span class="text-success"
+                              >{{ item.startTime }}-{{
+                                item.finishTime
+                              }}</span
+                            >
+                          </div>
+                        </div> -->
+                    <div class="col-lg-4 col-md-6">
+                      <div>
+                        เบอร์โทร
+                        <span class="text-success">{{ item.mobilephone }}</span>
+                      </div>
+                    </div>
+
+                    <!-- <div class="col-lg-4 col-md-6">
+                          <div>
+                            โปรโมชั่น
+                            <span class="text-success"
+                              >เซตเสือน้อย5%แถมฟรี1ครั้ง</span
+                            >
+                          </div>
+                        </div> -->
+                    <!-- <div class="col-lg-4 col-md-6">
+                          <div>
+                            วันที่เริ่มเรียน
+                            <span class="text-success">{{
+                              item.startDate
+                            }}</span>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div>
+                            วันที่เรียนจบ
+                            <span class="text-success">{{
+                              item.endDate
+                            }}</span>
+                          </div>
+                        </div> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { db, functions, fb } from "../../firebase.js";
 import moment from "moment";
+import firebase from "firebase/app";
 
 export default {
   name: "",
@@ -993,17 +1342,181 @@ export default {
       classrooms: [],
       disabled: 0,
       canEdit: false,
-      commentThisTime:'',
+      commentThisTime: "",
 
-      classHistory : [],
+      classHistory: [],
+      stdInClass: [],
+      setDaySelect: "",
+      // https://via.placeholder.com/300x200
+      attendancePic: "https://via.placeholder.com/300x200",
     };
   },
 
   methods: {
-    async addClassroomHis(classroom){
+    setDay() {
+      console.log(this.setDaySelect);
+      try {
+        this.$store.state.show = true;
+        let day = parseInt(this.setDaySelect)
+        let refDay;
+        if(day == 0){
+          refDay = db.collection("classroom").orderBy("dayAttend.dayNum","desc")
+        }
+        else{
+          refDay = db.collection("classroom")
+          .where("dayAttend.dayNum", "==", day)
+          .where("amount", ">=", 1)
+        }
+        // var date = moment().isoWeekday();
+        // console.log(date);
+
+          refDay.onSnapshot((querySnapshot) => {
+            this.classrooms = [];
+            querySnapshot.forEach((doc) => {
+              // if(!doc.data().role.isAdmin)
+              // {
+              // console.log(doc.data());
+              let classroom = {
+                nowDate: moment().format("ll"),
+                classId: doc.id,
+
+                amount: doc.data().amount,
+                classType: doc.data().classType,
+                courseName: doc.data().courseName,
+                createdAt: doc.data().createdAt,
+                dayAttend: doc.data().dayAttend,
+                endDate: doc.data().endDate,
+                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
+                level: doc.data().level,
+                rate: doc.data().rate,
+                startDate: doc.data().startDate,
+                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
+                studentAtClass: doc.data().student,
+                teacherAtclass: doc.data().teacherAtclass,
+                wages: doc.data().wages,
+              };
+              this.classrooms.push(classroom);
+              console.log(this.classrooms);
+              this.$store.state.show = false;
+            });
+            this.$store.state.show = false;
+          });
+      } catch (err) {
+        console.log(err);
+        this.$store.state.show = false;
+      }
+    },
+
+    stdInClassDetail(item) {
+      console.log(item);
+      // $('#StudentInClassModal').modal('show')
+      var docRef = db
+        .collection("courseActive")
+        .where("classId", "==", item.classId)
+        .where("userId", "==", item.userId);
+
+      docRef
+        .get()
+        .then((querySnapshot) => {
+          this.stdInClass = [];
+          querySnapshot.forEach((doc) => {
+            let detail = {
+              docId: doc.id,
+              amount: doc.data().amount,
+              classQty: doc.data().classQty,
+              classType: doc.data().classType,
+              courseName: doc.data().courseName,
+              dayAttend: doc.data().dayAttend,
+              endDate: moment(doc.data().endDate).add(543, "year").format("LL"),
+              finishTime: doc.data().finishTime,
+              invoiceNo: doc.data().invoiceNo,
+              level: doc.data().level,
+              mobilephone: doc.data().mobilephone,
+              nickName: doc.data().nickName,
+              startDate: moment(doc.data().startDate)
+                .add(543, "year")
+                .format("LL"),
+              startTime: doc.data().startTime,
+            };
+            this.stdInClass.push(detail);
+          });
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    },
+    async studentChk(item, idx, obj) {
+      // console.log(item);
+      // console.log(idx);
+      // console.log(obj);
+      // console.log((item["chk"] = true));
+      // console.log(item);
+      Swal.fire({
+        title: "ยืนยันการเข้าเรียน",
+        text: "ยืนยันการเข้าเรียน",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#30855c",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยัน",
+      }).then((result) => {
+        this.$store.state.show = true;
+        if (result.value) {
+          this.stdChkProcess(item, idx, obj);
+        } else {
+          this.$store.state.show = false;
+        }
+      });
+    },
+
+    async stdChkProcess(item, idx, obj) {
+      await db
+        .collection("AttendanceHistory")
+        .doc(obj.docId)
+        .update({
+          studentYes: firebase.firestore.FieldValue.arrayUnion(item),
+        });
+
+      var docRef = db
+        .collection("courseActive")
+        .where("classId", "==", item.classId)
+        .where("userId", "==", item.userId);
+
+      docRef
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data().amount);
+            let newAmount = doc.data().amount - 1;
+            db.collection("courseActive")
+              .doc(doc.id)
+              .update({ amount: newAmount })
+              .then(() => {
+                Swal.fire({
+                  title: "เพิ่มข้อมูลเรียบร้อย",
+                  text: "ได้ทำการเพิ่มข้อมูลการเข้าเรียนแล้ว",
+                  icon: "success",
+                  confirmButtonColor: "#30855c",
+                  confirmButtonText: "ตกลง",
+                });
+                this.$store.state.show = false;
+              });
+          });
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+          this.$store.state.show = false;
+        });
+    },
+    async addClassroomHis(classroom) {
       console.log(classroom);
-      try{
-        await db.collection('AttendanceHistory').add(classroom)
+      try {
+        await db.collection("AttendanceHistory").add(classroom);
         Swal.fire({
           title: "เพิ่มข้อมูลเรียบร้อย",
           text: "ได้ทำการเพิ่มข้อมูลแล้วเรียบร้อย",
@@ -1011,10 +1524,9 @@ export default {
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
         });
-        classroom.commentThisTime = null
-        classroom.learningTime = null
-
-      }catch(err){
+        classroom.commentThisTime = null;
+        classroom.learningTime = null;
+      } catch (err) {
         Swal.fire({
           title: "เกิดข้อผิดพลาด",
           text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
@@ -1181,20 +1693,27 @@ export default {
       // console.log(detail.classId);
       this.classroom = detail;
       this.disabled = 1;
-      
-      db.collection('AttendanceHistory').where("classId", "==", detail.classId).onSnapshot((querySnapshot)=>{
-          this.classHistory = []
-          querySnapshot.forEach((doc)=>{
+
+      db.collection("AttendanceHistory")
+        .where("classId", "==", detail.classId)
+        // .orderBy()
+        .onSnapshot((querySnapshot) => {
+          this.classHistory = [];
+          querySnapshot.forEach((doc) => {
             let classHis = {
-                docId:doc.id,
-                studentAtClass: doc.data().studentAtClass,
-                learningTime : doc.data().learningTime,
-                commentThisTime: doc.data().commentThisTime,
-                teacherAtclass :doc.data().teacherAtclass,
-            }
+              docId: doc.id,
+              studentAtClass: doc.data().studentAtClass,
+              learningTime: moment(doc.data().learningTime)
+                .add(543, "year")
+                .format("DD/MM/YYYY"),
+              commentThisTime: doc.data().commentThisTime,
+              teacherAtclass: doc.data().teacherAtclass,
+              studentYes: doc.data().studentYes,
+            };
             this.classHistory.push(classHis);
-          })
-      })
+            // this.classHistory.reverse();
+          });
+        });
     },
     getDate() {
       var date = moment(Date.now()).day();
@@ -1297,7 +1816,8 @@ export default {
 
   mounted() {
     this.getCourseTemplate();
-    this.getClassroom(), window.scrollTo(0, 0);
+    this.getClassroom();
+    window.scrollTo(0, 0);
     // this.getData();
   },
 };

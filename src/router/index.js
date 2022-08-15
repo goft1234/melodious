@@ -146,6 +146,7 @@ const routes = [
       },
     ],
   },
+  
   {
     path: '/teacher',
     name: 'teacher',
@@ -164,6 +165,7 @@ const routes = [
       component: () => import('../components/teachers/Profile.vue')
     },]
   },
+
   {
     path: '/student',
     name: 'student',

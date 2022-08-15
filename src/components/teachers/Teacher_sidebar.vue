@@ -32,7 +32,7 @@
               <div class="sidebar-menu">
                 <ul class="mt-3">
                   <li class="bottom-line">
-                    <router-link to="/teacher/profile">
+                    <router-link to="/teacher/schedule">
                       <i class="fas fa-arrow-circle-right"></i>
                       <span @click="hide">บันทึกการเข้าเรียน</span>
                     </router-link>
@@ -40,7 +40,7 @@
                   <li class="bottom-line">
                     <router-link to="/teacher/profile">
                       <i class="fas fa-user-graduate"></i>
-                      <span @click="hide">ข้อมูลนักเรียนที่สอน</span>
+                      <span @click="hide">รายชื่อนักเรียนที่สอน</span>
                     </router-link>
                   </li>
                   <li class="bottom-line">
