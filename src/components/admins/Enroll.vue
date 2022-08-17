@@ -151,11 +151,11 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">อีเมล์ </label>
+            <label for="email" class="text-success"><span class="text-danger">****</span> อีเมล์ </label>
             <input
               type="email"
               class="form-control"
-              placeholder="กรอกอีเมล์มี @"
+              placeholder="ใช้เป็น User เพื่อเข้าระบบ"
               id="อีเมล์"
               v-model.trim="profile.email"
             />
@@ -180,11 +180,11 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+            <label for="mobilephone" class="text-success"><span class="text-danger">****</span>โทรศัพท์มือถือ</label>
             <input
               type="text"
               class="form-control"
-              placeholder="กรอกเบอร์มือถือ"
+              placeholder="ใช้เป็นรหัสผ่านเพื่อเข้าระบบ"
               id="mobilephone"
               v-model.trim="profile.mobilephone"
               maxlength="10"
@@ -502,7 +502,7 @@ export default {
       },
 
       imageName: null,
-      dateNow: moment().add(543, 'year').format("LL"),
+      dateNow: moment().add(543, "year").format("LL"),
       detailOpen: false,
 
       profile: {
@@ -546,7 +546,7 @@ export default {
         },
 
         studyHis: "",
-        role: { isStudent: true },
+        role: { isInactive: true },
         profileType: "student",
       },
     };
@@ -692,53 +692,78 @@ export default {
     },
 
     async addProfile() {
-      this.$store.state.show = true;
-      var data = await fb
-        .auth()
-        .createUserWithEmailAndPassword(
-          this.profile.email,
-          this.profile.mobilephone
-        );
-      // this.$store.state.show = false;
+      try {
+        this.$store.state.show = true;
+        var data = await fb
+          .auth()
+          .createUserWithEmailAndPassword(
+            this.profile.email,
+            this.profile.mobilephone
+          );
+        // console.log(data.user.uid);
+        // this.$store.state.show = false;
 
-      var ref = db.collection("studentId").doc("detail");
-      let doc = await ref.get();
-      let str = doc.data().stdId.toString();
-      this.profile.studentId = "MMS" + str.padStart(3, "0");
-      console.log(this.profile.studentId);
+        var ref = db.collection("studentId").doc("detail");
+        let doc = await ref.get();
+        let str = doc.data().stdId.toString();
+        this.profile.studentId = "MMS" + str.padStart(3, "0");
+        console.log(this.profile.studentId);
 
-      this.profile.uid = data.user.uid;
-      this.profile.addProfileAt = Date.now();
+        this.profile.uid = data.user.uid;
+        this.profile.addProfileAt = Date.now();
 
-      await db
-        .collection("studentId")
-        .doc("detail")
-        .update({ stdId: firebase.firestore.FieldValue.increment(1) });
+        await db
+          .collection("studentId")
+          .doc("detail")
+          .update({ stdId: firebase.firestore.FieldValue.increment(1) });
 
-      var addFunctions = functions.httpsCallable("StudentData");
-      await addFunctions(this.profile)
-        .then(() => {
-          Swal.fire({
-            title: "ลงทะเบียนผู้ใช้งานเรียบร้อย",
-            text: "สามารถดำเนินการอื่นๆ ได้ที่หน้าข้อมูลนักเรียน",
-            icon: "success",
-            confirmButtonColor: "#30855c",
-            confirmButtonText: "ตกลง",
-          });
-          this.$router.push("/admin/student");
-          this.$store.state.show = false;
-        })
-        .catch((error) => {
-          console.log("Transaction failed: ", error);
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-            icon: "warning",
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: "ตกลง",
-          });
-          this.$store.state.show = false;
+        await db.collection("studentData").doc(data.user.uid).set(this.profile);
+
+        Swal.fire({
+          title: "ลงทะเบียนผู้ใช้งานเรียบร้อย",
+          text: "สามารถดำเนินการอื่นๆ ได้ที่หน้าข้อมูลนักเรียน",
+          icon: "success",
+          confirmButtonColor: "#30855c",
+          confirmButtonText: "ตกลง",
         });
+        this.$router.push("/admin/student");
+        this.$store.state.show = false;
+      } catch (err) {
+        console.log(err);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false;
+      }
+
+      // var addFunctions = functions.httpsCallable("StudentData");
+      // await addFunctions(this.profile)
+      //   .then(() => {
+      //     Swal.fire({
+      //       title: "ลงทะเบียนผู้ใช้งานเรียบร้อย",
+      //       text: "สามารถดำเนินการอื่นๆ ได้ที่หน้าข้อมูลนักเรียน",
+      //       icon: "success",
+      //       confirmButtonColor: "#30855c",
+      //       confirmButtonText: "ตกลง",
+      //     });
+      //     this.$router.push("/admin/student");
+      //     this.$store.state.show = false;
+      //   })
+      //   .catch((error) => {
+      //     console.log("Transaction failed: ", error);
+      //     Swal.fire({
+      //       title: "เกิดข้อผิดพลาด",
+      //       text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+      //       icon: "warning",
+      //       confirmButtonColor: "#FF0000",
+      //       confirmButtonText: "ตกลง",
+      //     });
+      //     this.$store.state.show = false;
+      //   });
     },
   },
 

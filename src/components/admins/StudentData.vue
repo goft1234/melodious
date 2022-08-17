@@ -23,7 +23,7 @@
           <template slot="table-row" slot-scope="props">
             <span v-if="props.column.field == 'status'">
               <select
-                @change="changeStatus(props.row.uid, $event)"
+                @change="changeStatus(props.row.userId, $event)"
                 class="custom-select"
               >
                 <option :selected="props.row.role.isStudent" value="isStudent">
@@ -69,7 +69,8 @@
               <div
                 class="btn btn-info"
                 data-toggle="modal"
-                data-target="#RenevalModal"
+                data-target="#addCourseModal"
+                @click="getReneval(props.row)"
               >
                 <i class="fa-solid fa-user-plus"></i>
               </div>
@@ -112,7 +113,7 @@
               </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
-              <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
+              <div class="btn btn-danger" @click="deleteStudent(props.row.userId)">
                 <i class="fas fa-trash-alt"></i>
               </div>
             </span>
@@ -175,7 +176,8 @@
             <tr class="text-center">
               <td class="text-left">
                 <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                  ชื่อ - นามสกุล {{ stdProfile.firstName }}
+                  {{ stdProfile.lastName }} <br />
                 </h6>
               </td>
               <td class="text-left">
@@ -461,7 +463,8 @@
             <tr class="text-center">
               <td class="text-left">
                 <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                  ชื่อ - นามสกุล {{ stdProfile.firstName }}
+                  {{ stdProfile.lastName }} <br />
                 </h6>
               </td>
               <td class="text-left">
@@ -1263,6 +1266,14 @@
                             {{ props.row.finishTime }}
                           </h6>
                         </span>
+                        <!-- <div v-else-if="props.column.field == 'remain' && connectCourse == true">
+                          <span>
+                          <h6>
+                            {{ props.row.remain }} 
+                          </h6>
+                       </span> 
+                        </div> -->
+                      
                         <span v-else-if="props.column.field == 'classDiscount'">
                           <div class="form-group">
                             <input
@@ -1894,6 +1905,11 @@ export default {
           field: "rate",
           type: "text",
         },
+        // {
+        //   label: "ชม.",
+        //   field: "remain",
+        //   type: "text",
+        // },
         {
           label: "จำนวนคอร์ส",
           field: "classQty",
@@ -2024,8 +2040,6 @@ export default {
           type: "text",
         },
       ],
-      fruit: null,
-      fruits: ["peach", "pear", "apple", "orange"],
       profiles: [],
 
       profile: {
@@ -2116,25 +2130,24 @@ export default {
       courseInfo: [],
       teacherId: null,
       teacherName: null,
-      teacherTel : null,
+      teacherTel: null,
 
       profileModal: null,
 
       disabled: 0,
-      fee: 300,
+      fee: 0,
 
       courseReserv: [],
       classrooms: [],
       studentTest: [],
-      commentThisTime:'',
+      commentThisTime: "",
+      connectCourse: false,
+
+      userIdToReneval: "",
     };
   },
 
   computed: {
-    // dateFormat() {
-    //   return moment(this.startDate).format("DD/MM/YYYY");
-    // },
-
     subTotal() {
       var total = this.courseReserv.reduce((accumulator, item) => {
         return accumulator + item.rate * item.classQty - item.classDiscount;
@@ -2246,19 +2259,23 @@ export default {
       // console.log(event.target.value);
       var addMessage = functions.httpsCallable("ApproveStudent");
       var data = { uid: uid, role: { [event.target.value]: true } };
+      // console.log(data);
       addMessage(data)
         .then((result) => {
-          // console.log(result);
-
-          Swal.fire({
-            title: "ทำการปรับสถานะเรียบร้อย",
-            text: "Admin ได้ทำการปรับสถานะ นักเรียน แล้วเรียบร้อย",
-            icon: "success",
-            confirmButtonColor: "#30855c",
-            confirmButtonText: "ตกลง",
-          });
+          console.log(result);
+          if (result) {
+            Swal.fire({
+              title: "ทำการปรับสถานะเรียบร้อย",
+              text: "Admin ได้ทำการปรับสถานะ นักเรียน แล้วเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            this.$store.state.show = false;
+          }
         })
         .catch((error) => {
+          console.log(error);
           Swal.fire({
             title: "เกิดข้อผิดพลาด",
             text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
@@ -2313,7 +2330,7 @@ export default {
         var batch = db.batch();
         this.courseReserv.forEach((item) => {
           let data = {
-            classId:item.classId,
+            classId: item.classId,
             userId: this.stdProfile.userId,
 
             studentId: this.stdProfile.studentId,
@@ -2332,8 +2349,8 @@ export default {
             level: item.level,
             rate: item.rate,
             classQty: item.classQty,
-            startDate: moment(item.startDate).format('x'),
-            endDate: moment(item.endDate).format('x'),
+            startDate: moment(item.startDate).format("x"),
+            endDate: moment(item.endDate).format("x"),
             startTime: item.startTime,
             wages: item.wages,
 
@@ -2343,22 +2360,23 @@ export default {
           batch.set(db.collection("courseActive").doc(), data);
         });
 
-        this.courseReserv.forEach((item)=>{
+        this.courseReserv.forEach((item) => {
           // console.log(item.studentAtclass);
           let stdProfileInClass = {
             userId: this.stdProfile.userId,
-            classId : item.classId,
+            classId: item.classId,
             studentId: this.stdProfile.studentId,
             firstName: this.stdProfile.firstName,
             lastName: this.stdProfile.lastName,
             nickName: this.stdProfile.nickName,
-            invoiceNo : this.invoiceNo,
-            dateAtClass: Date.now(),            
+            invoiceNo: this.invoiceNo,
+            dateAtClass: Date.now(),
           };
           batch.update(db.collection("classroom").doc(item.classId), {
-            student: firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
+            student:
+              firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
           });
-        })
+        });
 
         this.carts.forEach((item) => {
           var newQty = item.quantity - item.buyAmount;
@@ -2383,7 +2401,7 @@ export default {
         this.courseInfo = [];
         this.courseReserv.forEach((item) => {
           let data = {
-            classId:item.classId,
+            classId: item.classId,
             userId: this.stdProfile.userId,
 
             studentId: this.stdProfile.studentId,
@@ -2682,9 +2700,10 @@ export default {
       // console.log(uid);
       // this.$router.push({ name: "addcourse", params: { uid } });
       // (this.day = moment(Date.now()).format("DD/MM/YYYY")), console.log();
-      
+
       // stdProfile มีค่าเท่ากับ profile ใน getStudentData()
       this.stdProfile = stdProfile;
+      this.getClassroom()
     },
 
     addToInvoice() {
@@ -2811,7 +2830,8 @@ export default {
     //   // console.log(this.courses);
     // },
 
-    deleteTeacher(doc) {
+    deleteStudent(uid) {
+      // console.log(uid);
       Swal.fire({
         title: "ต้องการลบ?",
         text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -2820,13 +2840,14 @@ export default {
         confirmButtonColor: "#30855c",
         cancelButtonColor: "#d33",
         confirmButtonText: "ตกลง ลบข้อมูล",
-      }).then((result) => {
-        if (result.value) {
-          // console.log(doc)
-          db.collection("teacherData")
-            .doc(doc)
-            .delete()
-            .then(() => {
+      })
+        .then((result) => {
+          if (result.value) {
+            this.$store.state.show = true;
+            var del = functions.httpsCallable("deleteStudent");
+            var data = { uid: uid };
+
+            del(data).then(() => {
               Swal.fire({
                 title: "ทำการลบเรียบร้อย",
                 text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
@@ -2834,9 +2855,48 @@ export default {
                 confirmButtonColor: "#30855c",
                 confirmButtonText: "ตกลง",
               });
+              this.$store.state.show = false;
             });
-        }
-      });
+          }
+        })
+        .catch((error) => {
+          console.log("Transaction failed: ", error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        });
+
+
+      // Swal.fire({
+      //   title: "ต้องการลบ?",
+      //   text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
+      //   type: "warning",
+      //   showCancelButton: true,
+      //   confirmButtonColor: "#30855c",
+      //   cancelButtonColor: "#d33",
+      //   confirmButtonText: "ตกลง ลบข้อมูล",
+      // }).then((result) => {
+      //   if (result.value) {
+      //     // console.log(doc)
+      //     db.collection("teacherData")
+      //       .doc(doc)
+      //       .delete()
+      //       .then(() => {
+      //         Swal.fire({
+      //           title: "ทำการลบเรียบร้อย",
+      //           text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
+      //           icon: "success",
+      //           confirmButtonColor: "#30855c",
+      //           confirmButtonText: "ตกลง",
+      //         });
+      //       });
+      //   }
+      // });
     },
 
     async getInvoiceId() {
@@ -2945,10 +3005,73 @@ export default {
       }
     },
 
+    getReneval(stdProfile) {
+      // console.log();
+      this.stdProfile = stdProfile;
+      this.userIdToReneval = stdProfile.userId;
+      this.connectCourse == true;
+      this.getClassroom();
+      console.log(this.userIdToReneval);
+      try {
+        this.connectCourse = true;
+        this.$store.state.show = true;
+        var date = moment().isoWeekday();
+        // console.log(date);
+        db.collection("courseActive")
+          .where("userId", "==", this.userIdToReneval)
+          // .orderBy("createdAt", "desc")
+          .onSnapshot((querySnapshot) => {
+            this.classrooms = [];
+            querySnapshot.forEach((doc) => {
+              // if(!doc.data().role.isAdmin)
+              // {
+              // console.log(doc.data());
+              let classroom = {
+                nowDate: moment().format("ll"),
+                classId: doc.id,
+                remain:doc.data().amount,
+                amount: doc.data().amount,
+                classType: doc.data().classType,
+                courseName: doc.data().courseName,
+                dayAttend: doc.data().dayAttend,
+                endDate:doc.data().endDate,
+                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
+                level: doc.data().level,
+                rate: doc.data().rate,
+                startDate: doc.data().startDate,
+                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
+                studentAtclass: doc.data().student,
+                teacherAtclass: doc.data().teacherAtclass,
+                wages: doc.data().wages,
+                classQty: 0,
+                classDiscount: 0,
+              };
+              this.classrooms.push(classroom);
+              console.log(this.classrooms);
+            });
+            this.$store.state.show = false;
+          });
+      } catch (err) {
+        console.log(err);
+        this.$store.state.show = false;
+      }
+    },
+
     getClassroom() {
       try {
         this.$store.state.show = true;
         var date = moment().isoWeekday();
+
+        // let docRef ;
+        // if(connectCourse == true){
+        //   docRef = db.collection("classroom")
+        //   .where("day.dayNum", "==", date)
+        //   // .orderBy("createdAt", "desc")
+        // }
         // console.log(date);
         db.collection("classroom")
           // .where("day.dayNum", "==", date)
@@ -2966,7 +3089,7 @@ export default {
                 classType: doc.data().classType,
                 courseName: doc.data().courseName,
                 dayAttend: doc.data().dayAttend,
-                endDate:doc.data().endDate,
+                endDate: doc.data().endDate,
                 finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),

@@ -483,6 +483,7 @@
                               id="description"
                               rows="5"
                               disabled
+                              :value="obj.commentClass"
                             ></textarea>
                           </div>
                         </div>
@@ -574,8 +575,8 @@
                           </div>
 
                           <div class="col-sm-5">
-                            <div class="promotion-image-container">
-                              <img :src="attendancePic" class="img-thumbnail" />
+                            <div class="promotion-image-container text-center">
+                              <img :src="obj.attendancePic" width="300" height="300" class="img-thumbnail" />
                             </div>
                           </div>
                         </div>
@@ -1514,6 +1515,9 @@ export default {
         });
     },
     async addClassroomHis(classroom) {
+      
+      classroom.attendancePic = 'https://media.istockphoto.com/vectors/attendance-concept-vector-flat-design-vector-id1198430065?k=20&m=1198430065&s=170667a&w=0&h=Ah8_cY025T_GPNeASpti9X95K7eAWBzq2IwWCA0oQtI='
+      classroom.commentClass = '';
       console.log(classroom);
       try {
         await db.collection("AttendanceHistory").add(classroom);
@@ -1536,6 +1540,7 @@ export default {
         });
       }
     },
+
     stdAttend(attend) {
       Swal.fire({
         title: "ยืนยันการเข้าเรียน",
@@ -1707,6 +1712,8 @@ export default {
                 .add(543, "year")
                 .format("DD/MM/YYYY"),
               commentThisTime: doc.data().commentThisTime,
+              commentClass : doc.data().commentClass,
+              attendancePic : doc.data().attendancePic,
               teacherAtclass: doc.data().teacherAtclass,
               studentYes: doc.data().studentYes,
             };

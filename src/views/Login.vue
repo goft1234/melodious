@@ -129,7 +129,7 @@ export default {
             this.$router.replace("/teacher/schedule");
             // alert('admin')
           }else if (claims.isStudent) {
-            this.$router.replace("/student/schedule");
+            this.$router.replace("/student/profile");
             // alert('student')
           }
           else{

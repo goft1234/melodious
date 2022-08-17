@@ -81,7 +81,7 @@
                     </router-link>
                   </li>
                   <li class="bottom-line">
-                    <router-link to="/admin/teacher">
+                    <router-link to="/admin/assessment">
                       <i class="fas fa-paste"></i>
                       <span @click="hide">ระบบประเมินต่างๆ</span>
                     </router-link>

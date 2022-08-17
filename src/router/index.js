@@ -26,6 +26,11 @@ const routes = [
     }
   },
   {
+    path: '/assess/:uid',
+    name: 'assess',
+    component: () => import('../components/admins/AssessClipboard.vue')
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: () => import('../views/Profile'),
@@ -107,6 +112,11 @@ const routes = [
         path: 'attendance',
         name: 'attendance',
         component: () => import('../components/admins/Attendance.vue')
+      },
+      {
+        path: 'assessment',
+        name: 'assessment',
+        component: () => import('../components/admins/Assessment.vue')
       },
       {
         path: 'managetable',

@@ -508,9 +508,13 @@
                           </div>
 
                           <div class="col-sm-5">
-                            <div class="promotion-image-container">
-                              <img :src="obj.attendancePic" class="img-thumbnail" width="300"
-            height="220" />
+                            <div class="promotion-image-container text-center">
+                              <img
+                                :src="obj.attendancePic"
+                                class="img-thumbnail"
+                                width="300"
+                                height="220"
+                              />
                             </div>
                           </div>
                         </div>
@@ -772,7 +776,7 @@
                         class="form-control"
                         id="description"
                         rows="5"
-                        v-model="obj.commentClass"
+                        v-model="commentClass"
                       ></textarea>
                     </div>
                   </div>
@@ -824,15 +828,15 @@
                     </div>
 
                     <div class="col-sm-5">
-                      <div class="promotion-image-container">
-                        <div id="preview">
+                      <div class="promotion-image-container text-center">
+                        <div id="preview ">
                           <!-- v-if="profile.image" -->
                           <img
-                            v-if="obj.attendancePic"
-                            :src="attendancePic"
+                            v-if="license.attendancePic"
+                            :src="license.attendancePic"
                             class="img-thumbnail"
-                            width="250"
-                            height="250"
+                            width="200"
+                            height="25%"
                             style="border: 5px solid white"
                           />
                         </div>
@@ -843,7 +847,15 @@
                             @change="onFileChange"
                           />
                           <button
+                            v-if="submitBtn == true"
                             class="btn btn-success mt-3"
+                            @click="sendData(obj)"
+                          >
+                            ส่งข้อมูลการสอน
+                          </button>
+                          <button
+                            v-else
+                            class="btn btn-warning mt-3"
                             @click="uploadImage()"
                           >
                             อัพโหลดรูปภาพ
@@ -1074,18 +1086,52 @@ export default {
       stdInClass: [],
       setDaySelect: "",
       // https://via.placeholder.com/300x200
-      attendancePic:
-        "https://media.istockphoto.com/vectors/attendance-concept-vector-flat-design-vector-id1198430065?k=20&m=1198430065&s=170667a&w=0&h=Ah8_cY025T_GPNeASpti9X95K7eAWBzq2IwWCA0oQtI=",
+
       imageName: null,
       submitBtn: false,
+      license: {
+        attendancePic:
+          "https://media.istockphoto.com/vectors/attendance-concept-vector-flat-design-vector-id1198430065?k=20&m=1198430065&s=170667a&w=0&h=Ah8_cY025T_GPNeASpti9X95K7eAWBzq2IwWCA0oQtI=",
+      },
+      commentClass: "",
     };
   },
 
   methods: {
+    async sendData(classToday) {
+      console.log(classToday.docId);
+      // console.log(this.license.attendancePic);
+      // console.log(this.commentClass);
+      try {
+        this.$store.state.show = true;
+        await db.collection("AttendanceHistory").doc(classToday.docId).update({
+          commentClass: this.commentClass,
+          attendancePic: this.license.attendancePic,
+        });
+        Swal.fire({
+          title: "SUCCESS",
+          text: "ส่งข้อมูลเรียบร้อย",
+          icon: "success",
+          confirmButtonColor: "#30855c",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false;
+      } catch (err) {
+        console.log(err);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false;
+      }
+    },
     onFileChange(e) {
       const file = e.target.files[0];
       this.imageName = e.target.files[0];
-      this.attendancePic = URL.createObjectURL(file);
+      this.license.attendancePic = URL.createObjectURL(file);
     },
     uploadImage() {
       if (this.imageName != null) {
@@ -1113,7 +1159,7 @@ export default {
           },
           () => {
             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-              this.attendancePic = downloadURL;
+              this.license.attendancePic = downloadURL;
               Swal.fire({
                 title: "SUCCESS",
                 text: "อัพโหลดรูปภาพเรียบร้อย",
@@ -1122,7 +1168,8 @@ export default {
                 confirmButtonText: "ตกลง",
               });
               this.$store.state.show = false;
-              console.log(this.attendancePic);
+              this.submitBtn = true;
+              console.log(this.license.attendancePic);
             });
           }
         );
@@ -1136,6 +1183,7 @@ export default {
         });
       }
     },
+
     setDay() {
       console.log(this.setDaySelect);
       try {
@@ -1499,8 +1547,9 @@ export default {
               courseName: doc.data().courseName,
               classType: doc.data().classType,
               level: doc.data().level,
-              commentClass :doc.data().commentClass,
-              attendancePic : doc.data().attendancePic,            };
+              commentClass: doc.data().commentClass,
+              attendancePic: doc.data().attendancePic,
+            };
             this.classToday.push(classHis);
             // this.classHistory.reverse();
           });
@@ -1528,6 +1577,8 @@ export default {
               commentThisTime: doc.data().commentThisTime,
               teacherAtclass: doc.data().teacherAtclass,
               studentYes: doc.data().studentYes,
+              commentClass: doc.data().commentClass,
+              attendancePic: doc.data().attendancePic,
             };
             this.classHistory.push(classHis);
             // this.classHistory.reverse();
