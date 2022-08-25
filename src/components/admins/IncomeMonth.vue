@@ -670,6 +670,9 @@
         </div>
       </div>
     </div>
+    <pre>
+      {{testSpread}}
+    </pre>
     <!-- End Detail Modal -->
   </div>
 </template>
@@ -787,14 +790,14 @@ export default {
       disabled: 0,
 
       monthSelect: null,
-      dayAsset1:[],
-      dayAsset2:[],
-      dayAsset3:[],
-      dayAsset4:[],
-      dayAsset5:[],
-      dayAsset6:[],
-      dayAsset7:[],
-      dayAsset8:[],
+      dayAsset1: [],
+      dayAsset2: [],
+      dayAsset3: [],
+      dayAsset4: [],
+      dayAsset5: [],
+      dayAsset6: [],
+      dayAsset7: [],
+      dayAsset8: [],
     };
   },
   filters: {
@@ -819,11 +822,29 @@ export default {
         this.Items.forEach((item) => {
           if (item.invDayOfMonth == i) {
             // console.log(item.invDayOfMonth);
-            console.log(this.dayAsset.toString()+i.toString());
+            console.log(this.dayAsset.toString() + i.toString());
           }
         });
       }
     },
+
+    // testSpread() {
+    //   const result = this.Items.reduce((carry, current) => {
+    //     const { day } = current;
+    //     let el = carry.find(
+    //       (item) => item.invDayOfMonth === invDayOfMonth 
+    //     );
+
+    //     if (!el) {
+    //       el = {day};
+    //       carry.push(el);
+    //     }
+
+    //     el.other.push({ ...course });
+    //      console.log('ทดสอบ'+result);
+    //     return result;
+    //   }, []);
+    // },
   },
   methods: {
     invoiceDetail(detail) {
@@ -1014,6 +1035,7 @@ export default {
                 docId: doc.id,
               };
               this.Items.push(Item);
+              // console.log(this.Items);
             });
           });
       } catch (err) {

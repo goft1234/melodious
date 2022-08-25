@@ -69,6 +69,11 @@ const routes = [
         component: () => import('../components/admins/TeacherData.vue')
       },
       {
+        path: 'teacherSchedule/:uid',
+        name: 'teacherSchedule',
+        component: () => import('../components/admins/TeacherSchedule.vue')
+      },
+      {
         path: 'employee',
         name: 'employee',
         component: () => import('../components/admins/EmployeeData.vue')

@@ -32,6 +32,8 @@ Vue.use(datePicker);
 import DatetimePicker from '@livelybone/vue-datepicker';
 Vue.use('datetime-picker', DatetimePicker);
 
+import DateDropdown from 'vue-date-dropdown'
+Vue.use(DateDropdown);
 
 import ThailandAutoComplete from 'vue-thailand-address-autocomplete'
 Vue.component('ThailandAutoComplete', ThailandAutoComplete)

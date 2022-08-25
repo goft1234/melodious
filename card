@@ -1,0 +1,114 @@
+    <div class="container-fluid">
+      <div class="">
+        <h4 class="text-center text-success mb-4 mt-3">ข้อมูล Transaction</h4>
+        <div class="row">
+          <div class="col-md-12">
+            <date-range-picker
+              :single-date-picker="singleDatePicker"
+              @update="getDatetest"
+              :showDropdowns="showDropdowns"
+              v-model="pickerDates"
+            >
+              <template
+                v-slot:input="pickerDates"
+                style="min-width: 450px"
+                class="form-control"
+                >{{ pickerDates.startDate | date }} -
+                {{ pickerDates.endDate | date }}
+                <br />
+              </template>
+            </date-range-picker>
+            <br />
+            <!-- <div class="btn btn-success px-3" @click="test()">test</div> -->
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <div class="card-deck text-center">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-header bg-success shadow">
+                    <h5 class="text-light text-center">รายรับ</h5>
+                  </div>
+                  <h6 class="card-text mt-4 text-primary text-center">
+                    <h6 class="text-dark">รายรับช่วงวันที่</h6>
+                    {{ pickerDates.startDate | date }} -
+                    {{ pickerDates.endDate | date }}
+                  </h6>
+                  <h4 class="card-text my-4 text-primary text-center">
+                    จำนวน {{ incomeTotal }} บาท
+                  </h4>
+
+                  <div class="bg- shadow">
+                    <button
+                      to="/user/withdrawWeb"
+                      class="btn btn-success btn-block text-light"
+                      data-toggle="modal"
+                      data-target="#incomeModal"
+                    >
+                      ดูข้อมูล
+                    </button>
+                  </div>
+                  <div></div>
+                </div>
+              </div>
+
+              <!-- <div class="card">
+                <div class="card-body">
+                  <div class="card-header bg-danger shadow">
+                    <h5 class="text-light text-center">รายจ่าย</h5>
+                  </div>
+                  <h6 class="card-text mt-4 text-danger text-center">
+                    <h6 class="text-danger">รายจ่ายช่วงวันที่</h6>
+                    {{ pickerDates.startDate | date }} -
+                    {{ pickerDates.endDate | date }}
+                  </h6>
+                  <h4 class="card-text my-4 text-danger text-center">
+                    จำนวน {{ incomeTotal }} บาท
+                  </h4>
+
+                  <div class="bg- shadow">
+                    <button
+                      to="/user/withdrawWeb"
+                      class="btn btn-danger btn-block text-light"
+                    >
+                      ดูข้อมูล
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-header bg-warning shadow">
+                    <h5 class="text-light text-center">คงเหลือ</h5>
+                  </div>
+                  <h6 class="card-text mt-4 text-dark text-center">
+                    <h6 class="text-dark">ยอดคงเหลือช่วงวันที่</h6>
+                    {{ pickerDates.startDate | date }} -
+                    {{ pickerDates.endDate | date }}
+                  </h6>
+                  <h4 class="card-text my-4 text-dark text-center">
+                    จำนวน {{ incomeTotal }} บาท
+                  </h4>
+
+                  <div class="bg- shadow">
+                    <button
+                      to="/user/withdrawWeb"
+                      class="btn btn-warning btn-block text-light"
+                    >
+                      ดูข้อมูล
+                    </button>
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </div>
+          <div class="col-md-4"></div>
+        </div>
+      </div>
+
+      <div class="mt-3 shadow"></div>
+    </div>

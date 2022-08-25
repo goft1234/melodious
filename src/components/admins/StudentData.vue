@@ -113,7 +113,10 @@
               </div>
             </span>
             <span v-else-if="props.column.field == 'delete'">
-              <div class="btn btn-danger" @click="deleteStudent(props.row.userId)">
+              <div
+                class="btn btn-danger"
+                @click="deleteStudent(props.row.userId)"
+              >
                 <i class="fas fa-trash-alt"></i>
               </div>
             </span>
@@ -1273,7 +1276,7 @@
                           </h6>
                        </span> 
                         </div> -->
-                      
+
                         <span v-else-if="props.column.field == 'classDiscount'">
                           <div class="form-group">
                             <input
@@ -1676,7 +1679,7 @@
                         </table>
                       </div>
 
-                      <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
+                      <!-- <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
                       <div class="row mx-auto">
                         <div class="col-md-3">
                           <div class="form-check-inline">
@@ -1703,7 +1706,6 @@
                           </div>
                         </div>
                         <div class="col-md-6">
-                          <!-- โอนผ่านธนาคาร -->
                           <div class="input-group mb-3">
                             <div class="input-group-prepend">
                               <div class="input-group-text">
@@ -1741,15 +1743,6 @@
                             <label for="usr" class="text-success"
                               >วัน-เวลาที่ทำธุรกรรม
                             </label>
-                            <!-- <input
-                              type="text"
-                              class="form-control"
-                              id="usr"
-                              v-model="transactionTime"
-                            /> -->
-                            <!-- <date-picker v-model.trim="transactionTime" :config="options" locale="th"></date-picker> -->
-                            <!-- <Datepicker format="DD/MM/YYYY H:i:s"  v-model="transactionTime" @change="test(e)"></Datepicker> -->
-                            <!-- <DatetimePicker></DatetimePicker> -->
                             <input
                               type="datetime-local"
                               class="form-control"
@@ -1757,13 +1750,13 @@
                             />
                           </div>
                         </div>
-                      </div>
+                      </div> -->
 
                       <div class="row text-center">
                         <div class="col-md-12">
                           <button
                             class="btn btn-primary no-print"
-                            @click="confirmInvoice()"
+                            @click="submitInvoice()"
                           >
                             <i class="fas fa-check-circle"></i> ยืนยัน
                           </button>
@@ -2095,7 +2088,7 @@ export default {
       startDate: "",
       endDate: "",
       qty: 1,
-      paymentType: null,
+      paymentType: "",
       paymentFor: [],
       selected: [],
       other: null,
@@ -2176,7 +2169,6 @@ export default {
 
   methods: {
     async buyCourse(data) {
-      // data มีค่า = classroom ใน getClassroom()
       console.log(data.startDate);
       this.courseReserv.push(data);
       Swal.fire({
@@ -2324,15 +2316,16 @@ export default {
       location.reload();
     },
 
-    activeCourse() {
-      // console.log(this.stdProfile);
+    addToActiveCourse() {
       try {
         var batch = db.batch();
         this.courseReserv.forEach((item) => {
+          let remain = item.amount * item.classQty;
           let data = {
             classId: item.classId,
             userId: this.stdProfile.userId,
 
+            remain: remain,
             studentId: this.stdProfile.studentId,
             firstName: this.stdProfile.firstName,
             lastName: this.stdProfile.lastName,
@@ -2392,6 +2385,46 @@ export default {
       } catch (err) {
         console.log(err);
       }
+      // console.log('addTo activeCourse');
+    },
+
+    addToRenevalCourse() {
+      // console.log(this.courseReserv);
+      try {
+        var batch = db.batch();
+        this.courseReserv.forEach((item) => {
+          let remain = item.remain + (item.amount * item.classQty);
+          console.log(item.classId);
+          let data = {
+            remain: remain,
+          };
+          batch.update(db.collection("courseActive").doc(item.classId), data);
+          
+        });
+
+        this.carts.forEach((item) => {
+          var newQty = item.quantity - item.buyAmount;
+          batch.update(db.collection("products").doc(item.pID), {
+            quantity: newQty,
+          });
+        });
+
+        batch.commit();
+        console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+
+        this.addInvoice();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    activeCourse() {
+      // this.addInvoice()
+      // if (this.connectCourse) {
+      //   this.addToRenevalCourse();
+      // } else {
+      //   this.addToActiveCourse();
+      // }
     },
 
     async addInvoice() {
@@ -2404,6 +2437,7 @@ export default {
             classId: item.classId,
             userId: this.stdProfile.userId,
 
+            image: this.stdProfile.image,
             studentId: this.stdProfile.studentId,
             firstName: this.stdProfile.firstName,
             lastName: this.stdProfile.lastName,
@@ -2447,9 +2481,10 @@ export default {
           firstName: this.stdProfile.firstName,
           lastName: this.stdProfile.lastName,
           nickName: this.stdProfile.nickName,
-          payBy: this.payBy,
+          image: this.stdProfile.image,
+          // payBy: this.payBy,
           payforDetail: this.payforDetail,
-          bankDetail: this.bankDetail,
+          // bankDetail: this.bankDetail,
           invoiceNo: this.invoiceNo,
           paymentType: this.paymentType,
 
@@ -2463,26 +2498,32 @@ export default {
 
           paymentFor: this.selected,
           other: this.other,
-          note: this.note,
-          transactionTime: this.transactionTime,
+          // note: this.note,
+          // transactionTime: this.transactionTime,
           invoiceTime: moment().format("DD/MM/YYYY"),
           invoiceTimestamp: moment().format("x"),
           invDayOfWeek: moment().isoWeekday(),
           invDayOfMonth: moment().date(),
           invMonth: moment().month() + 1,
           invYear: moment().year(),
+
           canUpdate: false,
+          paid:false,
+          confirm:false,
+          print:false,
         };
 
         await db.collection("invoiceData").add(invoiceData);
         Swal.fire({
           title: "เรียบร้อย",
-          text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
+          text: "ทำการบันทึกฉบับร่างแล้วเรียบร้อย",
           icon: "success",
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
         });
         this.updateInvoiceId();
+        this.$router.push('/admin/editinvoice')
+        $('#addCourseModal').modal('hide')
       } catch (err) {
         console.log(err);
         Swal.fire({
@@ -2539,18 +2580,19 @@ export default {
       // }
     },
 
-    async confirmInvoice() {
-      if (this.payBy.length != 0) {
-        this.getInvoiceId();
-      } else {
-        Swal.fire({
-          title: "ไม่มีข้อมูลการชำระเงิน",
-          text: "ตรวจสอบวิธีชำระเงินใหม่อีกครั้งที่ ชำระเงินโดย (Pay By)",
-          icon: "error",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-      }
+    async submitInvoice() {
+      this.getInvoiceId();
+      // if (this.payBy.length != 0) {
+      //   this.getInvoiceId();
+      // } else {
+      //   Swal.fire({
+      //     title: "ไม่มีข้อมูลการชำระเงิน",
+      //     text: "ตรวจสอบวิธีชำระเงินใหม่อีกครั้งที่ ชำระเงินโดย (Pay By)",
+      //     icon: "error",
+      //     confirmButtonColor: "#FF0000",
+      //     confirmButtonText: "ตกลง",
+      //   });
+      // }
 
       // console.log(invoiceData);
       // try {
@@ -2703,7 +2745,8 @@ export default {
 
       // stdProfile มีค่าเท่ากับ profile ใน getStudentData()
       this.stdProfile = stdProfile;
-      this.getClassroom()
+      this.paymentType = "ลงทะเบียนใหม่";
+      this.getClassroom();
     },
 
     addToInvoice() {
@@ -2871,7 +2914,6 @@ export default {
           this.$store.state.show = false;
         });
 
-
       // Swal.fire({
       //   title: "ต้องการลบ?",
       //   text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -2918,7 +2960,8 @@ export default {
         this.invoiceNo = str.padStart(3, "0");
 
         // console.log(this.invoiceNo);
-        this.activeCourse();
+        // this.activeCourse();
+        this.addInvoice()
 
         this.$store.state.show = false;
       } catch (err) {
@@ -3006,35 +3049,27 @@ export default {
     },
 
     getReneval(stdProfile) {
-      // console.log();
-      this.stdProfile = stdProfile;
-      this.userIdToReneval = stdProfile.userId;
-      this.connectCourse == true;
-      this.getClassroom();
-      console.log(this.userIdToReneval);
       try {
+        this.stdProfile = stdProfile;
+        this.userIdToReneval = stdProfile.userId;
         this.connectCourse = true;
+        this.paymentType = "ต่อคอร์ส";
         this.$store.state.show = true;
-        var date = moment().isoWeekday();
-        // console.log(date);
         db.collection("courseActive")
           .where("userId", "==", this.userIdToReneval)
           // .orderBy("createdAt", "desc")
           .onSnapshot((querySnapshot) => {
             this.classrooms = [];
             querySnapshot.forEach((doc) => {
-              // if(!doc.data().role.isAdmin)
-              // {
-              // console.log(doc.data());
               let classroom = {
                 nowDate: moment().format("ll"),
                 classId: doc.id,
-                remain:doc.data().amount,
+                remain: doc.data().remain,
                 amount: doc.data().amount,
                 classType: doc.data().classType,
                 courseName: doc.data().courseName,
                 dayAttend: doc.data().dayAttend,
-                endDate:doc.data().endDate,
+                endDate: doc.data().endDate,
                 finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
                   "HH:mm"
                 ),
@@ -3125,9 +3160,9 @@ export default {
     this.getStudentData();
     // this.getCourseTemplate();
     this.getProducts();
-    this.getClassroom();
+    // this.getClassroom();
   },
-  // ขั้นตอนการทำงาน confirmInvoice() ->  getInvoiceId() ->
+  // ขั้นตอนการทำงาน submitInvoice() ->  getInvoiceId() ->
   // activeCourse() -> ตัดสต็อค -> addInvoice()
 };
 </script>

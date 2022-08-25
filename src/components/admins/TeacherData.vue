@@ -38,6 +38,19 @@
                 <i class="fa-solid fa-user"></i>
               </div>
             </span>
+            <span v-else-if="props.column.field == 'status'">
+              <select
+                @change="changeStatus(props.row.uid, $event)"
+                class="custom-select"
+              >
+                <option :selected="props.row.role.isTeacher" value="isTeacher">
+                  ครู - อาจารย์
+                </option>
+                <option :selected="props.row.role.isAdmin" value="isAdmin">
+                  Admin-(แอ็ดมิน)
+                </option>
+              </select>
+            </span>
             <span v-else-if="props.column.field == 'edit'">
               <div
                 v-if="props.row.canUpdate == true"
@@ -57,7 +70,7 @@
               </div>
             </span>
             <span v-else-if="props.column.field == 'schedule'">
-              <div class="btn btn-success" @click="scheduleTable(props.row)">
+              <div class="btn btn-success" @click="otherProfile(props.row.uid)">
                 <i class="fas fa-chalkboard-teacher"></i>
               </div>
             </span>
@@ -66,9 +79,9 @@
                 <i class="fas fa-trash-alt"></i>
               </div>
             </span>
-            <!-- <span v-else>
-        {{props.formattedRow[props.column.field]}}
-      </span>       -->
+            <span v-else>
+              {{ props.formattedRow[props.column.field] }}
+            </span>
           </template>
         </vue-good-table>
       </div>
@@ -507,6 +520,11 @@ export default {
           type: "text",
         },
         {
+          label: "สถานะ",
+          field: "status",
+          type: "text",
+        },
+        {
           label: "ข้อมูลอื่นๆ",
           field: "other",
           type: "text",
@@ -574,6 +592,41 @@ export default {
   },
 
   methods: {
+    changeStatus(uid, event) {
+      var addMessage = functions.httpsCallable("changeTeacherToAdmin");
+      var data = { uid: uid, role: { [event.target.value]: true } };
+      // console.log(data);
+      addMessage(data)
+        .then((result) => {
+          console.log(result);
+          if (result) {
+            Swal.fire({
+              title: "ทำการปรับสถานะเรียบร้อย",
+              text: "Admin ได้ทำการปรับสถานะ แล้วเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            this.$store.state.show = false;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+        });
+    },
+
+    otherProfile(userId) {
+      console.log(userId);
+      this.$router.push("/admin/teacherSchedule/" + userId);
+    },
+
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profile = profile;
@@ -595,7 +648,6 @@ export default {
             confirmButtonText: "ตกลง",
           });
           $("#profileModal").modal("hide");
-          
         });
     },
 
@@ -607,13 +659,12 @@ export default {
           this.allow = doc.data().canUpdate;
         });
 
-        if (this.allow == true) {
-            this.profile = profile;
-            this.modal = "edit";
-            this.disabled = 0;
-            $("#profileModal").modal("show");
-        
-        }
+      if (this.allow == true) {
+        this.profile = profile;
+        this.modal = "edit";
+        this.disabled = 0;
+        $("#profileModal").modal("show");
+      }
     },
 
     async editProfile(profile) {
@@ -659,14 +710,17 @@ export default {
       try {
         this.$store.state.show = true;
         db.collection("teacherData")
-          .where("role.isTeacher", "==", true)
+          // .where("role.isTeacher", "==", true)
+          // .where("role.isAdmin", "==", true)
           .onSnapshot((querySnapshot) => {
             this.profiles = [];
             querySnapshot.forEach((doc) => {
               // if(!doc.data().role.isAdmin)
               // {
               // console.log(doc.data());
-              let profile = {
+              if(doc.data().role.isAdmin || doc.data().role.isTeacher)
+              {
+                let profile = {
                 uid: doc.id,
                 addProfileAt: moment(doc.data().addProfileAt).format(
                   "DD/MM/YYYY HH:mm:ss"
@@ -683,6 +737,7 @@ export default {
                 telephone: doc.data().telephone,
                 mobilephone: doc.data().mobilephone,
                 profileType: "teacher",
+                role: doc.data().role,
 
                 address: {
                   addressNumber: doc.data().address.addressNumber,
@@ -706,6 +761,7 @@ export default {
                 commited: "ครู",
               };
               this.profiles.push(profile);
+              }
             });
             this.$store.state.show = false;
           });
@@ -755,18 +811,19 @@ export default {
           this.$store.state.show = false;
         });
     },
-    getEditPassword(){
-      db.collection('passEdit').doc('detail').onSnapshot((doc)=>{
-        this.editPass = doc.data().password;
-      })
-    }
-    
+    getEditPassword() {
+      db.collection("passEdit")
+        .doc("detail")
+        .onSnapshot((doc) => {
+          this.editPass = doc.data().password;
+        });
+    },
   },
 
   mounted() {
     window.scrollTo(0, 0);
     this.getData();
-    this.getEditPassword()
+    this.getEditPassword();
   },
 };
 </script>

@@ -26,6 +26,7 @@
       </div>
     </div>
 
+    <!-- v-if="detailOpen" -->
     <form v-on:submit.prevent v-if="detailOpen">
       <div class="row mt-3">
         <div class="col-md-12">
@@ -34,14 +35,18 @@
           </div>
         </div>
       </div>
-
+      <span class="text-danger">*</span
+      ><span class="text-success"> (จำเป็นต้องกรอกข้อมูล)</span>
       <h5 class="text-left text-success my-3 font-weight-bold">
         ข้อมูลส่วนตัวครู
       </h5>
+
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="namePrefix" class="text-success">คำนำหน้า</label>
+            <label for="namePrefix" class="text-success"
+              ><span class="text-danger">*</span>คำนำหน้า</label
+            >
             <select
               class="form-control"
               id="namePrefix"
@@ -57,7 +62,9 @@
 
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="nickName" class="text-success">ชื่อเล่น</label>
+            <label for="nickName" class="text-success"
+              ><span class="text-danger">*</span>ชื่อเล่น</label
+            >
             <input
               type="text"
               class="form-control"
@@ -73,7 +80,9 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="firstName" class="text-success">ชื่อจริง</label>
+            <label for="firstName" class="text-success"
+              ><span class="text-danger">*</span>ชื่อจริง</label
+            >
             <input
               type="text"
               class="form-control"
@@ -86,7 +95,9 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="lastName" class="text-success">นามสกุล</label>
+            <label for="lastName" class="text-success"
+              ><span class="text-danger">*</span>นามสกุล</label
+            >
             <input
               type="text"
               class="form-control"
@@ -101,18 +112,70 @@
 
       <div class="row">
         <div class="col-lg-6">
-          <div class="form-group">
-            <label for="birthday" class="text-success">วัน/เดือน/ปี เกิด</label>
-            <date-picker
-              name="birthday"
-              v-model="profile.birthday"
-              :config="options"
-            ></date-picker>
+          <div class="row mx-auto">
+            <div class="form-group">
+              <label class="text-success"
+                ><span class="text-danger">*</span>วัน / เดือน / ปี เกิด
+              </label>
+              <form class="form-inline">
+                <div>
+                  <b-form-input
+                    list="day-list"
+                    class="birthdayBox1"
+                    v-model="dBirth"
+                  ></b-form-input>
+
+                  <datalist id="day-list">
+                    <option>เลือกวันที่</option>
+                    <option v-for="index in 31" :key="index" :value="index">
+                      {{ index }}
+                    </option>
+                  </datalist>
+                </div>
+
+                <span class="mx-2 text-success">-</span>
+
+                <div>
+                  <b-form-input
+                    list="month-list"
+                    class="birthdayBox2"
+                    v-model="mBirth"
+                  ></b-form-input>
+
+                  <datalist id="month-list">
+                    <option>เลือกเดือน</option>
+                    <option v-for="index in monthList" :key="index">
+                      {{ index }}
+                    </option>
+                  </datalist>
+                </div>
+
+                <span class="mx-2 text-success"> - </span>
+
+                <div>
+                  <b-form-input
+                    list="year-list"
+                    class="birthdayBox3"
+                    v-model="yBirth"
+                    @change="testLog"
+                  ></b-form-input>
+
+                  <datalist id="year-list">
+                    <option>เลือกปี</option>
+                    <option v-for="index in 100" :key="index">
+                      {{ index + 2490 }}
+                    </option>
+                  </datalist>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">อีเมล์ </label>
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>อีเมล์</label
+            >
             <input
               type="email"
               class="form-control"
@@ -132,7 +195,7 @@
             <input
               type="text"
               class="form-control"
-              placeholder="ไม่มีให้ใส่ - "
+              placeholder="ไม่มีปล่อยว่าง"
               id="telephone"
               v-model.trim="profile.telephone"
               maxlength="10"
@@ -141,7 +204,9 @@
         </div>
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+            <label for="mobilephone" class="text-success"
+              ><span class="text-danger">*</span>โทรศัพท์มือถือ</label
+            >
             <input
               type="text"
               class="form-control"
@@ -162,7 +227,9 @@
       <div class="row mt-3">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="addressNumber" class="text-success">บ้านเลขที่ </label>
+            <label for="addressNumber" class="text-success"
+              ><span class="text-danger">*</span>บ้านเลขที่
+            </label>
             <input
               type="text"
               class="form-control"
@@ -180,7 +247,7 @@
             <input
               type="text"
               class="form-control"
-              placeholder="ไม่มีใส่ - "
+              placeholder="ไม่มีปล่อยว่าง "
               id="location"
               v-model.trim="profile.address.location"
             />
@@ -191,11 +258,13 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">ตรอก/ซอย </label>
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>ตรอก/ซอย
+            </label>
             <input
               type="email"
               class="form-control"
-              placeholder="ไม่มีใส่ - "
+              placeholder="ตรอก/ซอย"
               id="อีเมล์"
               v-model.trim="profile.address.soi"
             />
@@ -207,7 +276,7 @@
             <input
               type="email"
               class="form-control"
-              placeholder="กรอกชื่อ ถนน"
+              placeholder="ไม่มีปล่อยว่าง"
               id="อีเมล์"
               v-model.trim="profile.address.road"
             />
@@ -217,47 +286,67 @@
 
       <div class="row mt-2">
         <div class="col-lg-6">
-          <ThailandAutoComplete
-            v-model="profile.address.district"
-            type="district"
-            @select="select"
-            size=""
-            label="แขวง/ตำบล"
-            placeholder="ตำบล"
-          />
+          <div class="form-group">
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>แขวง/ตำบล
+            </label>
+            <ThailandAutoComplete
+              v-model="profile.address.district"
+              type="district"
+              @select="select"
+              size=""
+              label=""
+              placeholder="แขวง/ตำบล"
+            />
+          </div>
         </div>
         <div class="col-lg-6">
-          <ThailandAutoComplete
-            v-model="profile.address.amphoe"
-            type="amphoe"
-            @select="select"
-            size=""
-            label="เขต/อำเภอ"
-            placeholder="อำเภอ"
-          />
+          <div class="form-group">
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>เขต/อำเภอ
+            </label>
+            <ThailandAutoComplete
+              v-model="profile.address.amphoe"
+              type="amphoe"
+              @select="select"
+              size=""
+              label=""
+              placeholder="อำเภอ"
+            />
+          </div>
         </div>
       </div>
 
       <div class="row mt-2">
         <div class="col-lg-6">
-          <ThailandAutoComplete
-            v-model="profile.address.province"
-            type="province"
-            @select="select"
-            size=""
-            label="จังหวัด"
-            placeholder="จังหวัด"
-          />
+          <div class="form-group">
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>จังหวัด
+            </label>
+            <ThailandAutoComplete
+              v-model="profile.address.province"
+              type="province"
+              @select="select"
+              size=""
+              label=""
+              placeholder="จังหวัด"
+            />
+          </div>
         </div>
         <div class="col-lg-6">
-          <ThailandAutoComplete
-            v-model="profile.address.zipcode"
-            type="zipcode"
-            @select="select"
-            size=""
-            label="รหัสไปรษณีย์"
-            placeholder="รหัสไปรษณีย์"
-          />
+          <div class="form-group">
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>รหัสไปรษณีย์
+            </label>
+            <ThailandAutoComplete
+              v-model="profile.address.zipcode"
+              type="zipcode"
+              @select="select"
+              size=""
+              label=""
+              placeholder="รหัสไปรษณีย์"
+            />
+          </div>
         </div>
       </div>
 
@@ -269,7 +358,9 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="level" class="text-success"> ระดับการศึกษาสูงสุด</label>
+            <label for="level" class="text-success"
+              ><span class="text-danger">*</span>ระดับการศึกษาสูงสุด</label
+            >
             <select
               class="form-control"
               id="level"
@@ -302,7 +393,9 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success">ระดับชั้น / คณะ</label>
+            <label for="email" class="text-success"
+              ><span class="text-danger">*</span>ระดับชั้น / คณะ</label
+            >
             <input
               type="email"
               class="form-control"
@@ -366,11 +459,16 @@
 <script>
 import { fb, functions } from "../firebase.js";
 import moment from "moment";
+import DateDropdown from "vue-date-dropdown";
 
 export default {
   name: "profile",
+  components: {
+    DateDropdown,
+  },
   data() {
     return {
+      selectedDate: "",
       options: {
         // https://momentjs.com/docs/#/displaying/
         format: "DD/MM/YYYY",
@@ -380,8 +478,25 @@ export default {
       },
 
       imageName: null,
-      dateNow: moment().add(543, 'year').format("LL"),
+      dateNow: moment().add(543, "year").format("LL"),
       detailOpen: false,
+      monthList: [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+      ],
+      dBirth: "",
+      mBirth: "",
+      yBirth: "",
 
       profile: {
         uid: "",
@@ -497,17 +612,20 @@ export default {
         this.profile.firstName != "" &&
         this.profile.lastName != "" &&
         this.profile.email != "" &&
+        this.dBirth != "" &&
+        this.mBirth != "" &&
+        this.yBirth != "" &&
         this.profile.birthday != "" &&
         this.profile.telephone != "" &&
         this.profile.mobilephone != "" &&
         this.profile.address.addressNumber != "" &&
-        this.profile.address.location != "" &&
         this.profile.address.soi != "" &&
-        this.profile.address.road != "" &&
         this.profile.address.district != "" &&
         this.profile.address.amphoe != "" &&
         this.profile.address.province != "" &&
-        this.profile.address.zipcode != ""
+        this.profile.address.zipcode != "" &&
+        this.graduated.degree != "" &&
+        this.graduated.faculty != ""
       ) {
         this.addProfile();
       } else {
@@ -524,6 +642,7 @@ export default {
     async addProfile() {
       this.$store.state.show = true;
       this.profile.addProfileAt = Date.now();
+      this.profile.birthday = `${this.dBirth}/${this.mBirth}/${this.yBirth}`;
       this.profile.fullName = `${this.profile.firstName} ${this.profile.lastName} (ครู ${this.profile.nickName})`;
 
       var addFunctions = functions.httpsCallable("TeacherData");
@@ -563,4 +682,28 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+@media (max-width: 575.98px) {
+  .birthdayBox1 {
+    width: 80px;
+  }
+  .birthdayBox2 {
+    width: 80px;
+  }
+  .birthdayBox3 {
+    width: 100px;
+  }
+}
+
+@media (min-width: 576px) {
+  .birthdayBox1 {
+    width: 150px;
+  }
+  .birthdayBox2 {
+    width: 150px;
+  }
+  .birthdayBox3 {
+    width: 150px;
+  }
+}
+</style>

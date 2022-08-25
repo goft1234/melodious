@@ -39,6 +39,22 @@
                 <i class="fa-solid fa-user"></i>
               </div>
             </span>
+            <span v-else-if="props.column.field == 'status'">
+              <select
+                @change="changeStatus(props.row.uid, $event)"
+                class="custom-select"
+              >
+                <option
+                  :selected="props.row.role.isEmployee"
+                  value="isEmployee"
+                >
+                  พนักงาน
+                </option>
+                <option :selected="props.row.role.isAdmin" value="isAdmin">
+                  Admin - (แอ็ดมิน)
+                </option>
+              </select>
+            </span>
             <span v-else-if="props.column.field == 'edit'">
               <div
                 v-if="props.row.canUpdate == true"
@@ -500,6 +516,11 @@ export default {
           type: "text",
         },
         {
+          label: "สถานะ",
+          field: "status",
+          type: "text",
+        },
+        {
           label: "ข้อมูลอื่นๆ",
           field: "other",
           type: "text",
@@ -565,6 +586,35 @@ export default {
   },
 
   methods: {
+    changeStatus(uid, event) {
+      var addMessage = functions.httpsCallable("changeEmployeeToAdmin");
+      var data = { uid: uid, role: { [event.target.value]: true } };
+      // console.log(data);
+      addMessage(data)
+        .then((result) => {
+          console.log(result);
+          if (result) {
+            Swal.fire({
+              title: "ทำการปรับสถานะเรียบร้อย",
+              text: "Admin ได้ทำการปรับสถานะ แล้วเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            this.$store.state.show = false;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+        });
+    },
     fullProfile(profile) {
       // alert(profile.firstName);
       this.profile = profile;
@@ -687,64 +737,69 @@ export default {
 
     getData() {
       db.collection("employeeData")
-        .where("role.isEmployee", "==", true)
+        // .where("role.isEmployee", "==", true)
+        // .where("role.isAdmin","==",true)
         .onSnapshot((querySnapshot) => {
           this.profiles = [];
           querySnapshot.forEach((doc) => {
             // if(!doc.data().role.isAdmin)
             // {
-            console.log(doc.data());
-            let profile = {
-              uid: doc.id,
-              addProfileAt: moment(doc.data().addProfileAt).format(
-                "DD/MM/YYYY HH:mm:ss"
-              ),
-              canUpdate : doc.data().canUpdate,
-              image: doc.data().image,
+            // console.log(doc.data());
+            if (doc.data().role.isAdmin || doc.data().role.isEmployee) {
+              let profile = {
+                uid: doc.id,
+                addProfileAt: moment(doc.data().addProfileAt).format(
+                  "DD/MM/YYYY HH:mm:ss"
+                ),
+                canUpdate: doc.data().canUpdate,
+                image: doc.data().image,
 
-              namePrefix: doc.data().namePrefix,
-              nickName: doc.data().nickName,
-              firstName: doc.data().firstName,
-              lastName: doc.data().lastName,
-              birthday: doc.data().birthday,
-              email: doc.data().email,
-              telephone: doc.data().telephone,
-              mobilephone: doc.data().mobilephone,
-              profileType: "employee",
+                namePrefix: doc.data().namePrefix,
+                nickName: doc.data().nickName,
+                firstName: doc.data().firstName,
+                lastName: doc.data().lastName,
+                birthday: doc.data().birthday,
+                email: doc.data().email,
+                telephone: doc.data().telephone,
+                mobilephone: doc.data().mobilephone,
+                profileType: "employee",
+                role: doc.data().role,
 
-              address: {
-                addressNumber: doc.data().address.addressNumber,
-                location: doc.data().address.location,
-                soi: doc.data().address.soi,
-                road: doc.data().address.road,
-                district: doc.data().address.district,
-                amphoe: doc.data().address.amphoe,
-                province: doc.data().address.province,
-                zipcode: doc.data().address.zipcode,
-              },
+                address: {
+                  addressNumber: doc.data().address.addressNumber,
+                  location: doc.data().address.location,
+                  soi: doc.data().address.soi,
+                  road: doc.data().address.road,
+                  district: doc.data().address.district,
+                  amphoe: doc.data().address.amphoe,
+                  province: doc.data().address.province,
+                  zipcode: doc.data().address.zipcode,
+                },
 
-              graduated: {
-                degree: doc.data().graduated.degree,
-                university: doc.data().graduated.university,
-                faculty: doc.data().graduated.faculty,
-                major: doc.data().graduated.major,
-              },
-              workingProfile: doc.data().workingProfile,
-              commited: "พนักงาน",
-              empSalary: 0,
-            };
-            this.profiles.push(profile);
+                graduated: {
+                  degree: doc.data().graduated.degree,
+                  university: doc.data().graduated.university,
+                  faculty: doc.data().graduated.faculty,
+                  major: doc.data().graduated.major,
+                },
+                workingProfile: doc.data().workingProfile,
+                commited: "พนักงาน",
+                empSalary: 0,
+              };
+              this.profiles.push(profile);
+            }
             // this.$store.state.employeeApproveCount = this.profiles.length;
             // }
           });
         });
     },
-    getEditPassword(){
-      db.collection('passEdit').doc('detail').onSnapshot((doc)=>{
-        this.editPass = doc.data().password;
-      })
-    }
-    
+    getEditPassword() {
+      db.collection("passEdit")
+        .doc("detail")
+        .onSnapshot((doc) => {
+          this.editPass = doc.data().password;
+        });
+    },
   },
 
   mounted() {

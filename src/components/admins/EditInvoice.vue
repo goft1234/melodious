@@ -45,6 +45,42 @@
                 <i class="fa-solid fa-file-circle-plus"></i>
               </div>
             </span>
+            <span v-else-if="props.column.field == 'paid'">
+              <div
+                class="btn btn-success"
+                data-toggle="modal"
+                data-target="#paidModal"
+                @click="paymentDetail(props.row)"
+              >
+                <i class="fas fa-money-check-alt"></i>
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'confirm'">
+              <div
+                v-if="props.row.paid == true"
+                class="btn btn-success"
+                @click="confirmMethods(props.row.paymentType)"
+              >
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div v-else class="btn btn-danger">
+                <i class="fas fa-times-circle"></i>
+              </div>
+            </span>
+            <span v-else-if="props.column.field == 'print'">
+              <div
+                v-if="props.row.print == true"
+                class="btn btn-info"
+                @click="openEditModal(props.row)"
+              >
+                <!-- data-toggle="modal"
+              data-target="#invoiceModal" -->
+                <i class="fas fa-edit"></i>
+              </div>
+              <div v-else class="btn btn-danger">
+                <i class="fas fa-times-circle"></i>
+              </div>
+            </span>
             <span v-else-if="props.column.field == 'edit'">
               <div
                 v-if="props.row.canUpdate == true"
@@ -81,7 +117,7 @@
         </vue-good-table>
       </div>
 
-                <!-- print invoice -->
+      <!-- print invoice -->
       <div class="col" id="InvPckPrint" style="display: none">
         <div class="page" size="A4" style="page-break-after: always">
           <table
@@ -133,7 +169,8 @@
             <tr class="text-center">
               <td class="text-left">
                 <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                  ชื่อ - นามสกุล {{ stdProfile.firstName }}
+                  {{ stdProfile.lastName }} <br />
                 </h6>
               </td>
               <td class="text-left">
@@ -419,7 +456,8 @@
             <tr class="text-center">
               <td class="text-left">
                 <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }} {{ stdProfile.lastName }} <br />
+                  ชื่อ - นามสกุล {{ stdProfile.firstName }}
+                  {{ stdProfile.lastName }} <br />
                 </h6>
               </td>
               <td class="text-left">
@@ -926,7 +964,7 @@
                             </thead>
                             <tbody>
                               <tr
-                                v-for="(course, index) in coursesActive"
+                                v-for="(course, index) in item.courseDetail"
                                 :key="course.docId"
                                 class="text-center"
                               >
@@ -1094,7 +1132,7 @@
                           </table>
                         </div>
 
-                        <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
+                        <!-- <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
                         <div class="row mx-auto">
                           <div class="col-md-3">
                             <div class="form-check-inline">
@@ -1123,7 +1161,6 @@
                             </div>
                           </div>
                           <div class="col-md-6">
-                            <!-- โอนผ่านธนาคาร -->
                             <div class="input-group mb-3">
                               <div class="input-group-prepend">
                                 <div class="input-group-text">
@@ -1170,9 +1207,7 @@
                                 :disabled="disabled == 1"
                               />
                             </div>
-                            <!-- {{item.transactionTime}} -->
                           </div>
-                          <!-- v-if="modal == 'edit'" -->
                           <div class="col-md-12">
                             <div class="form-group">
                               <label for="comment" class="text-danger"
@@ -1188,7 +1223,7 @@
                               ></textarea>
                             </div>
                           </div>
-                        </div>
+                        </div> -->
 
                         <div class="row text-center">
                           <div class="col-md-12">
@@ -1271,7 +1306,7 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="(course, index) in coursesActive"
+                          v-for="(course, index) in item.courseDetail"
                           :key="course.docId"
                           class="text-center"
                         >
@@ -1530,8 +1565,6 @@
                       </div>
                     </div>
                   </div>
-
-                  
                 </div>
               </div>
               <!--End แสดงเพื่อ ดูรายลเอียดอย่างเดียว set modal = null -->
@@ -1566,8 +1599,119 @@
           </div>
         </div>
       </div>
-    </div>
 
+      <!--Start  paidModal -->
+      <div class="modal fade" id="paidModal">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title w-100 text-center text-success">
+                การชำระเงิน
+              </h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <form v-on:submit.prevent>
+                <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
+                <div class="row mx-auto">
+                  <div class="col-md-3">
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          value="เงินสด"
+                          v-model.trim="paymentDt.payBy"
+                        />เงินสด
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          value="เครดิตการ์ด"
+                          v-model.trim="paymentDt.payBy"
+                        />เครดิตการ์ด
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <input
+                            type="checkbox"
+                            value="โอนผ่านธนาคาร"
+                            v-model.trim="paymentDt.payBy"
+                          />
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="โอนผ่านบัญชีธนาคาร"
+                        v-model.trim="paymentDt.bankDetail"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mt-2">
+                      <label for="usr" class="text-success">หมายเหตุ </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="usr"
+                        placeholder="กรอกรายการโปรโมชั่น"
+                        v-model.trim="paymentDt.note"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mt-2">
+                      <label for="usr" class="text-success"
+                        >วัน-เวลาที่ทำธุรกรรม
+                      </label>
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        v-model="paymentDt.transactionTime"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button
+                @click="addPaymentDt(paymentDt)"
+                type="button"
+                class="btn btn-success"
+              >
+                บันทึกการชำระเงิน
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--End The Modal -->
+    </div>
   </div>
 </template>
 
@@ -1717,8 +1861,8 @@ export default {
           type: "text",
         },
         {
-          label: "ชำระโดย",
-          field: "payBy",
+          label: "ประเภท",
+          field: "paymentType",
           type: "text",
         },
         {
@@ -1737,20 +1881,35 @@ export default {
           type: "text",
         },
         {
-          label: "รายละเอียด",
-          field: "detail",
-          type: "text",
-        },
-        {
           label: "แก้ไข",
           field: "edit",
           type: "text",
         },
         {
-          label: "ลบ",
-          field: "delete",
+          label: "ชำระ",
+          field: "paid",
           type: "text",
         },
+        {
+          label: "ยืนยัน",
+          field: "confirm",
+          type: "text",
+        },
+        {
+          label: "print",
+          field: "print",
+          type: "text",
+        },
+        {
+          label: "รายละเอียด",
+          field: "detail",
+          type: "text",
+        },
+        // {
+        //   label: "ลบ",
+        //   field: "delete",
+        //   type: "text",
+        // },
       ],
 
       carts: [],
@@ -1785,51 +1944,60 @@ export default {
       editDetail: "",
       classrooms: [],
       stdProfile: {},
+
+      paymentDt: {
+        note: "",
+        payBy: [],
+        bankDetail: "",
+        transactionTime: "",
+        docId: "",
+        paid: "",
+      },
     };
   },
 
   methods: {
     // *** Event **** //
     buyCourse(data) {
-      // console.log(data);
-      let courseData = {
-        amount: data.amount,
-        classDiscount: data.classDiscount,
-        classId: data.classId,
-        classQty: data.classQty,
-        classType: data.classType,
-        courseName: data.courseName,
-        dayAttend: data.dayAttend,
-        endDate: data.endDate,
-        finishTime: data.finishTime,
-        level: data.level,
-        nowDate: Date.now(),
-        rate: data.rate,
-        startDate: data.startDate,
-        startTime: data.startTime,
-        studentAtclass: data.studentAtclass,
-        teacherAtclass: data.teacherAtclass,
-        wages: data.wages,
-        userId: this.stdProfile.userId,
-        classId: data.classId,
-        studentId: this.stdProfile.studentId,
-        firstName: this.stdProfile.firstName,
-        lastName: this.stdProfile.lastName,
-        nickName: this.stdProfile.nickName,
-      };
+      console.log(data);
+      // let courseData = {
+      //   amount: data.amount,
+      //   classDiscount: data.classDiscount,
+      //   classId: data.classId,
+      //   classQty: data.classQty,
+      //   classType: data.classType,
+      //   courseName: data.courseName,
+      //   dayAttend: data.dayAttend,
+      //   endDate: data.endDate,
+      //   finishTime: data.finishTime,
+      //   level: data.level,
+      //   nowDate: Date.now(),
+      //   rate: data.rate,
+      //   startDate: data.startDate,
+      //   startTime: data.startTime,
+      //   studentAtclass: data.studentAtclass,
+      //   teacherAtclass: data.teacherAtclass,
+      //   wages: data.wages,
+      //   userId: this.stdProfile.userId,
+      //   classId: data.classId,
+      //   studentId: this.stdProfile.studentId,
+      //   firstName: this.stdProfile.firstName,
+      //   lastName: this.stdProfile.lastName,
+      //   nickName: this.stdProfile.nickName,
+      // };
 
-      // console.log(courseData);
+      // // console.log(courseData);
 
-      // data มีค่า = classroom ใน getClassroom()
-      this.coursesActive.push(courseData);
-      this.addToClassroom(data);
-      Swal.fire({
-        title: "SUCCESS",
-        text: "เพิ่มคอร์สเรียนแล้วเรียบร้อย",
-        icon: "success",
-        confirmButtonColor: "#30855c",
-        confirmButtonText: "ตกลง",
-      });
+      // // data มีค่า = classroom ใน getClassroom()
+      // this.itemDatas.courseDetail.push(courseData);
+      // // this.addToClassroom(data);
+      // Swal.fire({
+      //   title: "SUCCESS",
+      //   text: "เพิ่มคอร์สเรียนแล้วเรียบร้อย",
+      //   icon: "success",
+      //   confirmButtonColor: "#30855c",
+      //   confirmButtonText: "ตกลง",
+      // });
     },
 
     deleteCourse(index, course) {
@@ -1855,6 +2023,50 @@ export default {
     },
 
     // *** updateData *** //
+    paymentDetail(payment) {
+      // console.log(payment);
+      this.paymentDt.docId = payment.docId;
+    },
+    addPaymentDt(paymentDt) {
+      console.log(paymentDt);
+
+      try {
+        db.collection("invoiceData").doc(paymentDt.docId).update({
+          note: this.paymentDt.note,
+          payBy: this.paymentDt.payBy,
+          bankDetail: this.paymentDt.bankDetail,
+          transactionTime: this.paymentDt.transactionTime,
+          paid: true,
+        });
+        Swal.fire({
+          title: "SUCCESS",
+          text: "บันทึกการชำระเงินเรียบร้อย",
+          icon: "success",
+          confirmButtonColor: "#30855c",
+          confirmButtonText: "ตกลง",
+        });
+        $("#paidModal").modal("hide");
+        this.paymentDt = {
+          note: "",
+          payBy: [],
+          bankDetail: "",
+          transactionTime: "",
+          docId: "",
+          paid: "",
+        };
+      } catch (err) {
+        console.log(err);
+        Swal.fire({
+          title: "ERROR",
+          text: "ไม่สามารถบันทึกการชำระเงินได้",
+          icon: "error",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+      }
+      // this.paymentDt
+    },
+
     async canUpdateStatus(detail) {
       const { value: password } = await Swal.fire({
         title: "กรอก Password",
@@ -2078,6 +2290,118 @@ export default {
     },
 
     // *** AddData ***
+    confirmMethods(paymentType){
+      // console.log(paymentType);
+      if (paymentType == "ต่อคอร์ส") {
+        // console.log("ต่อคอร์ส");
+        this.addToRenevalCourse();
+      } else {
+        // this.addToActiveCourse();
+        console.log("ลงทะเบียนใหม่");
+      }
+    },
+
+    addToRenevalCourse() {
+      // console.log(this.courseReserv);
+      try {
+        var batch = db.batch();
+        this.coursesActive.forEach((item) => {
+          let remain = item.remain + (item.amount * item.classQty);
+          console.log(item.classId);
+          let data = {
+            remain: remain,
+          };
+          batch.update(db.collection("courseActive").doc(item.classId), data);
+          
+        });
+
+        this.carts.forEach((item) => {
+          var newQty = item.quantity - item.buyAmount;
+          batch.update(db.collection("products").doc(item.pID), {
+            quantity: newQty,
+          });
+        });
+
+        batch.commit();
+        console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+
+        // this.addInvoice();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    addToActiveCourse() {
+      try {
+        var batch = db.batch();
+        this.coursesActive.forEach((item) => {
+          let remain = item.amount * item.classQty;
+          let data = {
+            classId: item.classId,
+            userId: this.stdProfile.userId,
+
+            remain: remain,
+            studentId: this.stdProfile.studentId,
+            firstName: this.stdProfile.firstName,
+            lastName: this.stdProfile.lastName,
+            nickName: this.stdProfile.nickName,
+            mobilephone: this.stdProfile.mobilephone,
+            courseName: item.courseName,
+            amount: item.amount,
+            classType: item.classType,
+            invoiceNo: this.invoiceNo,
+
+            dayAttend: item.dayAttend,
+            classDiscount: item.classDiscount,
+            finishTime: item.finishTime,
+            level: item.level,
+            rate: item.rate,
+            classQty: item.classQty,
+            startDate: moment(item.startDate).format("x"),
+            endDate: moment(item.endDate).format("x"),
+            startTime: item.startTime,
+            wages: item.wages,
+
+            teacherAtclass: item.teacherAtclass,
+          };
+
+          batch.set(db.collection("courseActive").doc(), data);
+        });
+
+        this.courseReserv.forEach((item) => {
+          // console.log(item.studentAtclass);
+          let stdProfileInClass = {
+            userId: this.stdProfile.userId,
+            classId: item.classId,
+            studentId: this.stdProfile.studentId,
+            firstName: this.stdProfile.firstName,
+            lastName: this.stdProfile.lastName,
+            nickName: this.stdProfile.nickName,
+            invoiceNo: this.invoiceNo,
+            dateAtClass: Date.now(),
+          };
+          batch.update(db.collection("classroom").doc(item.classId), {
+            student:
+              firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
+          });
+        });
+
+        this.carts.forEach((item) => {
+          var newQty = item.quantity - item.buyAmount;
+          batch.update(db.collection("products").doc(item.pID), {
+            quantity: newQty,
+          });
+        });
+
+        batch.commit();
+        console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+
+        this.addInvoice();
+      } catch (err) {
+        console.log(err);
+      }
+      // console.log('addTo activeCourse');
+    },
 
     addProductToCart(product) {
       var batch = db.batch();
@@ -2234,50 +2558,50 @@ export default {
     },
 
     invoiceDetail(detail) {
-      // console.log(detail);
+      console.log(detail);
       this.modal = null;
       this.disabled = 1;
       this.item = detail;
       this.carts = detail.productDetail;
 
-      db.collection("courseActive")
-        .where("invoiceNo", "==", detail.invoiceNo)
-        .onSnapshot((querySnapshot) => {
-          this.coursesActive = [];
-          querySnapshot.forEach((doc) => {
-            let course = {
-              docId: doc.id,
+      // db.collection("invoiceData")
+      //   .where("invoiceNo", "==", detail.invoiceNo)
+      //   .onSnapshot((querySnapshot) => {
+      //     this.coursesActive = [];
+      //     querySnapshot.forEach((doc) => {
+      //       let course = {
+      //         docId: doc.id,
 
-              amount: doc.data().amount,
-              classId: doc.data().classId,
-              classType: doc.data().classType,
-              courseName: doc.data().courseName,
-              dayAttend: doc.data().dayAttend,
-              classDiscount: doc.data().classDiscount,
-              endDate: doc.data().endDate,
-              finishTime: doc.data().finishTime,
-              firstName: doc.data().firstName,
-              invoiceNo: doc.data().invoiceNo,
-              lastName: doc.data().lastName,
-              level: doc.data().level,
-              rate: doc.data().rate,
-              classQty: doc.data().classQty,
-              startDate: doc.data().startDate,
-              startTime: doc.data().startTime,
-              teacherAtclass: doc.data().teacherAtclass,
-              wages: doc.data().wages,
-              transactionTime: doc.data().transactionTime,
+      //         amount: doc.data().amount,
+      //         classId: doc.data().classId,
+      //         classType: doc.data().classType,
+      //         courseName: doc.data().courseName,
+      //         dayAttend: doc.data().dayAttend,
+      //         classDiscount: doc.data().classDiscount,
+      //         endDate: doc.data().endDate,
+      //         finishTime: doc.data().finishTime,
+      //         firstName: doc.data().firstName,
+      //         invoiceNo: doc.data().invoiceNo,
+      //         lastName: doc.data().lastName,
+      //         level: doc.data().level,
+      //         rate: doc.data().rate,
+      //         classQty: doc.data().classQty,
+      //         startDate: doc.data().startDate,
+      //         startTime: doc.data().startTime,
+      //         teacherAtclass: doc.data().teacherAtclass,
+      //         wages: doc.data().wages,
+      //         transactionTime: doc.data().transactionTime,
 
-              // courseTemplateName: this.cName,
-              // courseTemplateType: this.cType,
-              // courseTemplateLevel: this.cLevel,
-              // courseTemplateRate: this.cRate,
-              // courseTemplateTeacher: this.cTeacher,
-              // courseTemplateDay: this.cDay,
-            };
-            this.coursesActive.push(course);
-          });
-        });
+      //         // courseTemplateName: this.cName,
+      //         // courseTemplateType: this.cType,
+      //         // courseTemplateLevel: this.cLevel,
+      //         // courseTemplateRate: this.cRate,
+      //         // courseTemplateTeacher: this.cTeacher,
+      //         // courseTemplateDay: this.cDay,
+      //       };
+      //       this.coursesActive.push(course);
+      //     });
+      //   });
     },
 
     getInvoiceData() {
@@ -2293,6 +2617,10 @@ export default {
             let Item = {
               userId: doc.data().userId,
               docId: doc.id,
+
+              confirm: doc.data().confirm,
+              paid: doc.data().paid,
+              print: doc.data().print,
 
               bankDetail: doc.data().bankDetail,
               canUpdate: doc.data().canUpdate,
@@ -2324,11 +2652,13 @@ export default {
               transactionTime: moment(doc.data().transactionTime).format(
                 "DD/MM/YY HH:mm"
               ),
+              // transactionTime:doc.data().transactionTime,
             };
 
-            console.log(Item);
+            // console.log(Item);
             this.itemDatas.push(Item);
-            // console.log("itemDatas  " + this.itemDatas);
+            console.log('From Itemdatas');
+            console.log(this.itemDatas);
           });
         });
     },

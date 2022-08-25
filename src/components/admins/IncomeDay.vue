@@ -1,13 +1,13 @@
 <template>
-  <div id="transaction" class="">
+  <div id="incomeDay" class="">
     <div class="container-fluid">
       <div class="">
         <h4 class="text-center text-success mb-4 mt-3">ข้อมูล Transaction</h4>
-        <div class="row">
+        <div class="row transaction">
           <div class="col-md-12">
             <date-range-picker
               :single-date-picker="singleDatePicker"
-              @update="getDatetest"
+              @update="getInvoiceDate"
               :showDropdowns="showDropdowns"
               v-model="pickerDates"
             >
@@ -21,7 +21,6 @@
               </template>
             </date-range-picker>
             <br />
-            <!-- <div class="btn btn-success px-3" @click="test()">test</div> -->
           </div>
         </div>
 
@@ -56,71 +55,19 @@
                   <div></div>
                 </div>
               </div>
-
-              <!-- <div class="card">
-                <div class="card-body">
-                  <div class="card-header bg-danger shadow">
-                    <h5 class="text-light text-center">รายจ่าย</h5>
-                  </div>
-                  <h6 class="card-text mt-4 text-danger text-center">
-                    <h6 class="text-danger">รายจ่ายช่วงวันที่</h6>
-                    {{ pickerDates.startDate | date }} -
-                    {{ pickerDates.endDate | date }}
-                  </h6>
-                  <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ incomeTotal }} บาท
-                  </h4>
-
-                  <div class="bg- shadow">
-                    <button
-                      to="/user/withdrawWeb"
-                      class="btn btn-danger btn-block text-light"
-                    >
-                      ดูข้อมูล
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-header bg-warning shadow">
-                    <h5 class="text-light text-center">คงเหลือ</h5>
-                  </div>
-                  <h6 class="card-text mt-4 text-dark text-center">
-                    <h6 class="text-dark">ยอดคงเหลือช่วงวันที่</h6>
-                    {{ pickerDates.startDate | date }} -
-                    {{ pickerDates.endDate | date }}
-                  </h6>
-                  <h4 class="card-text my-4 text-dark text-center">
-                    จำนวน {{ incomeTotal }} บาท
-                  </h4>
-
-                  <div class="bg- shadow">
-                    <button
-                      to="/user/withdrawWeb"
-                      class="btn btn-warning btn-block text-light"
-                    >
-                      ดูข้อมูล
-                    </button>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
           <div class="col-md-4"></div>
         </div>
-
-
       </div>
 
       <div class="mt-3 shadow"></div>
     </div>
-    
+
     <div class="mt-3 shadow">
       <vue-good-table
         :columns="columns"
-        :rows="Items"
+        :rows="invoiceData"
         :line-numbers="true"
         styleClass="vgt-table striped bordered"
         :search-options="{
@@ -143,16 +90,6 @@
               <i class="fa-solid fa-file-circle-plus"></i>
             </div>
           </span>
-          <span v-else-if="props.column.field == 'edit'">
-            <div
-              class="btn btn-warning"
-              @click="editItem(props.row)"
-              data-toggle="modal"
-              data-target="#detailModal"
-            >
-              <i class="fas fa-edit"></i>
-            </div>
-          </span>
           <span v-else-if="props.column.field == 'delete'">
             <div
               class="btn btn-danger"
@@ -170,106 +107,6 @@
       </vue-good-table>
     </div>
 
-    <!--Start Income  Modal -->
-    <div class="modal fade" id="incomeModal">
-      <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-          <!-- Modal Header -->
-          <div class="modal-header">
-            <h4
-              v-if="modal == 'new'"
-              class="modal-title w-100 text-center text-success"
-            >
-              เพิ่มสินค้า
-            </h4>
-            <h4
-              v-if="modal == 'edit'"
-              class="modal-title w-100 text-center text-warning"
-            >
-              แก้ไขสินค้า
-            </h4>
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-
-          <!-- Modal body -->
-          <div class="modal-body">
-            <vue-good-table
-              :columns="columns"
-              :rows="Items"
-              :line-numbers="true"
-              styleClass="vgt-table striped bordered"
-              :search-options="{
-                enabled: true,
-                placeholder: 'ค้นหา',
-              }"
-              :pagination-options="{
-                enabled: true,
-              }"
-              compactMode
-            >
-              <template slot="table-row" slot-scope="props">
-                <span v-if="props.column.field == 'edit'">
-                  <div
-                    class="btn btn-warning"
-                    @click="editItem(props.row)"
-                    data-toggle="modal"
-                    data-target="#Item"
-                  >
-                    แก้ไข
-                  </div>
-                </span>
-                <!-- @click="deleteItem(props.row.pID)" -->
-
-                <span v-else-if="props.column.field == 'detail'">
-                  <div
-                    class="btn btn-success"
-                    data-toggle="modal"
-                    data-target="#detailModal"
-                    @click="invoiceDetail(props.row)"
-                  >
-                    <i class="fa-solid fa-file-circle-plus"></i>
-                  </div>
-                </span>
-                <span v-else>
-                  {{ props.formattedRow[props.column.field] }}
-                </span>
-              </template>
-            </vue-good-table>
-          </div>
-
-          <!-- Modal footer -->
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              @click="addItem()"
-              type="button"
-              class="btn btn-success"
-              v-if="modal == 'new'"
-            >
-              บันทึกสินค้า
-            </button>
-            <button
-              @click="updateItem(Item.pID)"
-              type="button"
-              class="btn btn-warning"
-              v-if="modal == 'edit'"
-            >
-              แก้ไข
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--End Income  Modal -->
-
     <!-- Start Detail modal -->
     <div class="modal fade" id="detailModal">
       <div class="modal-dialog modal-xl">
@@ -286,367 +123,279 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <div class="accordion" role="tablist" style="padding: 0">
-              <b-card no-body class="mb-1">
-                <b-card-header header-tag="header" class="p-1" role="tab">
-                  <b-button block v-b-toggle.accordion-1 variant="success"
-                    >วิชาเรียน</b-button
-                  >
-                </b-card-header>
-                <b-collapse
-                  id="accordion-1"
-                  visible
-                  accordion="my-accordion"
-                  role="tabpanel"
-                >
-                  <b-card-body>
-                    <div
-                      class=""
-                      style="background: white"
-                      v-for="(course, index) in Item.courseDetail"
-                      :key="index"
-                    >
-                      <div class="row">
-                        <div class="col-lg-12">
-                          <h5 class="mt-4 text-center">
-                            วิชา {{ course.courseName }}
-                          </h5>
-                        </div>
-                      </div>
-                      <div class="row text-left">
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >วิชาเรียน</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model="course.courseName"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="nickName" class="text-success"
-                              >รูปแบบการเรียน</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.classType"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >Level ที่ลงเรียน</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.level"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="nickName" class="text-success"
-                              >ราคา/คอร์ส</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.price"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >ส่วนลด โปรโมชั่น</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.discount"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="text-success"
-                              >จำนวนครั้ง / คอร์ส</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="number"
-                                class="form-control"
-                                v-model.trim="course.amount"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="nickName" class="text-success"
-                              >อาจารย์รายวิชา</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.teacherName"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >ค่าสอนของครู</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.wages"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="text-success"
-                              >เริ่มเรียน เวลา</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.startTime"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="text-success"
-                              >เลิกเรียน เวลา</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.finishTime"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="text-success"
-                              >วันที่เริ่มเรียน</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.startDate"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="text-success"
-                              >วันที่เรียนจบ โดยประมาณ</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.endDate"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="namePrefix" class="text-success"
-                              >วันที่เลือกเรียน</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.day.item"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                          <div class="form-group">
-                            <label for="" class="text-success"
-                              >จำนวนคอร์ส</label
-                            >
-                            <div class="form-group">
-                              <input
-                                type="text"
-                                class="form-control"
-                                v-model.trim="course.qty"
-                                :disabled="disabled == 1"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <br />
-                        <hr />
-                      </div>
-                    </div>
-                  </b-card-body>
-                </b-collapse>
-              </b-card>
-
-              <b-card no-body class="mb-1">
-                <b-card-header header-tag="header" class="p-1" role="tab">
-                  <b-button block v-b-toggle.accordion-2 variant="success"
-                    >หนังสือ - อุปกรณ์</b-button
-                  >
-                </b-card-header>
-                <b-collapse
-                  id="accordion-2"
-                  accordion="my-accordion"
-                  role="tabpanel"
-                >
-                  <b-card-body>
-                    <div class="my-2">
-                      <h5 class="text-center text-success mt-3">
-                        ค่าหนังสือ - อุปกรณ์
-                      </h5>
-
-                      <div class="table-responsive">
-                        <table
-                          class="table table-bordered table-striped text-center"
-                        >
-                          <thead class="thead-light">
-                            <tr>
-                              <th>สินค้า</th>
-                              <th>จำนวน</th>
-                              <th>ราคา/หน่วย</th>
-                              <th>ส่วนลด</th>
-                              <th>รวม</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr
-                              v-for="(item, index) in Item.productDetail"
-                              :key="index"
-                            >
-                              <td>{{ item.pName }}</td>
-                              <td>{{ item.buyAmount }}</td>
-                              <td>{{ item.price }}</td>
-                              <td>{{ item.pDiscount }}</td>
-                              <td>
-                                {{
-                                  item.buyAmount * item.price - item.pDiscount
-                                }}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </b-card-body>
-                </b-collapse>
-              </b-card>
-
-              <b-card no-body class="mb-1">
-                <b-card-header header-tag="header" class="p-1" role="tab">
-                  <b-button block v-b-toggle.accordion-3 variant="success"
-                    >Invoice</b-button
-                  >
-                </b-card-header>
-                <b-collapse
-                  id="accordion-3"
-                  accordion="my-accordion"
-                  role="tabpanel"
-                >
-                  <b-card-body>
-                    <h5 class="text-center text-success mt-3">สรุปยอด</h5>
-                    <div class="table-responsive">
-                      <table
-                        class="table table-bordered table-striped text-center"
+            <div id="modalNull">
+              <div class="py-3" style="border: 1px solid green">
+                <h5 class="text-center text-success mt-3">วิชาเรียน</h5>
+                <h6 class="ml-3 mt-3 text-success">
+                  เพื่อชำระค่าเรียน (Payment for tuition)
+                </h6>
+                <div class="form-check-inline ml-3">
+                  <label class="form-check-label" for="">
+                    <input
+                      type="radio"
+                      class="form-check-input"
+                      id=""
+                      name=""
+                      value="ลงทะเบียนใหม่"
+                      checked
+                      v-model.trim="invoiceItem.paymentType"
+                      disabled
+                    />ลงทะเบียนใหม่
+                  </label>
+                </div>
+                <div class="form-check-inline">
+                  <label class="form-check-label" for="radio2">
+                    <input
+                      type="radio"
+                      class="form-check-input"
+                      id=""
+                      name=""
+                      value="ต่อคอร์ส"
+                      v-model.trim="invoiceItem.paymentType"
+                      disabled
+                    />ต่อคอร์สเรียน
+                  </label>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped text-center">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>วิชา</th>
+                        <th>จำนวน</th>
+                        <th>ค่าเรียน/คอร์ส</th>
+                        <th>ส่วนลด</th>
+                        <th>รวม</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(course, index) in invoiceItem.courseDetail"
+                        :key="index"
+                        class="text-center"
                       >
-                        <thead class="thead-light">
-                          <tr>
-                            <th>(1)รวมค่าเรียน</th>
-                            <th>(2)ค่าหนังสือหรืออุปกรณ์</th>
-                            <th>ค่าแรกเข้า</th>
-                            <th>รวมจำนวนเงินทั้งสิ้น</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>{{ Item.subTotal }}</td>
-                            <td>{{ Item.pSubtotal }}</td>
-                            <td>{{ Item.fee }}</td>
-                            <td>{{ Item.grandTotal }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group mt-2">
-                        <label for="usr" class="text-success">หมายเหตุ </label>
+                        <td>{{ course.courseName }}</td>
+                        <td>{{ course.classQty }}</td>
+                        <td>{{ course.rate }}</td>
+                        <td>{{ course.classDiscount }}</td>
+                        <td>
+                          {{
+                            course.classQty * course.rate - course.classDiscount
+                          }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="py-3 my-2" style="border: 1px solid green">
+                <h5 class="text-center text-success mt-3">หนังสือ - อุปกรณ์</h5>
+                <h6 class="ml-3 mt-3 text-success">เพื่อชำระ (Payment for)</h6>
+                <div class="row mx-auto">
+                  <div class="col-md-3">
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
                         <input
-                          type="text"
-                          class="form-control"
-                          v-model.trim="Item.note"
-                          :disabled="disabled == 1"
-                        />
-                      </div>
+                          type="checkbox"
+                          class="form-check-input"
+                          value="หนังสือเรียน"
+                          v-model.trim="invoiceItem.paymentFor"
+                          disabled
+                        />หนังสือเรียน
+                      </label>
                     </div>
-                  </b-card-body>
-                </b-collapse>
-              </b-card>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          value="อุปกรณ์การเรียน"
+                          v-model.trim="invoiceItem.paymentFor"
+                          disabled
+                        />อุปกรณ์การเรียน
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <input
+                            type="checkbox"
+                            value="อื่นๆ"
+                            v-model.trim="invoiceItem.paymentFor"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="กรอกรายการชำระ"
+                        v-model.trim="invoiceItem.payforDetail"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped text-center">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>สินค้า</th>
+                        <th>จำนวน</th>
+                        <th>ราคา/หน่วย</th>
+                        <th>ส่วนลด</th>
+                        <th>รวม</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(Item, index) in invoiceItem.productDetail"
+                        :key="index"
+                      >
+                        <td>{{ Item.pName }}</td>
+                        <td>{{ Item.buyAmount }}</td>
+                        <td>{{ Item.price }}</td>
+                        <td>{{ Item.pDiscount }}</td>
+                        <td>
+                          {{ Item.buyAmount * Item.price - Item.pDiscount }}
+                        </td>
+                        <!-- <td v-if="modal == 'edit'">
+                            <button
+                              type="button"
+                              @click="deleteProduct(index, Item)"
+                              class="btn btn-danger btn-sm"
+                            >
+                              <i class="fas fa-times text-light"></i>
+                            </button>
+                          </td> -->
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="py-3" style="border: 1px solid green">
+                <h5 class="text-center text-success mt-3">สรุปยอด</h5>
+                <div class="row mx-auto">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="usr" class="text-success"
+                        >ค่าแรกเข้า (Enrollment fee)
+                      </label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="usr"
+                        min="0"
+                        v-model.trim="invoiceItem.fee"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped text-center">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>(1)รวมค่าเรียน</th>
+                        <th>(2)ค่าหนังสือหรืออุปกรณ์</th>
+                        <th>ค่าแรกเข้า</th>
+                        <th>รวมจำนวนเงินทั้งสิ้น</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{ invoiceItem.subTotal }}</td>
+                        <td>{{ invoiceItem.pSubtotal }}</td>
+                        <td>{{ invoiceItem.fee }}</td>
+                        <td>{{ invoiceItem.grandTotal }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
+                <div class="row mx-auto">
+                  <div class="col-md-3">
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          value="เงินสด"
+                          v-model.trim="invoiceItem.payBy"
+                          disabled
+                        />เงินสด
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          value="เครดิตการ์ด"
+                          v-model.trim="invoiceItem.payBy"
+                          disabled
+                        />เครดิตการ์ด
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <!-- โอนผ่านธนาคาร -->
+                    <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <input
+                            type="checkbox"
+                            value="โอนผ่านธนาคาร"
+                            v-model.trim="invoiceItem.payBy"
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="โอนผ่านบัญชีธนาคาร"
+                        v-model.trim="invoiceItem.bankDetail"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mt-2">
+                      <label for="usr" class="text-success">หมายเหตุ </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="usr"
+                        v-model.trim="invoiceItem.note"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mt-2">
+                      <label for="usr" class="text-success"
+                        >วัน-เวลาที่ทำธุรกรรม
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        v-model="invoiceItem.transactionTime"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -659,22 +408,6 @@
             >
               Close
             </button>
-            <button
-              @click="addItem()"
-              type="button"
-              class="btn btn-success"
-              v-if="modal == 'new'"
-            >
-              บันทึกสินค้า
-            </button>
-            <button
-              @click="updateItem(Item.pID)"
-              type="button"
-              class="btn btn-warning"
-              v-if="modal == 'edit'"
-            >
-              แก้ไข
-            </button>
           </div>
         </div>
       </div>
@@ -686,12 +419,11 @@
 <script>
 import { db } from "../../firebase";
 import DateRangePicker from "vue2-daterange-picker";
-//you need to import the CSS manually
 import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import moment from "moment";
 
 export default {
-  name: "addItem",
+  name: "incomeDay",
   components: { DateRangePicker },
   data() {
     const startDate = new Date();
@@ -725,10 +457,6 @@ export default {
         ],
         firstDay: 0,
       },
-      pickerDates: {
-        startDate,
-        endDate,
-      },
       columns: [
         {
           label: "รหัสนักเรียน",
@@ -761,44 +489,32 @@ export default {
           type: "text",
         },
         {
-          label: "วันที่ - เวลา",
+          label: "วันที่",
           field: "transactionTime",
           type: "text",
         },
         {
           label: "จำนวน",
           field: "grandTotal",
-          type: "number",
+          type: "text",
         },
         {
           label: "รายละเอียด",
           field: "detail",
           type: "text",
         },
-        // {
-        //   label: "แก้ไข",
-        //   field: "edit",
-        //   type: "text",
-        // },
         {
           label: "ลบ",
           field: "delete",
           type: "text",
         },
       ],
-
-      modal: null,
-
-      Items: [],
-      Item: {
-        pName: null,
-        pCode: null,
-        cost: null,
-        price: null,
-        quantity: null,
+      pickerDates: {
+        startDate,
+        endDate,
       },
-      datatest: [],
-      disabled: 0,
+      invoiceData: [],
+      invoiceItem: {},
     };
   },
   filters: {
@@ -807,22 +523,68 @@ export default {
     },
   },
 
-  computed: {
-    incomeTotal() {
-      var total = this.Items.reduce((accumulator, item) => {
-        return accumulator + item.grandTotal;
-      }, 0);
-      console.log(total);
-      return Number(total).toLocaleString();
-    },
+  mounted() {
+    this.getInvoiceData();
   },
+
   methods: {
     invoiceDetail(detail) {
-      this.Item = detail;
-      this.disabled = 1;
-      console.log(this.Item);
+      this.invoiceItem = detail;
+      console.log(this.invoiceItem);
     },
-    async getDatetest() {
+    
+    getInvoiceData() {
+      var today = moment(Date.now()).format("DD/MM/YYYY");
+      // moment().toDate().getDate()
+      console.log(today);
+      db.collection("invoiceData")
+        .where("invoiceTime", "==", today)
+        .orderBy("invoiceNo", "desc")
+        .onSnapshot((querySnapshot) => {
+          this.invoiceData = [];
+          querySnapshot.forEach((doc) => {
+            let Item = {
+              userId: doc.data().userId,
+              docId: doc.id,
+
+              bankDetail: doc.data().bankDetail,
+              canUpdate: doc.data().canUpdate,
+              courseDetail: doc.data().courseDetail,
+              fee: doc.data().fee,
+              firstName: doc.data().firstName,
+              grandTotal: doc.data().grandTotal,
+              invDayOfMonth: doc.data().invDayOfMonth,
+              invDayOfWeek: doc.data().invDayOfWeek,
+              invMonth: doc.data().invMonth,
+              invYear: doc.data().invYear,
+
+              invoiceNo: doc.data().invoiceNo,
+              invoiceTime: doc.data().invoiceTime,
+              invoiceTimestamp: doc.data().invoiceTimestamp,
+              lastName: doc.data().lastName,
+              nickName: doc.data().nickName,
+              note: doc.data().note,
+              other: doc.data().other,
+              pSubtotal: doc.data().pSubtotal,
+              payBy: doc.data().payBy,
+              payforDetail: doc.data().payforDetail,
+
+              paymentFor: doc.data().paymentFor,
+              paymentType: doc.data().paymentType,
+              productDetail: doc.data().productDetail,
+              studentId: doc.data().studentId,
+              subTotal: doc.data().subTotal,
+              transactionTime: moment(doc.data().transactionTime).format(
+                "DD/MM/YY HH:mm"
+              ),
+            };
+            this.invoiceData.push(Item);
+            console.log(this.invoiceData);
+          });
+        });
+    },
+
+    async getInvoiceDate() {
       try {
         var startDateFormat = moment(this.pickerDates.startDate).format("x");
         console.log(startDateFormat);
@@ -832,188 +594,66 @@ export default {
           .where("invoiceTimestamp", ">=", startDateFormat)
           .where("invoiceTimestamp", "<=", endDateFormat)
           .onSnapshot((querySnapshot) => {
-            this.Items = [];
+            this.invoiceData = [];
             querySnapshot.forEach((doc) => {
               let Item = {
-                uid: doc.data().uid,
+                userId: doc.data().userId,
+                docId: doc.id,
+
                 bankDetail: doc.data().bankDetail,
-                studentId: doc.data().studentId,
+                canUpdate: doc.data().canUpdate,
+                courseDetail: doc.data().courseDetail,
+                fee: doc.data().fee,
                 firstName: doc.data().firstName,
+                grandTotal: doc.data().grandTotal,
+                invDayOfMonth: doc.data().invDayOfMonth,
+                invDayOfWeek: doc.data().invDayOfWeek,
+                invMonth: doc.data().invMonth,
+                invYear: doc.data().invYear,
+
+                invoiceNo: doc.data().invoiceNo,
+                invoiceTime: doc.data().invoiceTime,
+                invoiceTimestamp: doc.data().invoiceTimestamp,
                 lastName: doc.data().lastName,
                 nickName: doc.data().nickName,
-                invoiceNo: doc.data().invoiceNo,
-                paymentType: doc.data().paymentType,
-                courseDetail: doc.data().courseDetail,
-                productDetail: doc.data().productDetail,
-
-                pSubtotal: doc.data().pSubtotal,
-                subTotal: doc.data().subTotal,
-                grandTotal: doc.data().grandTotal,
-                fee: doc.data().fee,
-                payforDetail: doc.data().payforDetail,
-                invoiceTime: doc.data().invoiceTime,
                 note: doc.data().note,
-                payBy: doc.data().payBy,
-                paymentFor: doc.data().paymentFor,
-                transactionTime: doc.data().transactionTime,
-
                 other: doc.data().other,
-                docId: doc.id,
+                pSubtotal: doc.data().pSubtotal,
+                payBy: doc.data().payBy,
+                payforDetail: doc.data().payforDetail,
+
+                paymentFor: doc.data().paymentFor,
+                paymentType: doc.data().paymentType,
+                productDetail: doc.data().productDetail,
+                studentId: doc.data().studentId,
+                subTotal: doc.data().subTotal,
+                transactionTime: moment(doc.data().transactionTime).format(
+                  "DD/MM/YY HH:mm"
+                ),
               };
-              this.Items.push(Item);
+              this.invoiceData.push(Item);
             });
           });
       } catch (err) {
         console.log(err);
       }
     },
-    test() {
-      var startDateFormat = moment(this.pickerDates.endDate).format("x");
-      var endDateFormat = moment(this.pickerDates.endDate).format("x");
-      console.log("start " + startDateFormat);
-    },
-    deleteItem(doc) {
-      Swal.fire({
-        title: "ต้องการลบ?",
-        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#30855c",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "ตกลง ลบข้อมูล",
-      }).then((result) => {
-        if (result.value) {
-          // console.log(doc)
-          db.collection("Items")
-            .doc(doc)
-            .delete()
-            .then(() => {
-              Swal.fire({
-                title: "ทำการลบสินค้าเรียบร้อย",
-                text: "ได้ทำการลบสินค้าเรียบร้อย",
-                icon: "success",
-                confirmButtonColor: "#30855c",
-                confirmButtonText: "ตกลง",
-              });
-            });
-        }
-      });
-    },
-
-    addNew() {
-      this.modal = "new";
-      this.reset();
-    },
-
-    reset() {
-      this.Item = {
-        pName: null,
-        pCode: null,
-        cost: null,
-        price: null,
-        quantity: null,
-      };
-    },
-
-    editItem(Item) {
-      this.modal = "edit";
-      this.Item = Item;
-      this.disabled = 0;
-    },
-
-    updateItem(docId) {
-      // alert(docId)
-      db.collection("Items")
-        .doc(docId)
-        .update(this.Item)
-        .then(() => {
-          Swal.fire({
-            title: "อัพเดทข้อมูล",
-            text: "ได้ทำการupdateสินค้าเรียบร้อย",
-            icon: "success",
-            confirmButtonColor: "#30855c",
-            confirmButtonText: "ตกลง",
-          });
-          $("#Item").modal("hide");
-          this.reset();
-        });
-    },
-
-    async addItem() {
-      try {
-        await db.collection("Items").add(this.Item);
-        Swal.fire({
-          title: "เรียบร้อย",
-          text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
-          icon: "success",
-          confirmButtonColor: "#30855c",
-          confirmButtonText: "ตกลง",
-        });
-        $("#Item").modal("hide");
-        this.reset();
-      } catch (err) {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
-          icon: "error",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-      }
-    },
-
-    getData() {
-      var today = moment(Date.now()).format("DD/MM/YYYY");
-      // moment().toDate().getDate()
-      console.log(today);
-      db.collection("invoiceData")
-        .where("invoiceTime", "==", today)
-        .orderBy("invoiceNo", "desc")
-        .onSnapshot((querySnapshot) => {
-          this.Items = [];
-          querySnapshot.forEach((doc) => {
-            let Item = {
-              uid: doc.data().uid,
-              bankDetail: doc.data().bankDetail,
-              studentId: doc.data().studentId,
-              firstName: doc.data().firstName,
-              lastName: doc.data().lastName,
-              nickName: doc.data().nickName,
-              invoiceNo: doc.data().invoiceNo,
-              paymentType: doc.data().paymentType,
-              courseDetail: doc.data().courseDetail,
-              productDetail: doc.data().productDetail,
-
-              pSubtotal: doc.data().pSubtotal,
-              subTotal: doc.data().subTotal,
-              grandTotal: doc.data().grandTotal,
-              fee: doc.data().fee,
-              payforDetail: doc.data().payforDetail,
-              invoiceTime: doc.data().invoiceTime,
-              note: doc.data().note,
-              payBy: doc.data().payBy,
-              paymentFor: doc.data().paymentFor,
-              transactionTime: moment(doc.data().transactionTime).format('DD/MM/YY HH:mm'),
-
-              other: doc.data().other,
-              docId: doc.id,
-            };
-            this.Items.push(Item);
-            console.log(this.Items);
-          });
-        });
-    },
   },
 
-  mounted() {
-    this.getData();
-    window.scrollTo(0, 0);
+  computed: {
+    incomeTotal() {
+      var total = this.invoiceData.reduce((accumulator, Item) => {
+        return accumulator + Item.grandTotal;
+      }, 0);
+      console.log(total);
+      return Number(total).toLocaleString();
+    },
   },
 };
 </script>
 
-<style scoped>
-#transaction {
+<style lang="scss" scoped>
+.transaction {
   text-align: center;
   color: #2c3e50;
 }

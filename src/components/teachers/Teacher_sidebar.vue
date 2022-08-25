@@ -363,7 +363,7 @@ export default {
     signOut() {
       fb.auth()
         .signOut()
-        .then((user) => {
+        .then(() => {
           this.$router.push("/");
         })
         .catch((error) => {
