@@ -2433,6 +2433,7 @@ export default {
       try {
         this.courseInfo = [];
         this.courseReserv.forEach((item) => {
+          let remain = item.amount * item.classQty;
           let data = {
             classId: item.classId,
             userId: this.stdProfile.userId,
@@ -2457,6 +2458,7 @@ export default {
             startTime: item.startTime,
             wages: item.wages,
             teacherAtclass: item.teacherAtclass,
+            remain :remain,
             // teacherName: item.teacherAtclass.teacherName,
             // teacherId: item.teacherAtclass.teacherId,
             // teacherTel : item.teacherAtclass.mobilephone ,
@@ -2482,9 +2484,9 @@ export default {
           lastName: this.stdProfile.lastName,
           nickName: this.stdProfile.nickName,
           image: this.stdProfile.image,
-          // payBy: this.payBy,
+          payBy: [],
           payforDetail: this.payforDetail,
-          // bankDetail: this.bankDetail,
+          bankDetail: "",
           invoiceNo: this.invoiceNo,
           paymentType: this.paymentType,
 
@@ -2498,8 +2500,8 @@ export default {
 
           paymentFor: this.selected,
           other: this.other,
-          // note: this.note,
-          // transactionTime: this.transactionTime,
+          note: "",
+          transactionTime: "",
           invoiceTime: moment().format("DD/MM/YYYY"),
           invoiceTimestamp: moment().format("x"),
           invDayOfWeek: moment().isoWeekday(),
@@ -2507,9 +2509,9 @@ export default {
           invMonth: moment().month() + 1,
           invYear: moment().year(),
 
-          canUpdate: false,
+          canUpdate: true,
           paid:false,
-          confirm:false,
+          confirm:0,
           print:false,
         };
 
