@@ -85,7 +85,7 @@
               <div
                 v-if="props.row.print"
                 class="btn btn-info"
-                @click="print(props.row)"
+                @click="summarizeInvoice(props.row)"
               >
                 <i class="fas fa-print"></i>
               </div>
@@ -266,7 +266,7 @@
                   border-bottom: 6px black double;
                 "
               >
-                {{ subTotal }}
+                {{ invoiceToPrint.subTotal }}
               </td>
             </tr>
           </table>
@@ -1985,85 +1985,130 @@ export default {
       });
     },
 
-    async print(invoice) {
-      console.log(invoice);
-      var courseTotal = invoice.courseDetail.reduce((acc,item)=>{
-          return acc + parseInt(item.classQty)
-      },0);
+    async summarizeInvoice(invoice) {
+      var courseTotal = invoice.courseDetail.reduce((acc, item) => {
+        return acc + parseInt(item.classQty);
+      }, 0);
 
-      var classPriceTotal = invoice.courseDetail.reduce((acc,item)=>{
-          return acc + parseInt(item.classQty)*parseInt(item.rate) - parseInt(item.classDiscount)
-      },0);
+      var classPriceTotal = invoice.courseDetail.reduce((acc, item) => {
+        return (
+          acc +
+          parseInt(item.classQty) * parseInt(item.rate) -
+          parseInt(item.classDiscount)
+        );
+      }, 0);
 
-      var bookTotal = invoice.productDetail.filter(({pMode})=> pMode == 'หนังสือ')
-      .reduce((acc,item)=>{           
-              return acc + parseInt(item.price)*parseInt(item.buyAmount) - item.pDiscount;           
-      },0);
+      var bookTotal = invoice.productDetail
+        .filter(({ pMode }) => pMode == "หนังสือ")
+        .reduce((acc, item) => {
+          return (
+            acc +
+            parseInt(item.price) * parseInt(item.buyAmount) -
+            item.pDiscount
+          );
+        }, 0);
 
-      var instrumentTotal = invoice.productDetail.filter(({pMode})=> pMode == 'อุปกรณ์ดนตรี')
-      .reduce((acc,item)=>{           
-              return acc + parseInt(item.price)*parseInt(item.buyAmount) - item.pDiscount;           
-      },0);
+      var instrumentTotal = invoice.productDetail
+        .filter(({ pMode }) => pMode == "อุปกรณ์ดนตรี")
+        .reduce((acc, item) => {
+          return (
+            acc +
+            parseInt(item.price) * parseInt(item.buyAmount) -
+            item.pDiscount
+          );
+        }, 0);
 
-      var equipmentTotal = invoice.productDetail.filter(({pMode})=> pMode == 'อุปกรณ์การเรียน')
-      .reduce((acc,item)=>{           
-              return acc + parseInt(item.price)*parseInt(item.buyAmount) - item.pDiscount;           
-      },0);
+      var equipmentTotal = invoice.productDetail
+        .filter(({ pMode }) => pMode == "อุปกรณ์การเรียน")
+        .reduce((acc, item) => {
+          return (
+            acc +
+            parseInt(item.price) * parseInt(item.buyAmount) -
+            item.pDiscount
+          );
+        }, 0);
 
-      var examTotal = invoice.productDetail.filter(({pMode})=> pMode == 'ค่าสอบ')
-      .reduce((acc,item)=>{           
-              return acc + parseInt(item.price)*parseInt(item.buyAmount) - item.pDiscount;           
-      },0);
+      var examTotal = invoice.productDetail
+        .filter(({ pMode }) => pMode == "ค่าสอบ")
+        .reduce((acc, item) => {
+          return (
+            acc +
+            parseInt(item.price) * parseInt(item.buyAmount) -
+            item.pDiscount
+          );
+        }, 0);
 
-      var otherTotal = invoice.productDetail.filter(({pMode})=> pMode == 'อื่นๆ')
-      .reduce((acc,item)=>{           
-              return acc + parseInt(item.price)*parseInt(item.buyAmount) - item.pDiscount;           
-      },0);
+      var otherTotal = invoice.productDetail
+        .filter(({ pMode }) => pMode == "อื่นๆ")
+        .reduce((acc, item) => {
+          return (
+            acc +
+            parseInt(item.price) * parseInt(item.buyAmount) -
+            item.pDiscount
+          );
+        }, 0);
 
-      let result ={
-        classPriceTotal : parseInt(classPriceTotal),
-        courseTotal : courseTotal,
-        fee : parseInt(invoice.fee),
-        book : parseInt(bookTotal),
-        instrumentTotal : parseInt(instrumentTotal),
-        equipmentTotal : parseInt(equipmentTotal),
-        examTotal : parseInt(examTotal),
-        otherTotal : parseInt(otherTotal),
+      let sumTotal = parseInt(classPriceTotal)+parseInt(invoice.fee)
+      +parseInt(bookTotal)+parseInt(instrumentTotal)+parseInt(equipmentTotal)+parseInt(examTotal)
+      +parseInt(otherTotal);
+
+      let result = {
+        classPriceTotal: parseInt(classPriceTotal),
+        courseTotal: courseTotal,
+        fee: parseInt(invoice.fee),
+        book: parseInt(bookTotal),
+        instrumentTotal: parseInt(instrumentTotal),
+        equipmentTotal: parseInt(equipmentTotal),
+        examTotal: parseInt(examTotal),
+        otherTotal: parseInt(otherTotal),
+        sumTotal : parseInt(sumTotal),
         invDayOfMonth: moment().date(),
         invMonth: moment().month() + 1,
         invYear: moment().year(),
-      }
+      };
 
-      // console.log(result);
-      let today = moment().add('543','year').format("DD/MM/YYYY");
-      console.log(today);
-      var Ref = db.collection("summarize").doc(today);
       try {
-        await db
-          .runTransaction((transaction) => {
-            return transaction.get(Ref).then((doc) => {
-              if(!doc.exists) {
-                throw "Document does not exist!";
-              }
-              else{
-                
-              }
-              // var newQuantity=sfDoc.data().quantity-product.buyAmount;
-              // transaction.update(Ref, { quantity: newQuantity });
-            });
-          });
-
-        console.log("Transaction success");
-      } catch(error) {
+        if (invoice.summarize == false) {
+          let today = moment().add("543", "year").format("DD-MM-YYYY");
+          var ref = db.collection("summarize").doc(today);
+          let doc = await ref.get();
+          if (!doc.exists) {
+            await ref.set(result, { merge: true });
+          } else {
+            console.log(doc.data().book);
+            let data = {
+              classPriceTotal:
+                doc.data().classPriceTotal + result.classPriceTotal,
+              book: doc.data().book + result.book,
+              courseTotal: doc.data().courseTotal + result.courseTotal,
+              examTotal: doc.data().book + result.examTotal,
+              fee: doc.data().fee + result.fee,
+              instrumentTotal:
+                doc.data().instrumentTotal + result.instrumentTotal,
+              equipmentTotal: doc.data().equipmentTotal + result.equipmentTotal,
+              otherTotal: doc.data().otherTotal + result.otherTotal,
+              sumTotal : doc.data().sumTotal  + result.sumTotal,  
+              invDayOfMonth: result.invDayOfMonth,
+              invMonth: result.invMonth,
+              invYear: result.invYear,
+            };
+            await ref.set(data);
+          }
+          await db.collection('invoiceData').doc(invoice.docId).update({summarize : true})
+          this.print(invoice)
+        } else {
+          this.print(invoice)
+        }
+      } catch (error) {
         console.log("Transaction failed: ", error);
       }
+    },
 
-      // this.invoiceToPrint = {}
-      // this.invoiceToPrint = invoice;
-      // // console.log(this.invoiceToPrint);
-      // setTimeout(() => {
-      //   this.$htmlToPaper("InvPckPrint");
-      // }, 1000);
+    async print(invoice) {
+      this.invoiceToPrint = invoice;
+      setTimeout(() => {
+        this.$htmlToPaper("InvPckPrint");
+      }, 1000);
     },
 
     // *** updateData *** //
@@ -2374,6 +2419,7 @@ export default {
               confirm: doc.data().confirm,
               paid: doc.data().paid,
               print: doc.data().print,
+              summarize: doc.data().summarize,
 
               bankDetail: doc.data().bankDetail,
               canUpdate: doc.data().canUpdate,

@@ -2513,6 +2513,7 @@ export default {
           paid:false,
           confirm:0,
           print:false,
+          summarize :false,
           stdMobile : this.stdProfile.mobilephone,
         };
 

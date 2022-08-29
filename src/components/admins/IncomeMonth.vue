@@ -123,7 +123,7 @@
         }"
         compactMode
       >
-        <template slot="table-row" slot-scope="props">
+        <!-- <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field == 'detail'">
             <div
               class="btn btn-success"
@@ -157,7 +157,7 @@
           <span v-else>
             {{ props.formattedRow[props.column.field] }}
           </span>
-        </template>
+        </template> -->
       </vue-good-table>
     </div>
 
@@ -670,9 +670,7 @@
         </div>
       </div>
     </div>
-    <pre>
-      {{testSpread}}
-    </pre>
+
     <!-- End Detail Modal -->
   </div>
 </template>
@@ -726,54 +724,54 @@ export default {
       columns: [
         {
           label: "วันที่",
-          field: "studentId",
+          field: "docId",
           type: "text",
         },
         {
           label: "จำนวนคอร์ส",
-          field: "firstName",
-          type: "text",
+          field: "courseTotal",
+          type: "number",
         },
         {
           label: "ค่าคอร์สเรียน",
-          field: "lastName",
-          type: "text",
+          field: "classPriceTotal",
+          type: "number",
         },
         {
           label: "ค่าอุปกรณ์ดนตรี",
-          field: "nickName",
-          type: "text",
+          field: "instrumentTotal",
+          type: "number",
         },
         {
           label: "ค่าอุปกรณ์การเรียน",
-          field: "payBy",
-          type: "text",
+          field: "equipmentTotal",
+          type: "number",
         },
         {
           label: "ค่าแรกเข้า",
-          field: "invoiceNo",
-          type: "text",
+          field: "fee",
+          type: "number",
         },
         {
           label: "รายได้อื่นๆ",
-          field: "invoiceTime",
-          type: "text",
+          field: "otherTotal",
+          type: "number",
         },
         {
           label: "ค่าสอบ",
-          field: "grandTotal",
+          field: "examTotal",
           type: "number",
         },
         {
           label: "รวม",
-          field: "total",
-          type: "text",
+          field: "sumTotal",
+          type: "number",
         },
-        {
-          label: "รายละเอียด",
-          field: "detail",
-          type: "text",
-        },
+        // {
+        //   label: "รายละเอียด",
+        //   field: "detail",
+        //   type: "text",
+        // },
       ],
 
       modal: null,
@@ -809,30 +807,30 @@ export default {
   computed: {
     incomeTotal() {
       var total = this.Items.reduce((accumulator, item) => {
-        return accumulator + item.grandTotal;
+        return accumulator + item.sumTotal;
       }, 0);
       console.log(total);
       return Number(total).toLocaleString();
     },
 
-    testTotal() {
-      // console.log(moment(this.monthSelect).daysInMonth());
-      let amountDay = moment(this.monthSelect).daysInMonth();
-      for (var i = 1; i < amountDay + 1; i++) {
-        this.Items.forEach((item) => {
-          if (item.invDayOfMonth == i) {
-            // console.log(item.invDayOfMonth);
-            console.log(this.dayAsset.toString() + i.toString());
-          }
-        });
-      }
-    },
+    // testTotal() {
+    //   // console.log(moment(this.monthSelect).daysInMonth());
+    //   let amountDay = moment(this.monthSelect).daysInMonth();
+    //   for (var i = 1; i < amountDay + 1; i++) {
+    //     this.Items.forEach((item) => {
+    //       if (item.invDayOfMonth == i) {
+    //         // console.log(item.invDayOfMonth);
+    //         console.log(this.dayAsset.toString() + i.toString());
+    //       }
+    //     });
+    //   }
+    // },
 
     // testSpread() {
     //   const result = this.Items.reduce((carry, current) => {
     //     const { day } = current;
     //     let el = carry.find(
-    //       (item) => item.invDayOfMonth === invDayOfMonth 
+    //       (item) => item.invDayOfMonth === invDayOfMonth
     //     );
 
     //     if (!el) {
@@ -854,43 +852,32 @@ export default {
     },
 
     async getDatetest() {
-      // this.testTotal();
+      // console.log(this.monthSelect.split("-"));
       try {
-        let myYear = moment(this.monthSelect).year();
-        let myMonth = moment(this.monthSelect).month() + 1;
+        let find = this.monthSelect.split("-");
+        let myMonth = parseInt(find[1]);
+        let myYear = find[0];
         await db
-          .collection("invoiceData")
+          .collection("summarize")
           .where("invMonth", "==", myMonth)
-          .where("invYear", "==", myYear)
+          // .where("invYear", "==", myYear)
           .onSnapshot((querySnapshot) => {
             this.Items = [];
             querySnapshot.forEach((doc) => {
               let Item = {
-                uid: doc.data().uid,
-                bankDetail: doc.data().bankDetail,
-                studentId: doc.data().studentId,
-                firstName: doc.data().firstName,
-                lastName: doc.data().lastName,
-                nickName: doc.data().nickName,
-                invoiceNo: doc.data().invoiceNo,
-                invDayOfMonth: doc.data().invDayOfMonth,
-                paymentType: doc.data().paymentType,
-                courseDetail: doc.data().courseDetail,
-                productDetail: doc.data().productDetail,
-
-                pSubtotal: doc.data().pSubtotal,
-                subTotal: doc.data().subTotal,
-                grandTotal: doc.data().grandTotal,
-                fee: doc.data().fee,
-                payforDetail: doc.data().payforDetail,
-                invoiceTime: doc.data().invoiceTime,
-                note: doc.data().note,
-                payBy: doc.data().payBy,
-                paymentFor: doc.data().paymentFor,
-                transactionTime: doc.data().transactionTime,
-
-                other: doc.data().other,
                 docId: doc.id,
+                book: doc.data().book,
+                classPriceTotal: doc.data().classPriceTotal,
+                courseTotal: doc.data().courseTotal,
+                equipmentTotal: doc.data().equipmentTotal,
+                examTotal: doc.data().examTotal,
+                fee: doc.data().fee,
+                instrumentTotal: doc.data().instrumentTotal,
+                invDayOfMonth: doc.data().invDayOfMonth,
+                invMonth: doc.data().invMonth,
+                invYear: doc.data().invYear,
+                otherTotal: doc.data().otherTotal,
+                sumTotal: doc.data().sumTotal,
               };
               this.Items.push(Item);
               // this.testTotal();
@@ -906,134 +893,34 @@ export default {
       var endDateFormat = moment(this.pickerDates.endDate).format("x");
       console.log("start " + startDateFormat);
     },
-    deleteItem(doc) {
-      Swal.fire({
-        title: "ต้องการลบ?",
-        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#30855c",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "ตกลง ลบข้อมูล",
-      }).then((result) => {
-        if (result.value) {
-          // console.log(doc)
-          db.collection("Items")
-            .doc(doc)
-            .delete()
-            .then(() => {
-              Swal.fire({
-                title: "ทำการลบสินค้าเรียบร้อย",
-                text: "ได้ทำการลบสินค้าเรียบร้อย",
-                icon: "success",
-                confirmButtonColor: "#30855c",
-                confirmButtonText: "ตกลง",
-              });
-            });
-        }
-      });
-    },
-
-    addNew() {
-      this.modal = "new";
-      this.reset();
-    },
-
-    reset() {
-      this.Item = {
-        pName: null,
-        pCode: null,
-        cost: null,
-        price: null,
-        quantity: null,
-      };
-    },
-
-    editItem(Item) {
-      this.modal = "edit";
-      this.Item = Item;
-      this.disabled = 0;
-    },
-
-    updateItem(docId) {
-      // alert(docId)
-      db.collection("Items")
-        .doc(docId)
-        .update(this.Item)
-        .then(() => {
-          Swal.fire({
-            title: "อัพเดทข้อมูล",
-            text: "ได้ทำการupdateสินค้าเรียบร้อย",
-            icon: "success",
-            confirmButtonColor: "#30855c",
-            confirmButtonText: "ตกลง",
-          });
-          $("#Item").modal("hide");
-          this.reset();
-        });
-    },
-
-    async addItem() {
-      try {
-        await db.collection("Items").add(this.Item);
-        Swal.fire({
-          title: "เรียบร้อย",
-          text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
-          icon: "success",
-          confirmButtonColor: "#30855c",
-          confirmButtonText: "ตกลง",
-        });
-        $("#Item").modal("hide");
-        this.reset();
-      } catch (err) {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
-          icon: "error",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-      }
-    },
 
     async getData() {
       try {
         let myYear = moment().year();
         let myMonth = moment().month() + 1;
         await db
-          .collection("invoiceData")
+          .collection("summarize")
           .where("invMonth", "==", myMonth)
           .where("invYear", "==", myYear)
           .onSnapshot((querySnapshot) => {
             this.Items = [];
             querySnapshot.forEach((doc) => {
               let Item = {
-                uid: doc.data().uid,
-                bankDetail: doc.data().bankDetail,
-                studentId: doc.data().studentId,
-                firstName: doc.data().firstName,
-                lastName: doc.data().lastName,
-                nickName: doc.data().nickName,
-                invoiceNo: doc.data().invoiceNo,
-                invDayOfMonth: doc.data().invDayOfMonth,
-                paymentType: doc.data().paymentType,
-                courseDetail: doc.data().courseDetail,
-                productDetail: doc.data().productDetail,
-
-                pSubtotal: doc.data().pSubtotal,
-                subTotal: doc.data().subTotal,
-                grandTotal: doc.data().grandTotal,
-                fee: doc.data().fee,
-                payforDetail: doc.data().payforDetail,
-                invoiceTime: doc.data().invoiceTime,
-                note: doc.data().note,
-                payBy: doc.data().payBy,
-                paymentFor: doc.data().paymentFor,
-                transactionTime: doc.data().transactionTime,
-
-                other: doc.data().other,
                 docId: doc.id,
+                book: doc.data().book,
+                classPriceTotal: doc.data().classPriceTotal,
+                courseTotal: doc.data().courseTotal,
+                equipmentTotal: doc.data().equipmentTotal,
+                examTotal: doc.data().examTotal,
+                fee: doc.data().fee,
+                instrumentTotal: doc.data().instrumentTotal,
+                invDayOfMonth: doc.data().invDayOfMonth,
+                invMonth: doc.data().invMonth,
+                invYear: doc.data().invYear,
+                otherTotal: doc.data().otherTotal,
+                sumTotal: doc.data().sumTotal,
               };
+              // Item.fullDate = `${invDayOfMonth}/${invMonth}/${invYear}`
               this.Items.push(Item);
               // console.log(this.Items);
             });
