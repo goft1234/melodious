@@ -2,29 +2,24 @@
   <div id="addcourse">
     <div class="my-3">
       <h4 class="text-center text-success mb-4">บันทึกรายจ่าย</h4>
-      <!-- <h5 class="d-inline-block text-success">รายวิชาเรียน</h5> -->
-      <button
-        @click="addNew"
-        class="btn btn-info d-inline-block px-2"
-        data-toggle="modal"
-        data-target="#expenseTemplate"
-      >
-        สร้างหมวดหมู่
-      </button>
-      <button
-        @click="addNew"
-        class="btn btn-success d-inline-block float-right px-3"
-        data-toggle="modal"
-        data-target="#modal1"
-      >
-        เพิ่มรายการ
-      </button>
+      <div class="row">
+        <div class="col-12">
+          <button
+            @click="addNew"
+            class="btn btn-success d-inline-block float-right px-3"
+            data-toggle="modal"
+            data-target="#modal1"
+          >
+            เพิ่มรายการ
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="mt-3 shadow">
       <vue-good-table
         :columns="columns"
-        :rows="itemDatas"
+        :rows="expenseLists"
         :line-numbers="true"
         styleClass="vgt-table striped bordered"
         :search-options="{
@@ -48,10 +43,7 @@
             </div>
           </span>
           <span v-else-if="props.column.field == 'delete'">
-            <div
-              class="btn btn-danger"
-              @click="deletecourse(props.row.couseId)"
-            >
+            <div class="btn btn-danger" @click="deleteExpense(props.row.docId)">
               <i class="fas fa-trash-alt"></i>
             </div>
           </span>
@@ -72,7 +64,7 @@
               v-if="modal == 'new'"
               class="modal-title w-100 text-center text-success"
             >
-              เพิ่มวิชาเรียน
+              แบบบันทึกรายจ่าย
             </h4>
             <h4
               v-if="modal == 'edit'"
@@ -97,7 +89,7 @@
                 </div>
                 <input
                   type="text"
-                  v-model.trim="itemData.date"
+                  v-model.trim="expenseList.date"
                   class="form-control"
                   placeholder=""
                   disabled
@@ -117,13 +109,10 @@
                   <select
                     class="form-control"
                     id="courseType"
-                    v-model="itemData.type"
+                    v-model="expenseList.type"
                   >
                     <option disabled value="">เลือกหมวดหมู่</option>
-                    <option
-                      v-for="(item, index) in expenseTemplate.type"
-                      :key="index"
-                    >
+                    <option v-for="(item, index) in expenseMode" :key="index">
                       {{ item }}
                     </option>
                   </select>
@@ -140,7 +129,7 @@
                   </div>
                   <input
                     type="text"
-                    v-model.trim="itemData.list"
+                    v-model.trim="expenseList.list"
                     class="form-control"
                     placeholder="กรอกรายการที่ต้องการบันทึก"
                   />
@@ -159,7 +148,7 @@
                   </div>
                   <input
                     type="number"
-                    v-model.trim="itemData.amount"
+                    v-model.trim="expenseList.amount"
                     class="form-control"
                     placeholder="กรอกจำนวนเงิน"
                     min="0"
@@ -179,12 +168,12 @@
               Close
             </button>
             <button
-              @click="addItemData()"
+              @click="summarizeExpense()"
               type="button"
               class="btn btn-success"
               v-if="modal == 'new'"
             >
-              บันทึกวิชาเรียน
+              บันทึกข้อมูล
             </button>
             <button
               @click="updatecourse(course.couseId)"
@@ -199,95 +188,6 @@
       </div>
     </div>
     <!--End The Modal -->
-
-    <!--Start The template Modal -->
-    <div class="modal fade" id="expenseTemplate">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <!-- Modal Header -->
-          <div class="modal-header">
-            <h4 class="modal-title w-100 text-center text-secondary">
-              สร้างหมวดหมู่
-            </h4>
-
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-
-          <!-- Modal body -->
-          <div class="modal-body">
-            <form v-on:submit.prevent>
-              <!-- <h6 class="float-left text-success">ชื่อวิชาเรียน/หลักสูตร</h6> -->
-              <label for="product_link" class="text-primary">
-                สร้างหมวดหมู่
-              </label>
-              <b-form-tags
-                v-model="expenseTemplate.type"
-                no-outer-focus
-                tag-variant="success"
-                class="mb-4"
-              >
-                <template
-                  v-slot="{
-                    tags,
-                    inputAttrs,
-                    inputHandlers,
-                    tagVariant,
-                    addTag,
-                    removeTag,
-                  }"
-                >
-                  <b-input-group class="mb-2">
-                    <b-form-input
-                      v-bind="inputAttrs"
-                      v-on="inputHandlers"
-                      placeholder="กดปุ่มAdd หรือ กดEnter เพื่อเพิ่ม"
-                      class="form-control"
-                    ></b-form-input>
-                    <b-input-group-append>
-                      <b-button @click="addTag()" variant="success"
-                        >Add</b-button
-                      >
-                    </b-input-group-append>
-                  </b-input-group>
-                  <div class="d-inline-block" style="font-size: 1.3rem">
-                    <b-form-tag
-                      v-for="tag in tags"
-                      @remove="removeTag(tag)"
-                      :key="tag"
-                      :title="tag"
-                      :variant="tagVariant"
-                      class="mr-1"
-                      >{{ tag }}</b-form-tag
-                    >
-                  </div>
-                </template>
-              </b-form-tags>
-            </form>
-          </div>
-
-          <!-- Modal footer -->
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              @click="updateKeyword()"
-              type="button"
-              class="btn btn-success"
-            >
-              บันทึกข้อมูล
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--End The template Modal -->
   </div>
 </template>
 
@@ -317,13 +217,8 @@ export default {
           type: "text",
         },
         {
-          label: "จำนวน",
+          label: "จำนวนเงิน",
           field: "amount",
-          type: "text",
-        },
-        {
-          label: "แก้ไข",
-          field: "edit",
           type: "text",
         },
         {
@@ -340,11 +235,33 @@ export default {
         // level: [],
         // rate: [],
       },
-      itemDatas: [],
-      itemData: {
-        date: moment().add('543','year').format('DD/MM/YYYY'),
+      expenseMode: [
+        "สาธารณูปโภค",
+        "เครื่องเขียน",
+        "อุปกรณ์การสอน",
+        "เครื่องใช้สำนักงาน",
+        "โฆษณา",
+        "ค่าสอนครู",
+        "เงินเดือนเจ้าหน้าที่",
+        "สวัสดิการครู/เจ้าหน้าที่",
+        "ค่ารับรอง",
+        "ธรรมเนียมธนาคาร",
+        "ธรรมเนียมอื่นๆ",
+        "เงินประกัน",
+        "ค่าเช่า",
+        "ค่าซ่อมบำรุง",
+        "ค่าจ้างแรงงานทั่วไปรายครั้ง",
+        "กิจกรรม/คอนเสิร์ต",
+        "ค่าเดินทาง",
+        "สอบเกรด",
+        "ค่าเครื่องดนตรี",
+      ],
+      expenseLists: [],
+      expenseList: {
+        date: moment().add("543", "year").format("DD/MM/YYYY"),
         type: "",
         list: "",
+        amount: null,
         docId: "",
       },
     };
@@ -389,7 +306,7 @@ export default {
         );
     },
 
-    deletecourse(doc) {
+    deleteExpense(docId) {
       Swal.fire({
         title: "ต้องการลบ?",
         text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -401,8 +318,8 @@ export default {
       }).then((result) => {
         if (result.value) {
           // console.log(doc)
-          db.collection("courses")
-            .doc(doc)
+          db.collection("expenseTable")
+            .doc(docId)
             .delete()
             .then(() => {
               Swal.fire({
@@ -423,20 +340,18 @@ export default {
     },
 
     reset() {
-      this.course = {
-        courseName: null,
-        class: null,
-        beginRate: null,
-        mediumRate: null,
-        topRate: null,
-        teacherRate: null,
+      this.expenseList = {
+        date: moment().add("543", "year").format("DD/MM/YYYY"),
+        type: null,
+        list: null,
+        amount: null,
       };
     },
 
     editExpense(itemData) {
       this.modal = "edit";
       // console.log(couseId);
-      this.itemData = itemData;
+      this.expenseList = itemData;
     },
 
     updatecourse(docId) {
@@ -457,9 +372,138 @@ export default {
         });
     },
 
+    async summarizeExpense() {
+      let result = {
+            utilities : 0,
+            device : 0,
+            teaching  : 0,
+            office : 0,
+            advertise : 0,
+            teachEarn : 0,
+            employeeEarn : 0,
+            welfare : 0,
+            service : 0,
+            bankfee : 0,
+
+            otherfee : 0,
+            security : 0,
+            forrent : 0,
+            maintenance : 0,
+            wagesWorker : 0,
+            activity : 0,
+            travel : 0,
+            test : 0,
+            instrument : 0,
+            invDayOfMonth: moment().date(),
+            invMonth: moment().month() + 1,
+            invYear: moment().year(),
+          }
+          result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
+
+          if(this.expenseList.type == 'สาธารณูปโภค'){
+            result.utilities = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'เครื่องเขียน'){
+            result.device = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'อุปกรณ์การสอน'){
+            result.teaching = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'เครื่องใช้สำนักงาน'){
+            result.office = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'โฆษณา'){
+            result.advertise = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่าสอนครู'){
+            result.teachEarn = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'เงินเดือนเจ้าหน้าที่'){
+            result.employeeEarn = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'สวัสดิการครู/เจ้าหน้าที่'){
+            result.welfare = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่ารับรอง'){
+            result.service = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ธรรมเนียมธนาคาร'){
+            result.bankfee = parseInt(this.expenseList.amount) 
+          }
+
+          else if(this.expenseList.type == 'ธรรมเนียมอื่นๆ'){
+            result.otherfee = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'เงินประกัน'){
+            result.security = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่าเช่า'){
+            result.forrent = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่าซ่อมบำรุง'){
+            result.maintenance = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่าจ้างแรงงานทั่วไปรายครั้ง'){
+            result.wagesWorker = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'กิจกรรม/คอนเสิร์ต'){
+            result.activity = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่าเดินทาง'){
+            result.travel = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'สอบเกรด'){
+            result.test = parseInt(this.expenseList.amount) 
+          }
+          else if(this.expenseList.type == 'ค่าเครื่องดนตรี'){
+            result.instrument = parseInt(this.expenseList.amount) 
+          }
+
+
+
+      try {
+        let today = moment().add("543", "year").format("DD-MM-YYYY");
+        var ref = db.collection("summarizeExpense").doc(today);
+        let doc = await ref.get();
+        if (!doc.exists) {
+          // console.log(result);
+          await ref.set(result, { merge: true });
+          this.addItemData() 
+        } else {
+          let data = {
+            docId : doc.id,
+            utilities : doc.data().utilities + result.utilities,
+            device : doc.data().device + result.device,
+            teaching : doc.data().teaching + result.teaching,
+            office : doc.data().office + result.office,
+            advertise : doc.data().advertise + result.advertise,
+            teachEarn : doc.data().teachEarn + result.teachEarn,
+            employeeEarn : doc.data().employeeEarn + result.employeeEarn,
+            welfare : doc.data().welfare + result.welfare,
+            service : doc.data().service + result.service,
+            bankfee : doc.data().bankfee + result.bankfee,
+
+            otherfee : doc.data().otherfee + result.otherfee,
+            security : doc.data().security + result.security,
+            forrent : doc.data().forrent + result.forrent,
+            maintenance : doc.data().maintenance + result.maintenance,
+            wagesWorker : doc.data().wagesWorker + result.wagesWorker,
+            activity : doc.data().activity + result.activity,
+            travel : doc.data().wagesWorker + result.travel,
+            test : doc.data().activity + result.test,
+            instrument : doc.data().instrument + result.instrument,
+          }
+          await db.collection('summarizeExpense').doc(today).update(data)
+          this.addItemData() 
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     async addItemData() {
       try {
-        await db.collection("expenseTable").add(this.itemData);
+        await db.collection("expenseTable").add(this.expenseList);
         Swal.fire({
           title: "เพิ่มข้อมูลเรียบร้อย",
           text: "ได้ทำการเพิ่มข้อมูลแล้วเรียบร้อย",
@@ -480,27 +524,26 @@ export default {
       }
     },
 
-    getItemdata() {
+    getExpenseLists() {
       db.collection("expenseTable").onSnapshot((querySnapshot) => {
-        this.itemDatas = [];
+        this.expenseLists = [];
         querySnapshot.forEach((doc) => {
-          let itemData = {
-            date:doc.data().date,
+          let expenseList = {
+            date: doc.data().date,
             type: doc.data().type,
             list: doc.data().list,
             amount: doc.data().amount,
             docId: doc.id,
           };
-          this.itemDatas.push(itemData);
-          console.log(this.itemDatas);
+          this.expenseLists.push(expenseList);
+          console.log(this.expenseLists);
         });
       });
     },
   },
 
   mounted() {
-    this.getItemdata();
-    this.getItemdataTemplate();
+    this.getExpenseLists();
     window.scrollTo(0, 0);
   },
 };

@@ -12,12 +12,12 @@
             @change="setPage()"
           >
             <option disabled value="">เลือกเพื่อดูข้อมูลบัญชี</option>
+            <option value="expense">ระบบบันทึกค่าใช้จ่าย</option>
             <option value="overview">ภาพรวมทั้งหมด</option>
             <option value="incomeday">รายรับ - รายวัน</option>
             <option value="incomemonth">รายรับ - รายเดือน</option>
-            <option value="expense">ระบบบันทึกค่าใช้จ่ายแต่ละเดือน</option>
-            <option value="teacher">รายจ่าย - รายวัน</option>
-            <option value="employee">รายจ่าย - รายเดือน</option>
+            <option value="expense">รายจ่าย - รายวัน</option>
+            <option value="expensemonth">รายจ่าย - รายเดือน</option>
             <option value="teacher">สรุปยอดรายวัน</option>
             <option value="employee">สรุปยอดรายเดือน</option>
           </select>
@@ -56,6 +56,9 @@ export default {
       }
       else if(this.acccountPage == "expense"){
         this.$router.replace("/admin/account/expense");
+      }
+      else if(this.acccountPage == "expensemonth"){
+        this.$router.replace("/admin/account/expensemonth");
       }
     },
   },

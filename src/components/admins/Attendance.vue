@@ -27,21 +27,18 @@
           </div>
           <div class="col-md-3"></div>
         </div>
-        <button
-          class="btn btn-info d-inline-block px-2"
-          data-toggle="modal"
-          data-target="#courseTemplate"
-        >
-          สร้างแม่แบบ
-        </button>
-        <button
-          @click="addNew"
-          class="btn btn-success d-inline-block float-right px-3"
-          data-toggle="modal"
-          data-target="#addClassroomModal"
-        >
-          สร้างห้องเรียน
-        </button>
+        <div class="row">
+          <div class="col-12">
+            <button
+              @click="addNew"
+              class="btn btn-success d-inline-block float-right px-3"
+              data-toggle="modal"
+              data-target="#addClassroomModal"
+            >
+              สร้างห้องเรียน
+            </button>
+          </div>
+        </div>
       </div>
       <!-- <pre>{{JSON.stringify(groupData, null, 2)}}</pre> -->
       <div class="mt-3 shadow">
@@ -148,38 +145,54 @@
                   </div>
                   <b-card-body>
                     <div
+                      class="row mb-3"
                       v-for="(item, index) in classroom.studentAtClass"
                       :key="index.userId"
-                      class="mb-3"
+                      style="background: #e9ecef"
                     >
-                      <div class="card-body" style="background: #e9ecef">
-                        <h6 class="card-title text-center text-success">
-                          INVOICE NUMBER (INV.No.) {{ item.invoiceNo }}
-                        </h6>
-                        <p class="card-text">
-                          ชื่อ - นามสกุล
-                          <span class="text-success"
-                            >{{ item.firstName }} {{ item.lastName }}</span
-                          >
-                        </p>
-                        <p class="card-text">
-                          ชื่อเล่น
-                          <span class="text-success">{{ item.nickName }}</span>
-                        </p>
-                        <p class="card-text">
-                          รหัสนักเรียน
-                          <span class="text-success">{{ item.studentId }}</span>
-                        </p>
-                        <div class="row justify-content-center">
-                          <div class="col text-center">
-                            <button
-                              @click="stdInClassDetail(item)"
-                              class="btn btn-primary"
-                              data-toggle="modal"
-                              data-target="#StudentInClassModal"
+                      <div class="col-md-6">
+                        <img
+                          :src="item.image"
+                          class="rounded-circle mx-auto d-block mt-4"
+                          width="160"
+                          height="160"
+                          style="border: 5px solid white"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card-body">
+                          <h6 class="card-title text-center text-success">
+                            INVOICE NUMBER (INV.No.) {{ item.invoiceNo }}
+                          </h6>
+                          <p class="card-text">
+                            ชื่อ - นามสกุล
+                            <span class="text-success"
+                              >{{ item.firstName }} {{ item.lastName }}</span
                             >
-                              รายละเอียด
-                            </button>
+                          </p>
+                          <p class="card-text">
+                            ชื่อเล่น
+                            <span class="text-success">{{
+                              item.nickName
+                            }}</span>
+                          </p>
+                          <p class="card-text">
+                            รหัสนักเรียน
+                            <span class="text-success">{{
+                              item.studentId
+                            }}</span>
+                          </p>
+                          <div class="row justify-content-center">
+                            <div class="col text-center">
+                              <button
+                                @click="stdInClassDetail(item)"
+                                class="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#StudentInClassModal"
+                              >
+                                รายละเอียด
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -413,16 +426,16 @@
                   </b-card-body>
                   <div class="row float-right mb-2">
                     <!-- bug*** -->
-                    <div class="col mr-3 text-center">
+                    <div v-if="canEdit == false" class="col mr-3 text-center">
                       <button
                         @click="editClassroom(classroom)"
                         class="btn btn-warning"
-                        v-if="canEdit == false"
                       >
                         แก้ไข
                       </button>
+                    </div>
+                    <div v-else-if="canEdit" class="col mr-3 text-center">
                       <button
-                        v-else
                         @click="updateClassroom(classroom.classId)"
                         class="btn btn-success"
                       >
@@ -576,7 +589,12 @@
 
                           <div class="col-sm-5">
                             <div class="promotion-image-container text-center">
-                              <img :src="obj.attendancePic" width="300" height="300" class="img-thumbnail" />
+                              <img
+                                :src="obj.attendancePic"
+                                width="300"
+                                height="300"
+                                class="img-thumbnail"
+                              />
                             </div>
                           </div>
                         </div>
@@ -1105,7 +1123,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div>
                         ชม.คงเหลือ
-                        <span class="text-success">{{ item.amount }}</span>
+                        <span class="text-success">{{ item.remain }}</span>
                       </div>
                     </div>
                     <div class="col-lg-4 col-md-6">
@@ -1157,7 +1175,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div>
                         เบอร์โทร
-                        <span class="text-success">{{ item.mobilephone }}</span>
+                        <span class="text-success">{{ item.stdMobile }}</span>
                       </div>
                     </div>
 
@@ -1250,7 +1268,7 @@ export default {
         },
         {
           label: "เวลาเรียน",
-          field: "startTime",
+          field: "classTime",
           type: "text",
         },
         {
@@ -1358,54 +1376,56 @@ export default {
       console.log(this.setDaySelect);
       try {
         this.$store.state.show = true;
-        let day = parseInt(this.setDaySelect)
+        let day = parseInt(this.setDaySelect);
         let refDay;
-        if(day == 0){
-          refDay = db.collection("classroom").orderBy("dayAttend.dayNum","desc")
-        }
-        else{
-          refDay = db.collection("classroom")
-          .where("dayAttend.dayNum", "==", day)
-          .where("amount", ">=", 1)
+        if (day == 0) {
+          refDay = db
+            .collection("classroom")
+            .orderBy("dayAttend.dayNum", "desc");
+        } else {
+          refDay = db
+            .collection("classroom")
+            .where("dayAttend.dayNum", "==", day)
+            .where("amount", ">=", 1);
         }
         // var date = moment().isoWeekday();
         // console.log(date);
 
-          refDay.onSnapshot((querySnapshot) => {
-            this.classrooms = [];
-            querySnapshot.forEach((doc) => {
-              // if(!doc.data().role.isAdmin)
-              // {
-              // console.log(doc.data());
-              let classroom = {
-                nowDate: moment().format("ll"),
-                classId: doc.id,
+        refDay.onSnapshot((querySnapshot) => {
+          this.classrooms = [];
+          querySnapshot.forEach((doc) => {
+            // if(!doc.data().role.isAdmin)
+            // {
+            // console.log(doc.data());
+            let classroom = {
+              nowDate: moment().format("ll"),
+              classId: doc.id,
 
-                amount: doc.data().amount,
-                classType: doc.data().classType,
-                courseName: doc.data().courseName,
-                createdAt: doc.data().createdAt,
-                dayAttend: doc.data().dayAttend,
-                endDate: doc.data().endDate,
-                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
-                  "HH:mm"
-                ),
-                level: doc.data().level,
-                rate: doc.data().rate,
-                startDate: doc.data().startDate,
-                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
-                  "HH:mm"
-                ),
-                studentAtClass: doc.data().student,
-                teacherAtclass: doc.data().teacherAtclass,
-                wages: doc.data().wages,
-              };
-              this.classrooms.push(classroom);
-              console.log(this.classrooms);
-              this.$store.state.show = false;
-            });
+              amount: doc.data().amount,
+              classType: doc.data().classType,
+              courseName: doc.data().courseName,
+              createdAt: doc.data().createdAt,
+              dayAttend: doc.data().dayAttend,
+              endDate: doc.data().endDate,
+              finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
+                "HH:mm"
+              ),
+              level: doc.data().level,
+              rate: doc.data().rate,
+              startDate: doc.data().startDate,
+              startTime: moment(doc.data().startTime, "HH:mm:ss").format(
+                "HH:mm"
+              ),
+              studentAtClass: doc.data().student,
+              teacherAtclass: doc.data().teacherAtclass,
+              wages: doc.data().wages,
+            };
+            this.classrooms.push(classroom);
+            console.log(this.classrooms);
             this.$store.state.show = false;
           });
+          this.$store.state.show = false;
+        });
       } catch (err) {
         console.log(err);
         this.$store.state.show = false;
@@ -1436,12 +1456,13 @@ export default {
               finishTime: doc.data().finishTime,
               invoiceNo: doc.data().invoiceNo,
               level: doc.data().level,
-              mobilephone: doc.data().mobilephone,
+              stdMobile: doc.data().stdMobile,
               nickName: doc.data().nickName,
               startDate: moment(doc.data().startDate)
                 .add(543, "year")
                 .format("LL"),
               startTime: doc.data().startTime,
+              remain : doc.data().remain,
             };
             this.stdInClass.push(detail);
           });
@@ -1493,10 +1514,10 @@ export default {
           querySnapshot.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             console.log(doc.id, " => ", doc.data().amount);
-            let newAmount = doc.data().amount - 1;
+            let newRemain = doc.data().remain - 1;
             db.collection("courseActive")
               .doc(doc.id)
-              .update({ amount: newAmount })
+              .update({ remain: newRemain })
               .then(() => {
                 Swal.fire({
                   title: "เพิ่มข้อมูลเรียบร้อย",
@@ -1515,9 +1536,9 @@ export default {
         });
     },
     async addClassroomHis(classroom) {
-      
-      classroom.attendancePic = 'https://media.istockphoto.com/vectors/attendance-concept-vector-flat-design-vector-id1198430065?k=20&m=1198430065&s=170667a&w=0&h=Ah8_cY025T_GPNeASpti9X95K7eAWBzq2IwWCA0oQtI='
-      classroom.commentClass = '';
+      classroom.attendancePic =
+        "https://media.istockphoto.com/vectors/attendance-concept-vector-flat-design-vector-id1198430065?k=20&m=1198430065&s=170667a&w=0&h=Ah8_cY025T_GPNeASpti9X95K7eAWBzq2IwWCA0oQtI=";
+      classroom.commentClass = "";
       console.log(classroom);
       try {
         await db.collection("AttendanceHistory").add(classroom);
@@ -1636,7 +1657,7 @@ export default {
           confirmButtonColor: "#30855c",
           confirmButtonText: "ตกลง",
         });
-        $("#course").modal("hide");
+        $("#addClassroomModal").modal("hide");
         this.reset();
       } catch (err) {
         Swal.fire({
@@ -1712,8 +1733,8 @@ export default {
                 .add(543, "year")
                 .format("DD/MM/YYYY"),
               commentThisTime: doc.data().commentThisTime,
-              commentClass : doc.data().commentClass,
-              attendancePic : doc.data().attendancePic,
+              commentClass: doc.data().commentClass,
+              attendancePic: doc.data().attendancePic,
               teacherAtclass: doc.data().teacherAtclass,
               studentYes: doc.data().studentYes,
             };
@@ -1793,6 +1814,7 @@ export default {
                 teacherAtclass: doc.data().teacherAtclass,
                 wages: doc.data().wages,
               };
+              classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
               this.classrooms.push(classroom);
               console.log(this.classrooms);
             });
@@ -1805,21 +1827,21 @@ export default {
     },
   },
 
-  computed: {
-    groupData() {
-      const groupByCategory = this.profiles.reduce((group, product) => {
-        const { invoiceNo } = product;
-        console.log({ invoiceNo });
-        group[invoiceNo] = group[invoiceNo] ?? [];
-        group[invoiceNo].push(product);
-        // console.log(group[invoiceNo]);
-        // console.log(JSON.stringify(groupByCategory, null, 2));
-        // console.log(group);
-        return group;
-      }, {});
-      return groupByCategory;
-    },
-  },
+  // computed: {
+  //   groupData() {
+  //     const groupByCategory = this.profiles.reduce((group, product) => {
+  //       const { invoiceNo } = product;
+  //       console.log({ invoiceNo });
+  //       group[invoiceNo] = group[invoiceNo] ?? [];
+  //       group[invoiceNo].push(product);
+  //       // console.log(group[invoiceNo]);
+  //       // console.log(JSON.stringify(groupByCategory, null, 2));
+  //       // console.log(group);
+  //       return group;
+  //     }, {});
+  //     return groupByCategory;
+  //   },
+  // },
 
   mounted() {
     this.getCourseTemplate();

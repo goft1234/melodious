@@ -157,6 +157,11 @@ const routes = [
             name: 'expense',
             component: () => import('../components/admins/ExpenseTable.vue')
           },
+          {
+            path: 'expensemonth',
+            name: 'expensemonth',
+            component: () => import('../components/admins/ExpenseMonth.vue')
+          },
         ]
       },
     ],

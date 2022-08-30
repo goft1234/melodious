@@ -92,12 +92,12 @@
                       <span @click="hide">รายงาน (Report)</span>
                     </router-link>
                   </li>
-                  <li class="bottom-line">
+                  <!-- <li class="bottom-line">
                     <router-link to="/admin/managetable">
                       <i class="fas fa-calendar-alt"></i>
                       <span @click="hide">ระบบจัดการหน้าปฏิทิน</span>
                     </router-link>
-                  </li>
+                  </li> -->
                   <li class="bottom-line">
                     <router-link to="/admin/account/overview">
                       <i class="fas fa-university"></i>

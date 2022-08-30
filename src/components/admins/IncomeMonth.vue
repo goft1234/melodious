@@ -2,7 +2,7 @@
   <div id="transaction" class="">
     <div class="container-fluid">
       <div class="">
-        <h4 class="text-center text-success mb-4 mt-3">สรุปยอดรายวัน</h4>
+        <h4 class="text-center text-success mb-4 mt-3">สรุป รายรับ / เดือน</h4>
         <div class="row">
           <div class="col-md-4"></div>
           <div class="col-md-4">
@@ -49,56 +49,6 @@
                   <div></div>
                 </div>
               </div>
-
-              <!-- <div class="card">
-                <div class="card-body">
-                  <div class="card-header bg-danger shadow">
-                    <h5 class="text-light text-center">รายจ่าย</h5>
-                  </div>
-                  <h6 class="card-text mt-4 text-danger text-center">
-                    <h6 class="text-danger">รายจ่ายช่วงวันที่</h6>
-                    {{ pickerDates.startDate | date }} -
-                    {{ pickerDates.endDate | date }}
-                  </h6>
-                  <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ incomeTotal }} บาท
-                  </h4>
-
-                  <div class="bg- shadow">
-                    <button
-                      to="/user/withdrawWeb"
-                      class="btn btn-danger btn-block text-light"
-                    >
-                      ดูข้อมูล
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-header bg-warning shadow">
-                    <h5 class="text-light text-center">คงเหลือ</h5>
-                  </div>
-                  <h6 class="card-text mt-4 text-dark text-center">
-                    <h6 class="text-dark">ยอดคงเหลือช่วงวันที่</h6>
-                    {{ pickerDates.startDate | date }} -
-                    {{ pickerDates.endDate | date }}
-                  </h6>
-                  <h4 class="card-text my-4 text-dark text-center">
-                    จำนวน {{ incomeTotal }} บาท
-                  </h4>
-
-                  <div class="bg- shadow">
-                    <button
-                      to="/user/withdrawWeb"
-                      class="btn btn-warning btn-block text-light"
-                    >
-                      ดูข้อมูล
-                    </button>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
           <div class="col-md-4"></div>
@@ -852,14 +802,11 @@ export default {
     },
 
     async getDatetest() {
-      // console.log(this.monthSelect.split("-"));
+      console.log(this.monthSelect);
       try {
-        let find = this.monthSelect.split("-");
-        let myMonth = parseInt(find[1]);
-        let myYear = find[0];
         await db
           .collection("summarize")
-          .where("invMonth", "==", myMonth)
+          .where("monthlyDay", "==", this.monthSelect)
           // .where("invYear", "==", myYear)
           .onSnapshot((querySnapshot) => {
             this.Items = [];

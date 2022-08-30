@@ -2052,6 +2052,7 @@ export default {
       +parseInt(bookTotal)+parseInt(instrumentTotal)+parseInt(equipmentTotal)+parseInt(examTotal)
       +parseInt(otherTotal);
 
+
       let result = {
         classPriceTotal: parseInt(classPriceTotal),
         courseTotal: courseTotal,
@@ -2066,6 +2067,7 @@ export default {
         invMonth: moment().month() + 1,
         invYear: moment().year(),
       };
+      result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
 
       try {
         if (invoice.summarize == false) {
@@ -2091,7 +2093,9 @@ export default {
               invDayOfMonth: result.invDayOfMonth,
               invMonth: result.invMonth,
               invYear: result.invYear,
+              monthlyDay : result.monthlyDay,
             };
+
             await ref.set(data);
           }
           await db.collection('invoiceData').doc(invoice.docId).update({summarize : true})
@@ -2455,7 +2459,7 @@ export default {
               ),
               // transactionTime:doc.data().transactionTime,
             };
-
+            
             // console.log(Item);
             this.invoiceDetails.push(invoiceDetail);
 

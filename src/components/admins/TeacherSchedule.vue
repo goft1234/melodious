@@ -136,39 +136,55 @@
                     </div>
                   </div>
                   <b-card-body>
-                    <div
+                                        <div
+                      class="row mb-3"
                       v-for="(item, index) in classroom.studentAtClass"
                       :key="index.userId"
-                      class="mb-3"
+                      style="background: #e9ecef"
                     >
-                      <div class="card-body" style="background: #e9ecef">
-                        <h6 class="card-title text-center text-success">
-                          INVOICE NUMBER (INV.No.) {{ item.invoiceNo }}
-                        </h6>
-                        <p class="card-text">
-                          ชื่อ - นามสกุล
-                          <span class="text-success"
-                            >{{ item.firstName }} {{ item.lastName }}</span
-                          >
-                        </p>
-                        <p class="card-text">
-                          ชื่อเล่น
-                          <span class="text-success">{{ item.nickName }}</span>
-                        </p>
-                        <p class="card-text">
-                          รหัสนักเรียน
-                          <span class="text-success">{{ item.studentId }}</span>
-                        </p>
-                        <div class="row justify-content-center">
-                          <div class="col text-center">
-                            <button
-                              @click="stdInClassDetail(item)"
-                              class="btn btn-primary"
-                              data-toggle="modal"
-                              data-target="#StudentInClassModal"
+                      <div class="col-md-6">
+                        <img
+                          :src="item.image"
+                          class="rounded-circle mx-auto d-block mt-4"
+                          width="160"
+                          height="160"
+                          style="border: 5px solid white"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card-body">
+                          <h6 class="card-title text-center text-success">
+                            INVOICE NUMBER (INV.No.) {{ item.invoiceNo }}
+                          </h6>
+                          <p class="card-text">
+                            ชื่อ - นามสกุล
+                            <span class="text-success"
+                              >{{ item.firstName }} {{ item.lastName }}</span
                             >
-                              รายละเอียด
-                            </button>
+                          </p>
+                          <p class="card-text">
+                            ชื่อเล่น
+                            <span class="text-success">{{
+                              item.nickName
+                            }}</span>
+                          </p>
+                          <p class="card-text">
+                            รหัสนักเรียน
+                            <span class="text-success">{{
+                              item.studentId
+                            }}</span>
+                          </p>
+                          <div class="row justify-content-center">
+                            <div class="col text-center">
+                              <button
+                                @click="stdInClassDetail(item)"
+                                class="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#StudentInClassModal"
+                              >
+                                รายละเอียด
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -624,7 +640,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div>
                         ชม.คงเหลือ
-                        <span class="text-success">{{ item.amount }}</span>
+                        <span class="text-success">{{ item.remain }}</span>
                       </div>
                     </div>
                     <div class="col-lg-4 col-md-6">
@@ -676,7 +692,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div>
                         เบอร์โทร
-                        <span class="text-success">{{ item.mobilephone }}</span>
+                        <span class="text-success">{{ item.stdMobile }}</span>
                       </div>
                     </div>
 
@@ -1266,12 +1282,13 @@ export default {
               finishTime: doc.data().finishTime,
               invoiceNo: doc.data().invoiceNo,
               level: doc.data().level,
-              mobilephone: doc.data().mobilephone,
+              stdMobile: doc.data().stdMobile,
               nickName: doc.data().nickName,
               startDate: moment(doc.data().startDate)
                 .add(543, "year")
                 .format("LL"),
               startTime: doc.data().startTime,
+              remain : doc.data().remain,
             };
             this.stdInClass.push(detail);
           });
