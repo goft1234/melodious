@@ -4,6 +4,17 @@
       <div class="">
         <h4 class="text-center text-success mb-4">ข้อมูลนักเรียน</h4>
       </div>
+      <div class="row">
+        <div class="col-12">
+          <router-link
+            to="/admin/editinvoice"
+            class="btn btn-success float-right px-2"
+          >
+            <i class="fa-sharp fa-solid fa-file-invoice-dollar"></i>
+            ใบเสร็จทั้งหมด
+          </router-link>
+        </div>
+      </div>
       <div class="mt-3 shadow">
         <vue-good-table
           :columns="columns"
@@ -50,10 +61,6 @@
                 <i class="fa-solid fa-user"></i>
               </div>
             </span>
-            <!-- class="btn btn-success"
-                @click="addcoursepage(props.row.uid)" -->
-            <!-- data-toggle="modal"
-                data-target="#addCourseModal" -->
             <span v-else-if="props.column.field == 'addcourse'">
               <div
                 class="btn btn-success"
@@ -64,7 +71,6 @@
                 <i class="fa-solid fa-file-circle-plus"></i>
               </div>
             </span>
-            <!-- @click="Reneval(props.row)" -->
             <span v-else-if="props.column.field == 'Reneval'">
               <div
                 class="btn btn-info"
@@ -75,13 +81,30 @@
                 <i class="fa-solid fa-user-plus"></i>
               </div>
             </span>
-            <span v-else-if="props.column.field == 'data'">
+            <span v-else-if="props.column.field == 'otherData'">
               <div
-                class="btn btn-dark"
-                data-toggle="modal"
-                data-target="#RenevalModal"
+                class="btn btn-dark dropdown-toggle"
+                id="dropdownOtherData"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
               >
                 <i class="fas fa-table"></i>
+              </div>
+              <div class="dropdown-menu" aria-labelledby="dropdownOtherData">
+                <div
+                  class="dropdown-item btn"
+                  @click="studentCourse(props.row.userId)"
+                >
+                  คอร์สที่ลงเรียน
+                </div>
+
+                <div
+                  class="dropdown-item btn"
+                  @click="studentInvoice(props.row.userId)"
+                >
+                  ประวัติการชำระ
+                </div>
               </div>
             </span>
             <span v-else-if="props.column.field == 'edit'">
@@ -120,591 +143,12 @@
                 <i class="fas fa-trash-alt"></i>
               </div>
             </span>
-            <!-- <span v-else>
-        {{props.formattedRow[props.column.field]}}
-      </span>       -->
+            <span v-else>
+              {{ props.formattedRow[props.column.field] }}
+            </span>
           </template>
         </vue-good-table>
       </div>
-
-      <!-- print invoice -->
-      <div class="col" id="InvPckPrint" style="display: none">
-        <div class="page" size="A4" style="page-break-after: always">
-          <table
-            width="100%"
-            style="margin: 10px 0; border-bottom: 3px #000000 solid"
-          >
-            <tr>
-              <td
-                class="text-center"
-                style="
-                  font-weight: bolder;
-                  font-size: 1.75em;
-                  padding-top: 10px;
-                "
-              >
-                <img
-                  src="https://www.mmsmelodious.info/images/logo/medium-1594270995740.png"
-                  alt="Logo"
-                  style="width: 150px"
-                />
-              </td>
-              <td colspan="2" class="text-center">
-                <h4>โรงเรียนสอนดนตรี เมโลดิอุส</h4>
-                <h5>Melodious Music School</h5>
-                <p>
-                  188/77-78 หมู่4 ชั้น2 ถ.หนามแดง-บางพลี ต.บางพลีใหญ่ อ.บางพลี
-                  จ.สมุทราปราการ 10540
-                </p>
-                <p>
-                  Tel. 02-183-9700 , 087-022-0277 , 091-5588700 Fax. 02-183-7492
-                </p>
-                <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
-              </td>
-              <td class="text-right">
-                <h5>Inv.No. {{ invoiceNo }}</h5>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%">
-            <tr>
-              <td style="" colspan="4">
-                <p class="text-left">ได้รับเงินจาก (Received from)</p>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%">
-            <tr class="text-center">
-              <td class="text-left">
-                <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }}
-                  {{ stdProfile.lastName }} <br />
-                </h6>
-              </td>
-              <td class="text-left">
-                <h6>ชื่อเล่น {{ stdProfile.nickName }}</h6>
-              </td>
-              <td class="text-center">
-                <h6>รหัสนักเรียน : {{ stdProfile.studentId }}</h6>
-              </td>
-              <td class="text-right">
-                <h6>วันที่ {{ day }}</h6>
-              </td>
-            </tr>
-          </table>
-          <br />
-          <table width="100%" class="mb-2">
-            <tr class="text-left">
-              <td colspan="4">
-                (1):เพื่อชำระค่าเรียน <b>{{ paymentType }}</b>
-                <label for=""></label>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%" class="table-bordered" style="text-align: center">
-            <tr>
-              <th style="width: 8%">ลำดับ<br />No.</th>
-              <th style="width: 56%">
-                รายละเอียดวิชาเรียน<br />Enrolled Course
-              </th>
-              <th style="width: 8%">จำนวน<br />Qty.</th>
-              <th style="width: 12%">ค่าเรียนต่อคอร์ส<br />Tuition fee</th>
-              <th style="width: 8%">ส่วนลด<br />Discount</th>
-              <th style="width: 8%">รวมค่าเรียน<br />Total</th>
-            </tr>
-            <tr
-              v-for="(course, index) in courseReserv"
-              :key="index"
-              class="text-center"
-            >
-              <td>{{ index + 1 }}</td>
-              <td>
-                <span v-if="course.courseName"
-                  >วิชา-{{ course.courseName }} ,</span
-                >
-                <span v-if="course.classType"
-                  >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
-                </span>
-                <span v-if="course.startDate">
-                  วันที่เริ่มเรียน-{{ course.startDate }} ,
-                </span>
-                <br />
-                <span v-if="course.teacherAtclass.teacherName">
-                  อาจารย์ผู้สอน-{{ course.teacherAtclass.teacherName }}
-                </span>
-              </td>
-              <td>{{ course.classQty }}</td>
-              <td>{{ course.rate }}</td>
-              <td>{{ course.classDiscount }}</td>
-              <td>
-                {{ course.classQty * course.rate - course.classDiscount }}
-              </td>
-            </tr>
-            <tr>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="3"
-              ></td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="2"
-              >
-                รวมค่าเรียนทั้งสิ้น <br />Totol
-              </td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-              >
-                {{ subTotal }}
-              </td>
-            </tr>
-          </table>
-          <p><br /></p>
-
-          <div class="mb-2">
-            (2):เพื่อชำระค่า
-            <span
-              v-for="(item, index) in selected"
-              :key="index"
-              colspan="4"
-              style="display: inline-block"
-            >
-              <b v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
-                >หนังสือเรียน ,</b
-              >
-              <b v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
-                >อุปกรณ์การเรียน ,</b
-              >
-              <b v-if="item == 'อื่นๆ'" class="text-left pl-2">{{
-                payforDetail
-              }}</b>
-            </span>
-          </div>
-
-          <table width="100%" class="table-bordered" style="text-align: center">
-            <tr>
-              <th style="width: 8%">ลำดับ<br />No.</th>
-              <th style="width: 56%">รายละเอียด<br />Description</th>
-              <th style="width: 8%">จำนวน<br />Qty.</th>
-              <th style="width: 12%">ราคา/หน่วย<br />unit price</th>
-              <th style="width: 8%">ส่วนลด<br />Discount</th>
-              <th style="width: 8%">รวม<br />Total</th>
-            </tr>
-            <tr v-for="(item, index) in carts" :key="index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ item.pName }}</td>
-              <td>{{ item.buyAmount }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.pDiscount }}</td>
-              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
-            </tr>
-            <tr>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="3"
-              ></td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="2"
-              >
-                รวมค่าเรียนทั้งสิ้น <br />Totol
-              </td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-              >
-                {{ pSubtotal }}
-              </td>
-            </tr>
-          </table>
-          <p><br /></p>
-
-          <div class="mb-2">
-            ชำระเงินโดย (Pay by)
-            <span
-              v-for="(item, index) in payBy"
-              :key="index"
-              colspan="4"
-              style="display: inline-block"
-            >
-              <b v-if="item == 'เงินสด'" class="text-left pl-2">เงินสด ,</b>
-              <b v-if="item == 'เครดิตการ์ด'" class="text-left pl-2"
-                >เครดิตการ์ด ,</b
-              >
-              <b v-if="item == 'โอนผ่านธนาคาร'" class="text-left pl-2">{{
-                bankDetail
-              }}</b>
-            </span>
-          </div>
-
-          <table width="100%" class="table-bordered" style="text-align: center">
-            <tr>
-              <th style="width: 25%">(1)รวมค่าเรียน<br />Totol Tuition Fee</th>
-              <th style="width: 25%">
-                (2)ค่าหนังสือหรืออุปกรณ์<br />Total Amount
-              </th>
-              <th style="width: 25%">ค่าแรกเข้า<br />Enrollment fee</th>
-              <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
-            </tr>
-            <tr style="height: 50px">
-              <td>{{ subTotal }}</td>
-              <td>{{ pSubtotal }}</td>
-              <td>{{ fee }}</td>
-              <td>{{ grandTotal }}</td>
-            </tr>
-          </table>
-          <br />
-          <table width="100%" style="1px solid black">
-            <tr class="text-left">
-              <td colspan="4">
-                จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)
-                Baht.______________________________________________________
-              </td>
-            </tr>
-          </table>
-          <br />
-          <table width="100%" style="1px solid black">
-            <tr class="text-left">
-              <td colspan="4">หมายเหตุ {{ note }}</td>
-            </tr>
-          </table>
-          <p><br /></p>
-          <table width="100%">
-            <tr class="float-right">
-              <td colspan="3">
-                <h6>
-                  ลงชื่อ_______________________________________เจ้าหน้าที่/ผู้ดำเนินการ
-                </h6>
-                <br />
-                <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
-              </td>
-            </tr>
-          </table>
-          <br />
-          <i style="font-size: 10px"
-            >โรงเรียนดนตรี เมโลดิอุส
-            ขอสงวนสิทธิ์ที่จะไม่คืนค่าเรียนแก่ผู้สมัครไม่ว่ากรณีใดๆทั้งสิ้น</i
-          >
-          <br />
-          <span style="font-size: 10px"
-            >MMS reserve all the rights to not refund the tuition fees.</span
-          >
-        </div>
-        <!-- PAGE PACKING LIST -->
-        <div class="page" size="A4" style="page-break-after: always">
-          <table
-            width="100%"
-            style="margin: 10px 0; border-bottom: 3px #000000 solid"
-          >
-            <tr>
-              <td
-                class="text-center"
-                style="
-                  font-weight: bolder;
-                  font-size: 1.75em;
-                  padding-top: 10px;
-                "
-              >
-                <img
-                  src="https://www.mmsmelodious.info/images/logo/medium-1594270995740.png"
-                  alt="Logo"
-                  style="width: 150px"
-                />
-              </td>
-              <td colspan="2" class="text-center">
-                <h4>โรงเรียนสอนดนตรี เมโลดิอุส</h4>
-                <h5>Melodious Music School</h5>
-                <p>
-                  188/77-78 หมู่4 ชั้น2 ถ.หนามแดง-บางพลี ต.บางพลีใหญ่ อ.บางพลี
-                  จ.สมุทราปราการ 10540
-                </p>
-                <p>
-                  Tel. 02-183-9700 , 087-022-0277 , 091-5588700 Fax. 02-183-7492
-                </p>
-                <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
-              </td>
-              <td class="text-right">
-                <h5>Inv.No. {{ invoiceNo }}</h5>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%">
-            <tr>
-              <td style="" colspan="4">
-                <p class="text-left">ได้รับเงินจาก (Received from)</p>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%">
-            <tr class="text-center">
-              <td class="text-left">
-                <h6>
-                  ชื่อ - นามสกุล {{ stdProfile.firstName }}
-                  {{ stdProfile.lastName }} <br />
-                </h6>
-              </td>
-              <td class="text-left">
-                <h6>ชื่อเล่น {{ stdProfile.nickName }}</h6>
-              </td>
-              <td class="text-center">
-                <h6>รหัสนักเรียน : {{ stdProfile.studentId }}</h6>
-              </td>
-              <td class="text-right">
-                <h6>วันที่ {{ day }}</h6>
-              </td>
-            </tr>
-          </table>
-          <br />
-          <table width="100%" class="mb-2">
-            <tr class="text-left">
-              <td colspan="4">
-                (1):เพื่อชำระค่าเรียน <b>{{ paymentType }}</b>
-                <label for=""></label>
-              </td>
-            </tr>
-          </table>
-
-          <table width="100%" class="table-bordered" style="text-align: center">
-            <tr>
-              <th style="width: 8%">ลำดับ<br />No.</th>
-              <th style="width: 56%">
-                รายละเอียดวิชาเรียน<br />Enrolled Course
-              </th>
-              <th style="width: 8%">จำนวน<br />Qty.</th>
-              <th style="width: 12%">ค่าเรียนต่อคอร์ส<br />Tuition fee</th>
-              <th style="width: 8%">ส่วนลด<br />Discount</th>
-              <th style="width: 8%">รวมค่าเรียน<br />Total</th>
-            </tr>
-            <tr
-              v-for="(course, index) in courseReserv"
-              :key="index"
-              class="text-center"
-            >
-              <td>{{ index + 1 }}</td>
-              <td>
-                <span v-if="course.courseName"
-                  >วิชา-{{ course.courseName }} ,</span
-                >
-                <span v-if="course.classType"
-                  >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
-                </span>
-                <span v-if="course.startDate">
-                  วันที่เริ่มเรียน-{{ course.startDate }} ,
-                </span>
-                <br />
-                <span v-if="course.teacherAtclass.teacherName">
-                  อาจารย์ผู้สอน-{{ course.teacherAtclass.teacherName }}
-                </span>
-              </td>
-              <td>{{ course.classQty }}</td>
-              <td>{{ course.rate }}</td>
-              <td>{{ course.classDiscount }}</td>
-              <td>
-                {{ course.classQty * course.rate - course.classDiscount }}
-              </td>
-            </tr>
-            <tr>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="3"
-              ></td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="2"
-              >
-                รวมค่าเรียนทั้งสิ้น <br />Totol
-              </td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-              >
-                {{ subTotal }}
-              </td>
-            </tr>
-          </table>
-          <p><br /></p>
-
-          <div class="mb-2">
-            (2):เพื่อชำระค่า
-            <span
-              v-for="(item, index) in selected"
-              :key="index"
-              colspan="4"
-              style="display: inline-block"
-            >
-              <b v-if="item == 'หนังสือเรียน'" class="text-left pl-2"
-                >หนังสือเรียน ,</b
-              >
-              <b v-if="item == 'อุปกรณ์การเรียน'" class="text-left pl-2"
-                >อุปกรณ์การเรียน ,</b
-              >
-              <b v-if="item == 'อื่นๆ'" class="text-left pl-2">{{
-                payforDetail
-              }}</b>
-            </span>
-          </div>
-
-          <table width="100%" class="table-bordered" style="text-align: center">
-            <tr>
-              <th style="width: 8%">ลำดับ<br />No.</th>
-              <th style="width: 56%">รายละเอียด<br />Description</th>
-              <th style="width: 8%">จำนวน<br />Qty.</th>
-              <th style="width: 12%">ราคา/หน่วย<br />unit price</th>
-              <th style="width: 8%">ส่วนลด<br />Discount</th>
-              <th style="width: 8%">รวม<br />Total</th>
-            </tr>
-            <tr v-for="(item, index) in carts" :key="index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ item.pName }}</td>
-              <td>{{ item.buyAmount }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.pDiscount }}</td>
-              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
-            </tr>
-            <tr>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="3"
-              ></td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-                colspan="2"
-              >
-                รวมค่าเรียนทั้งสิ้น <br />Totol
-              </td>
-              <td
-                style="
-                  border-left: 0;
-                  border-right: 0;
-                  border-bottom: 6px black double;
-                "
-              >
-                {{ pSubtotal }}
-              </td>
-            </tr>
-          </table>
-          <p><br /></p>
-
-          <div class="mb-2">
-            ชำระเงินโดย (Pay by)
-            <span
-              v-for="(item, index) in payBy"
-              :key="index"
-              colspan="4"
-              style="display: inline-block"
-            >
-              <b v-if="item == 'เงินสด'" class="text-left pl-2">เงินสด ,</b>
-              <b v-if="item == 'เครดิตการ์ด'" class="text-left pl-2"
-                >เครดิตการ์ด ,</b
-              >
-              <b v-if="item == 'โอนผ่านธนาคาร'" class="text-left pl-2">{{
-                bankDetail
-              }}</b>
-            </span>
-          </div>
-
-          <table width="100%" class="table-bordered" style="text-align: center">
-            <tr>
-              <th style="width: 25%">(1)รวมค่าเรียน<br />Totol Tuition Fee</th>
-              <th style="width: 25%">
-                (2)ค่าหนังสือหรืออุปกรณ์<br />Total Amount
-              </th>
-              <th style="width: 25%">ค่าแรกเข้า<br />Enrollment fee</th>
-              <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
-            </tr>
-            <tr style="height: 50px">
-              <td>{{ subTotal }}</td>
-              <td>{{ pSubtotal }}</td>
-              <td>{{ fee }}</td>
-              <td>{{ grandTotal }}</td>
-            </tr>
-          </table>
-          <br />
-          <table width="100%" style="1px solid black">
-            <tr class="text-left">
-              <td colspan="4">
-                จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)
-                Baht.______________________________________________________
-              </td>
-            </tr>
-          </table>
-          <br />
-          <table width="100%" style="1px solid black">
-            <tr class="text-left">
-              <td colspan="4">หมายเหตุ {{ note }}</td>
-            </tr>
-          </table>
-          <p><br /></p>
-          <table width="100%">
-            <tr class="float-right">
-              <td colspan="3">
-                <h6>
-                  ลงชื่อรับทราบ_______________________________________ผู้สมัคร/ผู้ปกครอง
-                </h6>
-                <br />
-                <!-- <h6 class="text-center">ผู้รับเงิน</h6> -->
-              </td>
-            </tr>
-          </table>
-          <br />
-          <i style="font-size: 10px"
-            >โรงเรียนดนตรี เมโลดิอุส
-            ขอสงวนสิทธิ์ที่จะไม่คืนค่าเรียนแก่ผู้สมัครไม่ว่ากรณีใดๆทั้งสิ้น</i
-          >
-          <br />
-          <span style="font-size: 10px"
-            >MMS reserve all the rights to not refund the tuition fees.</span
-          >
-        </div>
-      </div>
-
-      <!-- OUTPUT -->
     </div>
 
     <!--Start profileModal -->
@@ -875,7 +319,9 @@
             <h5 class="text-left text-success my-3 font-weight-bold">
               ข้อมูลผู้ปกครอง
             </h5>
-
+            <div class="col-md-12 text-center mb-3">
+              <h6 class="text-success">(ผู้ปกครองคนที่ 1)</h6>
+            </div>
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
@@ -969,6 +415,99 @@
           </div> -->
               </div>
             </div>
+
+            <div class="col-md-12 text-center mb-3">
+        <h6 class="text-success">(ผู้ปกครองคนที่ 2)</h6>
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="firstName" class="text-success">ชื่อจริง</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="กรอกชื่อจริง"
+              id="firstName"
+              v-model.trim="profile.parentFirstName2"
+              :disabled="disabled == 1"
+            />
+            <!-- <span> : {{ profile.firstName }}</span> -->
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="lastName" class="text-success">นามสกุล</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="กรอกนามสกุล"
+              id="lastName"
+              v-model.trim="profile.parentLastName2"
+              :disabled="disabled == 1"
+            />
+            <!-- <span> : {{ profile.lastName }}</span> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="กรอกนามสกุล"
+              id="mobilephone"
+              v-model.trim="profile.parentMobilephone2"
+              maxlength="10"
+              :disabled="disabled == 1"
+            />
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="email" class="text-success">อีเมล์ </label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="กรอกอีเมล์มี @"
+              id="อีเมล์"
+              v-model.trim="profile.parentEmail2"
+              :disabled="disabled == 1"
+            />
+            <!-- <span> : {{ profile.email }}</span> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="telephone" class="text-success">เกี่ยวข้องเป็น</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="เกี่ยวข้องเป็น"
+              id="telephone"
+              v-model.trim="profile.parentAbout2"
+              :disabled="disabled == 1"
+            />
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <!-- <div class="form-group">
+            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="กรอกนามสกุล"
+              id="mobilephone"
+              v-model.trim="profile.mobilephone"
+            />
+          </div> -->
+        </div>
+      </div>
 
             <hr />
             <h5 class="text-left text-success my-3 font-weight-bold">
@@ -1269,13 +808,6 @@
                             {{ props.row.finishTime }}
                           </h6>
                         </span>
-                        <!-- <div v-else-if="props.column.field == 'remain' && connectCourse == true">
-                          <span>
-                          <h6>
-                            {{ props.row.remain }} 
-                          </h6>
-                       </span> 
-                        </div> -->
 
                         <span v-else-if="props.column.field == 'classDiscount'">
                           <div class="form-group">
@@ -1552,52 +1084,6 @@
                         </div>
                       </div>
 
-                      <!-- <div class="row mx-auto mt-3">
-                        <div class="col-md-3">
-                          <div class="form-check-inline">
-                            <label class="form-check-label">
-                              <input
-                                type="checkbox"
-                                class="form-check-input"
-                                value="หนังสือเรียน"
-                                v-model="paymentFor"
-                              />หนังสือเรียน
-                            </label>
-                          </div>
-                        </div>
-                        <div class="col-md-3">
-                          <div class="form-check-inline">
-                            <label class="form-check-label">
-                              <input
-                                type="checkbox"
-                                class="form-check-input"
-                                value="อุปกรณ์การเรียน"
-                                v-model="paymentFor"
-                              />อุปกรณ์การเรียน
-                            </label>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="input-group mb-3">
-                            อื่นๆ
-                            <div class="input-group-prepend">
-                              <div class="input-group-text">
-                                <input
-                                  type="checkbox"
-                                  value="อื่นๆ"
-                                  v-model="paymentFor"
-                                />
-                              </div>
-                            </div>
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="รายละเอียดอื่นๆ"
-                              v-model="other"
-                            />
-                          </div>
-                        </div>
-                      </div> -->
                       <div class="table-responsive">
                         <table
                           class="table table-bordered table-striped text-center"
@@ -1679,79 +1165,6 @@
                         </table>
                       </div>
 
-                      <!-- <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
-                      <div class="row mx-auto">
-                        <div class="col-md-3">
-                          <div class="form-check-inline">
-                            <label class="form-check-label">
-                              <input
-                                type="checkbox"
-                                class="form-check-input"
-                                value="เงินสด"
-                                v-model.trim="payBy"
-                              />เงินสด
-                            </label>
-                          </div>
-                        </div>
-                        <div class="col-md-3">
-                          <div class="form-check-inline">
-                            <label class="form-check-label">
-                              <input
-                                type="checkbox"
-                                class="form-check-input"
-                                value="เครดิตการ์ด"
-                                v-model.trim="payBy"
-                              />เครดิตการ์ด
-                            </label>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                              <div class="input-group-text">
-                                <input
-                                  type="checkbox"
-                                  value="โอนผ่านธนาคาร"
-                                  v-model.trim="payBy"
-                                />
-                              </div>
-                            </div>
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="โอนผ่านบัญชีธนาคาร"
-                              v-model.trim="bankDetail"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group mt-2">
-                            <label for="usr" class="text-success"
-                              >หมายเหตุ
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="usr"
-                              placeholder="กรอกรายการโปรโมชั่น"
-                              v-model.trim="note"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group mt-2">
-                            <label for="usr" class="text-success"
-                              >วัน-เวลาที่ทำธุรกรรม
-                            </label>
-                            <input
-                              type="datetime-local"
-                              class="form-control"
-                              v-model="transactionTime"
-                            />
-                          </div>
-                        </div>
-                      </div> -->
-
                       <div class="row text-center">
                         <div class="col-md-12">
                           <button
@@ -1795,54 +1208,10 @@
               Close
             </button>
           </div>
-          <!-- <b-form-group
-            label="Using options array:"
-            v-slot="{ ariaDescribedby }"
-          >
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selected"
-              :options="options"
-              :aria-describedby="ariaDescribedby"
-              name="flavour-1"
-            ></b-form-checkbox-group>
-          </b-form-group>
-
-          selected {{ selected }} -->
         </div>
       </div>
     </div>
     <!--End Modal AddCourse -->
-
-    <!--Start Modal Reneval -->
-    <div class="modal fade" id="RenevalModal">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <!-- Modal Header -->
-          <div class="modal-header">
-            <h4 class="modal-title">Modal Heading</h4>
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-
-          <!-- Modal body -->
-          <div class="modal-body"></div>
-
-          <!-- Modal footer -->
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--End Modal Reneval -->
   </div>
 </template>
 
@@ -1850,11 +1219,9 @@
 import { db, functions, fb } from "../../firebase.js";
 import firebase from "firebase/app";
 import moment from "moment";
-// import { DatetimePicker } from '@livelybone/vue-datepicker';
-
 export default {
-  name: "",
-  components: {},
+  name: "studentData",
+
   data() {
     return {
       classRoomColumns: [
@@ -1863,16 +1230,6 @@ export default {
           field: "teacherAtclass.teacherName",
           type: "text",
         },
-        // {
-        //   label: "นักเรียน",
-        //   field: "studentAtClass",
-        //   type: "text",
-        // },
-        // {
-        //   label: "รหัสนักเรียน",
-        //   field: "studentId",
-        //   type: "text",
-        // },
         {
           label: "วิชา",
           field: "courseName",
@@ -1898,11 +1255,6 @@ export default {
           field: "rate",
           type: "text",
         },
-        // {
-        //   label: "ชม.",
-        //   field: "remain",
-        //   type: "text",
-        // },
         {
           label: "จำนวนคอร์ส",
           field: "classQty",
@@ -2019,7 +1371,7 @@ export default {
         },
         {
           label: "ข้อมูลอื่นๆ",
-          field: "data",
+          field: "otherData",
           type: "text",
         },
         {
@@ -2034,7 +1386,7 @@ export default {
         },
       ],
       profiles: [],
-
+      profileModal: null,
       profile: {
         userId: "",
         addProfileAt: "",
@@ -2048,6 +1400,13 @@ export default {
         email: "",
         telephone: "",
         mobilephone: "",
+
+        parentFirstName2: "",
+        parentLastName2: "",
+        parentEmail2: "",
+        parentMobilephone2: "",
+        parentAbout2: "",
+
 
         address: {
           addressNumber: "",
@@ -2070,105 +1429,57 @@ export default {
         studyHis: "",
         profileType: "student",
       },
-
-      courses: [],
-      products: [],
-
-      courseSelected: "",
-      classTypeSelected: "",
-      levelSelected: "",
-      priceSelected: 0,
-      teacherSelected: "",
-      daySelected: "",
-      discount: 0,
-      amount: 12,
-      startTime: "",
-      wages: 0,
-      finishTime: "",
-      startDate: "",
-      endDate: "",
-      qty: 1,
-      paymentType: "",
-      paymentFor: [],
-      selected: [],
-      other: null,
-      payBy: [],
-      payforDetail: "",
-      bankDetail: "",
-      note: null,
-      transactionTime: null,
-
-      cName: [],
-      cType: [],
-      cLevel: [],
-      cRate: [],
-      cTeacher: [],
-      cDay: ["จันทร์", "อังคาร", "พุธ", "พฤหัส", "ศุกร์", "เสาร์", "อาทิตย์"],
-
-      stdProfile: {
-        // stdProfileId:null,
-        // nickName:null,
-        // firstName:null,
-        // lastName:null,
-        // date: Date.now()
-      },
-      day: moment().add(543, "year").format("LL"),
-      invoiceNo: null,
-
-      carts: [],
-      buyAmount: 0,
-      pDiscount: 0,
-
-      confirm: false,
-      courseInfo: [],
-      teacherId: null,
-      teacherName: null,
-      teacherTel: null,
-
-      profileModal: null,
-
       disabled: 0,
+      stdProfile: {},
+      userIdToReneval: "",
+      connectCourse: false,
       fee: 0,
 
+      products: [],
+      courses: [],
+      carts: [],
       courseReserv: [],
       classrooms: [],
-      studentTest: [],
-      commentThisTime: "",
-      connectCourse: false,
 
-      userIdToReneval: "",
+      payforDetail: "",
+      selected: [],
+      confirm: false,
+      paymentType: "",
+      other: null,
     };
   },
 
-  computed: {
-    subTotal() {
-      var total = this.courseReserv.reduce((accumulator, item) => {
-        return accumulator + item.rate * item.classQty - item.classDiscount;
-      }, 0);
-      return total;
-    },
-
-    pSubtotal() {
-      var ptotal = this.carts.reduce((accumulator, item) => {
-        return accumulator + item.price * item.buyAmount - item.pDiscount;
-      }, 0);
-      return ptotal;
-    },
-
-    grandTotal() {
-      var total = this.subTotal + this.pSubtotal + parseInt(this.fee);
-      return total;
-    },
-  },
-  // watch: {
-  //   clonedItems: function (newVal, oldVal) {
-  //     console.log(newVal);
-  //     console.log(oldVal);
-  //   },
-  // },
-
   methods: {
-    async buyCourse(data) {
+    studentCourse(userId) {
+      console.log(userId);
+      this.$router.push("/admin/studentcourse/" + userId);
+    },
+    studentInvoice(userId) {
+      this.$router.push("/admin/studentinvoice/" + userId);
+    },
+    addToCart(product) {
+      this.carts.push(product);
+      Swal.fire({
+        title: "Add To Cart",
+        text: "เพิ่มสินค้าลงตระกร้าเรียบร้อยแล้ว",
+        icon: "success",
+        confirmButtonColor: "#30855c",
+        confirmButtonText: "ตกลง",
+      });
+    },
+
+    deleteProduct(index) {
+      this.carts.splice(index, 1);
+      Swal.fire({
+        title: "SUCCESS",
+        text: "ยกเลิกสินค้าเรียบร้อย",
+        icon: "success",
+        confirmButtonColor: "#30855c",
+        confirmButtonText: "ตกลง",
+      });
+    },
+
+    buyCourse(data) {
       console.log(data.startDate);
       this.courseReserv.push(data);
       Swal.fire({
@@ -2178,48 +1489,9 @@ export default {
         confirmButtonColor: "#30855c",
         confirmButtonText: "ตกลง",
       });
-      // console.log(data.studentAtclass);
-      // this.studentTest = data.studentAtclass;
-      // let stdProfileInClass = {
-      //     uid: this.stdProfile.uid,
-      //     studentId: this.stdProfile.studentId,
-      //     firstName: this.stdProfile.firstName,
-      //     lastName: this.stdProfile.lastName,
-      //     nickName: this.stdProfile.nickName,
-      //     dateAtClass: Date.now(),
-      //   };
-      // this.studentTest.push(stdProfileInClass)
-      // console.log(this.studentTest);
-      // try {
-      //   this.courseReserv.push(data);
-      //   let ref = db.collection("classroom").doc(data.classId);
-
-      //   let stdProfileInClass = {
-      //     uid: this.stdProfile.uid,
-      //     studentId: this.stdProfile.studentId,
-      //     firstName: this.stdProfile.firstName,
-      //     lastName: this.stdProfile.lastName,
-      //     nickName: this.stdProfile.nickName,
-      //     dateAtClass: Date.now(),
-      //   };
-
-      //   await ref.update({
-      //     student: firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
-      //   });
-      //   Swal.fire({
-      //     title: "SUCCESS",
-      //     text: "เพิ่มคอร์สเรียนแล้วเรียบร้อย",
-      //     icon: "success",
-      //     confirmButtonColor: "#30855c",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // } catch (err) {
-      //   console.log(err);
-      // }
     },
 
-    async deleteCourse(index) {
-      // console.log(course.studentAtclass);
+    deleteCourse(index) {
       this.courseReserv.splice(index, 1);
       Swal.fire({
         title: "SUCCESS",
@@ -2228,208 +1500,52 @@ export default {
         confirmButtonColor: "#30855c",
         confirmButtonText: "ตกลง",
       });
-      // try {
-
-      //   let ref = db.collection("classroom").doc(course.classId);
-
-      //   await ref.update({
-      //     student: course.studentAtclass
-      //   });
-      //   Swal.fire({
-      //     title: "SUCCESS",
-      //     text: "ยกเลิกคอร์สเรียนแล้วเรียบร้อย",
-      //     icon: "success",
-      //     confirmButtonColor: "#30855c",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // } catch (err) {
-      //   console.log(err);
-      // }
     },
 
-    changeStatus(uid, event) {
-      // console.log(event.target.value);
-      var addMessage = functions.httpsCallable("ApproveStudent");
-      var data = { uid: uid, role: { [event.target.value]: true } };
-      // console.log(data);
-      addMessage(data)
-        .then((result) => {
-          console.log(result);
-          if (result) {
-            Swal.fire({
-              title: "ทำการปรับสถานะเรียบร้อย",
-              text: "Admin ได้ทำการปรับสถานะ นักเรียน แล้วเรียบร้อย",
-              icon: "success",
-              confirmButtonColor: "#30855c",
-              confirmButtonText: "ตกลง",
-            });
-            this.$store.state.show = false;
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-            icon: "warning",
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: "ตกลง",
-          });
-        });
-    },
-
-    updateProfile(userId) {
-      // console.log(this.profile);
-      db.collection("studentData")
-        .doc(userId)
-        .update(this.profile)
-        .then(() => {
-          Swal.fire({
-            title: "อัพเดทข้อมูล",
-            text: "ได้ทำการupdateสินค้าเรียบร้อย",
-            icon: "success",
-            confirmButtonColor: "#30855c",
-            confirmButtonText: "ตกลง",
-          });
-          // $("#product").modal("hide");
-        });
-      // try {
-      //   var batch = db.batch();
-
-      //   var sfRef = db.collection("studentData").doc(uid);
-      //   batch.update(sfRef, { population: 1000000 });
-      //   batch.commit();
-      //   console.log("เพิ่มคอร์สเรียนเรียบร้อย");
-      // } catch (err) {
-      //   console.log(err);
-      // }
-    },
     editprofile(profile) {
       this.profileModal = "edit";
       this.profile = profile;
       this.disabled = 0;
     },
-    test(e) {
-      console.log(this.transactionTime);
-    },
-    reset() {
-      location.reload();
+
+    submitInvoice() {
+      this.getInvoiceId();
     },
 
-    addToActiveCourse() {
+    async getInvoiceId() {
       try {
-        var batch = db.batch();
-        this.courseReserv.forEach((item) => {
-          let remain = item.amount * item.classQty;
-          let data = {
-            classId: item.classId,
-            userId: this.stdProfile.userId,
-
-            remain: remain,
-            studentId: this.stdProfile.studentId,
-            firstName: this.stdProfile.firstName,
-            lastName: this.stdProfile.lastName,
-            nickName: this.stdProfile.nickName,
-            mobilephone: this.stdProfile.mobilephone,
-            courseName: item.courseName,
-            amount: item.amount,
-            classType: item.classType,
-            invoiceNo: this.invoiceNo,
-
-            dayAttend: item.dayAttend,
-            classDiscount: item.classDiscount,
-            finishTime: item.finishTime,
-            level: item.level,
-            rate: item.rate,
-            classQty: item.classQty,
-            startDate: moment(item.startDate).format("x"),
-            endDate: moment(item.endDate).format("x"),
-            startTime: item.startTime,
-            wages: item.wages,
-
-            teacherAtclass: item.teacherAtclass,
-          };
-
-          batch.set(db.collection("courseActive").doc(), data);
-        });
-
-        this.courseReserv.forEach((item) => {
-          // console.log(item.studentAtclass);
-          let stdProfileInClass = {
-            userId: this.stdProfile.userId,
-            classId: item.classId,
-            studentId: this.stdProfile.studentId,
-            firstName: this.stdProfile.firstName,
-            lastName: this.stdProfile.lastName,
-            nickName: this.stdProfile.nickName,
-            invoiceNo: this.invoiceNo,
-            dateAtClass: Date.now(),
-          };
-          batch.update(db.collection("classroom").doc(item.classId), {
-            student:
-              firebase.firestore.FieldValue.arrayUnion(stdProfileInClass),
-          });
-        });
-
-        this.carts.forEach((item) => {
-          var newQty = item.quantity - item.buyAmount;
-          batch.update(db.collection("products").doc(item.pID), {
-            quantity: newQty,
-          });
-        });
-
-        batch.commit();
-        console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+        this.$store.state.show = true;
+        var ref = db.collection("invoiceId").doc("detail");
+        let doc = await ref.get();
+        if (!doc.exists) {
+          await ref.set(
+            {
+              invoiceNo: 1,
+            },
+            { merge: true }
+          );
+          location.reload();
+          this.$store.state.show = false;
+        }
+        let str = doc.data().invoiceNo.toString();
+        this.invoiceNo = str.padStart(3, "0");
 
         this.addInvoice();
+
+        this.$store.state.show = false;
       } catch (err) {
-        console.log(err);
-      }
-      // console.log('addTo activeCourse');
-    },
-
-    addToRenevalCourse() {
-      // console.log(this.courseReserv);
-      try {
-        var batch = db.batch();
-        this.courseReserv.forEach((item) => {
-          let remain = item.remain + (item.amount * item.classQty);
-          console.log(item.classId);
-          let data = {
-            remain: remain,
-          };
-          batch.update(db.collection("courseActive").doc(item.classId), data);
-          
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถดึงรหัสนักเรียนได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
         });
-
-        this.carts.forEach((item) => {
-          var newQty = item.quantity - item.buyAmount;
-          batch.update(db.collection("products").doc(item.pID), {
-            quantity: newQty,
-          });
-        });
-
-        batch.commit();
-        console.log("เพิ่มคอร์สเรียนเรียบร้อย");
-
-        this.addInvoice();
-      } catch (err) {
-        console.log(err);
+        this.$store.state.show = false;
       }
-    },
-
-    activeCourse() {
-      // this.addInvoice()
-      // if (this.connectCourse) {
-      //   this.addToRenevalCourse();
-      // } else {
-      //   this.addToActiveCourse();
-      // }
     },
 
     async addInvoice() {
-      // console.log(invoiceData);
-      // $('#addCourseModal').modal('hide')
       try {
         this.courseInfo = [];
         this.courseReserv.forEach((item) => {
@@ -2449,7 +1565,7 @@ export default {
             classType: item.classType,
             dayAttend: item.dayAttend,
             classDiscount: item.classDiscount,
-            endDate: moment(item.endDate).format("x") ,
+            endDate: moment(item.endDate).format("x"),
             finishTime: item.finishTime,
             level: item.level,
             rate: item.rate,
@@ -2458,23 +1574,10 @@ export default {
             startTime: item.startTime,
             wages: item.wages,
             teacherAtclass: item.teacherAtclass,
-            remain :remain,
-            // teacherName: item.teacherAtclass.teacherName,
-            // teacherId: item.teacherAtclass.teacherId,
-            // teacherTel : item.teacherAtclass.mobilephone ,
+            remain: remain,
           };
 
           this.courseInfo.push(data);
-          // console.log(this.courseInfo);
-          // this.courseInfo = []
-          // item.teacher.forEach((detail)=>{
-          //   let data = {
-          //     teacherName : detail.fullName,
-          //     teacherId : detail.uid,
-          //   }
-          //       this.courseInfo.push(data)
-          //       console.log(this.courseInfo);
-          // })
         });
 
         let invoiceData = {
@@ -2510,11 +1613,11 @@ export default {
           invYear: moment().year(),
 
           canUpdate: true,
-          paid:false,
-          confirm:0,
-          print:false,
-          summarize :false,
-          stdMobile : this.stdProfile.mobilephone,
+          paid: false,
+          confirm: 0,
+          print: false,
+          summarize: false,
+          stdMobile: this.stdProfile.mobilephone,
         };
 
         await db.collection("invoiceData").add(invoiceData);
@@ -2526,8 +1629,8 @@ export default {
           confirmButtonText: "ตกลง",
         });
         this.updateInvoiceId();
-        this.$router.push('/admin/editinvoice')
-        $('#addCourseModal').modal('hide')
+        this.$router.push("/admin/editinvoice");
+        $("#addCourseModal").modal("hide");
       } catch (err) {
         console.log(err);
         Swal.fire({
@@ -2547,367 +1650,60 @@ export default {
         .update({ invoiceNo: firebase.firestore.FieldValue.increment(1) });
       this.confirm = true;
       console.log("จบการทำงาน");
-      // console.log(product.pID);
-      // this.$store.state.show = true;
-      // var Ref = db.collection("products").doc(product.pID);
-      // try {
-      //   await db
-      //     .runTransaction((transaction) => {
-      //       return transaction.get(Ref).then((sfDoc) => {
-      //         if(!sfDoc.exists) {
-      //           throw "Document does not exist!";
-      //         }
-      //         var newQuantity=sfDoc.data().quantity-product.buyAmount;
-      //         transaction.update(Ref, { quantity: newQuantity });
-      //       });
-      //     });
-      //   Swal.fire({
-      //     title: "Add To Cart",
-      //     text: "เพิ่มสินค้าลงตระกร้าเรียบร้อยแล้ว",
-      //     icon: "success",
-      //     confirmButtonColor: "#30855c",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      //   this.carts.push(product);
-      //   this.$store.state.show=false;
-      //   console.log(this.cart);
-      // } catch(error) {
-      //   console.log("Transaction failed: ", error);
-      //   Swal.fire({
-      //     title: "เกิดข้อผิดพลาดที่ระบบ",
-      //     text: "ไม่สามารถตัดยอดสินค้าได้ กรุณาลองใหม่อีกครั้ง",
-      //     icon: "warning",
-      //     confirmButtonColor: "#FF0000",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      //   this.$store.state.show=false;
-      // }
     },
 
-    async submitInvoice() {
-      this.getInvoiceId();
-      // if (this.payBy.length != 0) {
-      //   this.getInvoiceId();
-      // } else {
-      //   Swal.fire({
-      //     title: "ไม่มีข้อมูลการชำระเงิน",
-      //     text: "ตรวจสอบวิธีชำระเงินใหม่อีกครั้งที่ ชำระเงินโดย (Pay By)",
-      //     icon: "error",
-      //     confirmButtonColor: "#FF0000",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // }
-
-      // console.log(invoiceData);
-      // try {
-      //   this.courseInfo = [];
-      //   this.courses.forEach((item) => {
-      //     let data = {
-      //       uid: this.stdProfile.uid,
-      //       studentId: this.stdProfile.studentId,
-      //       firstName: this.stdProfile.firstName,
-      //       lastName: this.stdProfile.lastName,
-      //       nickName: this.stdProfile.nickName,
-      //       courseName: item.courseSelected,
-      //       amount: item.amount,
-      //       classType: item.classTypeSelected,
-      //       day: item.daySelected,
-      //       discount: item.discount,
-      //       endDate: item.endDate,
-      //       finishTime: item.finishTime,
-      //       level: item.levelSelected,
-      //       price: item.priceSelected,
-      //       qty: item.qty,
-      //       startDate: item.startDate,
-      //       startTime: item.startTime,
-      //       teacherName: item.teacherSelected.teacherName,
-      //       teacherId: item.teacherSelected.teacherId,
-      //     };
-
-      //     this.courseInfo.push(data);
-      //     console.log(this.courseInfo);
-      //     // this.courseInfo = []
-      //     // item.teacher.forEach((detail)=>{
-      //     //   let data = {
-      //     //     teacherName : detail.fullName,
-      //     //     teacherId : detail.uid,
-      //     //   }
-      //     //       this.courseInfo.push(data)
-      //     //       console.log(this.courseInfo);
-      //     // })
-      //   });
-
-      //   let invoiceData = {
-      //     uid: this.stdProfile.uid,
-      //     studentId: this.stdProfile.studentId,
-      //     firstName: this.stdProfile.firstName,
-      //     lastName: this.stdProfile.lastName,
-      //     nickName: this.stdProfile.nickName,
-      //     payBy: this.payBy,
-      //     invoiceNo: invoiceNo,
-      //     paymentType: this.paymentType,
-
-      //     courseDetail: this.courseInfo,
-      //     productDetail: this.carts,
-      //     subTotal: this.subTotal,
-      //     grandTotal: this.grandTotal,
-      //     fee: this.fee,
-
-      //     paymentFor: this.paymentFor,
-      //     other: this.other,
-      //     note: this.note,
-      //     transactionTime: this.transactionTime,
-      //   };
-
-      //   await db.collection("invoiceData").add(invoiceData);
-      //   Swal.fire({
-      //     title: "เรียบร้อย",
-      //     text: "ได้ทำการเพิ่มสินค้าแล้วเรียบร้อย",
-      //     icon: "success",
-      //     confirmButtonColor: "#30855c",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // } catch (err) {
-      //   Swal.fire({
-      //     title: "เกิดข้อผิดพลาด",
-      //     text: "เกิดข้อผิดพลาดบางอย่าง กรุณารอและทำรายการใหม่",
-      //     icon: "error",
-      //     confirmButtonColor: "#FF0000",
-      //     confirmButtonText: "ตกลง",
-      //   });
-      // }
-      // this.confirm = true;
+    updateProfile(userId) {
+      db.collection("studentData")
+        .doc(userId)
+        .update(this.profile)
+        .then(() => {
+          Swal.fire({
+            title: "อัพเดทข้อมูล",
+            text: "ได้ทำการupdateสินค้าเรียบร้อย",
+            icon: "success",
+            confirmButtonColor: "#30855c",
+            confirmButtonText: "ตกลง",
+          });
+        });
     },
 
-    addToCart(product) {
-      // console.log(product);
-      // ---- product มีค่า = product ใน getProducts()
-      this.carts.push(product);
-      // console.log(this.carts);
-      // console.log(product.pID);
-      // this.$store.state.show = true;
-      // var Ref = db.collection("products").doc(product.pID);
-      // return db
-      //   .runTransaction((transaction) => {
-      //     return transaction.get(Ref).then((sfDoc) => {
-      //       if (!sfDoc.exists) {
-      //         throw "Document does not exist!";
-      //       }
-      //       var newQuantity = sfDoc.data().quantity - product.buyAmount;
-      //       transaction.update(Ref, { quantity: newQuantity });
-      //     });
-      //   })
-      //   .then(() => {
-      //     Swal.fire({
-      //       title: "Add To Cart",
-      //       text: "เพิ่มสินค้าลงตระกร้าเรียบร้อยแล้ว",
-      //       icon: "success",
-      //       confirmButtonColor: "#30855c",
-      //       confirmButtonText: "ตกลง",
-      //     });
-      //     this.carts.push(product);
-      //     this.$store.state.show = false;
-      //     console.log(this.cart);
-      //   })
-      //   .catch((error) => {
-      //     console.log("Transaction failed: ", error);
-      //     Swal.fire({
-      //       title: "เกิดข้อผิดพลาดที่ระบบ",
-      //       text: "ไม่สามารถตัดยอดสินค้าได้ กรุณาลองใหม่อีกครั้ง",
-      //       icon: "warning",
-      //       confirmButtonColor: "#FF0000",
-      //       confirmButtonText: "ตกลง",
-      //     });
-      //     this.$store.state.show = false;
-      //   });
-      Swal.fire({
-        title: "Add To Cart",
-        text: "เพิ่มสินค้าลงตระกร้าเรียบร้อยแล้ว",
-        icon: "success",
-        confirmButtonColor: "#30855c",
-        confirmButtonText: "ตกลง",
-      });
-      // console.log(this.carts);
+    reset() {
+      location.reload();
     },
 
-    decimalDigits(value) {
-      return value.toFixed(this.invoiceCurrency.decimal_digits);
-    },
-    print() {
-      // Pass the element id here
-      // window.print();
-      this.$htmlToPaper("InvPckPrint");
-      // this.carts = [];
-      // this.reset()
+    fullProfile(profile) {
+      this.profileModal = null;
+      this.profile = profile;
+      this.disabled = 1;
     },
 
     addcourse(stdProfile) {
-      // console.log(stdProfile);
-      // console.log(uid);
-      // this.$router.push({ name: "addcourse", params: { uid } });
-      // (this.day = moment(Date.now()).format("DD/MM/YYYY")), console.log();
-
-      // stdProfile มีค่าเท่ากับ profile ใน getStudentData()
       this.stdProfile = stdProfile;
       this.paymentType = "ลงทะเบียนใหม่";
       this.getClassroom();
     },
 
-    addToInvoice() {
-      let data = {
-        studentId: this.stdProfile.studentId,
-      };
+    changeStatus(uid, event) {
+      // console.log(event.target.value);
+      var addMessage = functions.httpsCallable("ApproveStudent");
+      var data = { uid: uid, role: { [event.target.value]: true } };
       // console.log(data);
-    },
-
-    async getProducts() {
-      try {
-        this.$store.state.show = true;
-        db.collection("products").onSnapshot((querySnapshot) => {
-          this.products = [];
-          querySnapshot.forEach((doc) => {
-            let product = {
-              pName: doc.data().pName,
-              pMode: doc.data().pMode,
-              pCode: doc.data().pCode,
-              cost: doc.data().cost,
-              price: doc.data().price,
-              quantity: doc.data().quantity,
-              buyAmount: 0,
-              pDiscount: 0,
-              pID: doc.id,
-            };
-            this.products.push(product);
-          });
-        });
-        // this.$store.state.show = true;
-        // let Ref = await db.collection("products").get();
-        // if (Ref.empty) {
-        //   console.log("No matching documents.");
-        //   return;
-        // }
-        // this.products = [];
-        // Ref.forEach((doc) => {
-        //   let product = {
-        //     pName: doc.data().pName,
-        //     pCode: doc.data().pCode,
-        //     cost: doc.data().cost,
-        //     price: doc.data().price,
-        //     quantity: doc.data().quantity,
-        //     buyAmount: 0,
-        //     pID: doc.id,
-        //   };
-        //   this.products.push(product);
-        //   console.log(this.products);
-        // });
-        this.$store.state.show = false;
-      } catch (err) {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาดที่ระบบ",
-          text: "ไม่สามารถดึงข้อมูลสินค้าได้ กรุณาลองใหม่อีกครั้ง",
-          icon: "warning",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-        this.$store.state.show = false;
-      }
-    },
-
-    // async getCourseTemplate() {
-    //   try {
-    //     this.$store.state.show = true;
-    //     const doc = await db.collection("courseTemplate").doc("detail").get();
-    //     if (doc.empty) {
-    //       console.log("No matching documents.");
-    //       return;
-    //     }
-    //     this.cName = doc.data().courseName;
-    //     this.cType = doc.data().courseType;
-    //     this.cLevel = doc.data().level;
-    //     this.cRate = doc.data().rate;
-    //     this.cTeacher = doc.data().teacher;
-
-    //     // console.log(this.cTeacher);
-    //     // this.addNewItem();
-    //     this.$store.state.show = false;
-    //   } catch (err) {
-    //     Swal.fire({
-    //       title: "เกิดข้อผิดพลาดที่ระบบ",
-    //       text: "ไม่สามารถดึงข้อมูล course เรียนได้ กรุณาลองใหม่อีกครั้ง",
-    //       icon: "warning",
-    //       confirmButtonColor: "#FF0000",
-    //       confirmButtonText: "ตกลง",
-    //     });
-    //     this.$store.state.show = false;
-    //   }
-    // },
-
-    deleteProduct(index) {
-      // console.log(index);
-      this.carts.splice(index, 1);
-    },
-
-    addNewProduct() {},
-
-    // addNewItem() {
-    //   this.courses.push({
-    //     courseSelected: "",
-    //     classTypeSelected: "",
-    //     levelSelected: "",
-    //     priceSelected: "",
-    //     teacherSelected: "",
-    //     daySelected: "",
-    //     discount: 0,
-    //     amount: 12,
-    //     startTime: "",
-    //     wages: 0,
-    //     finishTime: "",
-    //     startDate: "",
-    //     endDate: "",
-    //     qty: 1,
-    //     // endDate:  moment(this.startDate).add(3,'M').format('YYYY-MM-DD'),
-
-    //     courseName: this.cName,
-    //     courseType: this.cType,
-    //     level: this.cLevel,
-    //     rate: this.cRate,
-    //     teacher: this.cTeacher,
-    //     day: this.cDay,
-    //   });
-    //   // console.log(this.courses);
-    // },
-
-    deleteStudent(uid) {
-      // console.log(uid);
-      Swal.fire({
-        title: "ต้องการลบ?",
-        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#30855c",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "ตกลง ลบข้อมูล",
-      })
+      addMessage(data)
         .then((result) => {
-          if (result.value) {
-            this.$store.state.show = true;
-            var del = functions.httpsCallable("deleteStudent");
-            var data = { uid: uid };
-
-            del(data).then(() => {
-              Swal.fire({
-                title: "ทำการลบเรียบร้อย",
-                text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
-                icon: "success",
-                confirmButtonColor: "#30855c",
-                confirmButtonText: "ตกลง",
-              });
-              this.$store.state.show = false;
+          console.log(result);
+          if (result) {
+            Swal.fire({
+              title: "ทำการปรับสถานะเรียบร้อย",
+              text: "Admin ได้ทำการปรับสถานะ นักเรียน แล้วเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
             });
+            this.$store.state.show = false;
           }
         })
         .catch((error) => {
-          console.log("Transaction failed: ", error);
+          console.log(error);
           Swal.fire({
             title: "เกิดข้อผิดพลาด",
             text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
@@ -2915,141 +1711,7 @@ export default {
             confirmButtonColor: "#FF0000",
             confirmButtonText: "ตกลง",
           });
-          this.$store.state.show = false;
         });
-
-      // Swal.fire({
-      //   title: "ต้องการลบ?",
-      //   text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
-      //   type: "warning",
-      //   showCancelButton: true,
-      //   confirmButtonColor: "#30855c",
-      //   cancelButtonColor: "#d33",
-      //   confirmButtonText: "ตกลง ลบข้อมูล",
-      // }).then((result) => {
-      //   if (result.value) {
-      //     // console.log(doc)
-      //     db.collection("teacherData")
-      //       .doc(doc)
-      //       .delete()
-      //       .then(() => {
-      //         Swal.fire({
-      //           title: "ทำการลบเรียบร้อย",
-      //           text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
-      //           icon: "success",
-      //           confirmButtonColor: "#30855c",
-      //           confirmButtonText: "ตกลง",
-      //         });
-      //       });
-      //   }
-      // });
-    },
-
-    async getInvoiceId() {
-      try {
-        this.$store.state.show = true;
-        var ref = db.collection("invoiceId").doc("detail");
-        let doc = await ref.get();
-        if (!doc.exists) {
-          await ref.set(
-            {
-              invoiceNo: 1,
-            },
-            { merge: true }
-          );
-          location.reload();
-          this.$store.state.show = false;
-        }
-        let str = doc.data().invoiceNo.toString();
-        this.invoiceNo = str.padStart(3, "0");
-
-        // console.log(this.invoiceNo);
-        // this.activeCourse();
-        this.addInvoice()
-
-        this.$store.state.show = false;
-      } catch (err) {
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถดึงรหัสนักเรียนได้ กรุณาลองใหม่อีกครั้ง",
-          icon: "warning",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-        this.$store.state.show = false;
-      }
-    },
-
-    fullProfile(profile) {
-      // alert(profile.firstName);
-      this.profileModal = null;
-      this.profile = profile;
-      this.disabled = 1;
-    },
-
-    getStudentData() {
-      try {
-        this.$store.state.show = true;
-        db.collection("studentData")
-          .orderBy("addProfileAt", "desc")
-          .onSnapshot((querySnapshot) => {
-            this.profiles = [];
-            querySnapshot.forEach((doc) => {
-              // console.log(doc.data());
-              let profile = {
-                userId: doc.id,
-                studentId: doc.data().studentId,
-                addProfileAt: moment(doc.data().addProfileAt).format(
-                  "DD/MM/YYYY HH:mm:ss"
-                ),
-                image: doc.data().image,
-
-                namePrefix: doc.data().namePrefix,
-                nickName: doc.data().nickName,
-                firstName: doc.data().firstName,
-                lastName: doc.data().lastName,
-                birthday: doc.data().birthday,
-                email: doc.data().email,
-                telephone: doc.data().telephone,
-                mobilephone: doc.data().mobilephone,
-
-                parentFirstName: doc.data().parentFirstName,
-                parentLastName: doc.data().parentLastName,
-                parentEmail: doc.data().parentEmail,
-                parentMobilephone: doc.data().parentMobilephone,
-                parentAbout: doc.data().parentAbout,
-                profileType: "student",
-
-                address: {
-                  addressNumber: doc.data().address.addressNumber,
-                  location: doc.data().address.location,
-                  soi: doc.data().address.soi,
-                  road: doc.data().address.road,
-                  district: doc.data().address.district,
-                  amphoe: doc.data().address.amphoe,
-                  province: doc.data().address.province,
-                  zipcode: doc.data().address.zipcode,
-                },
-
-                graduated: {
-                  degree: doc.data().graduated.degree,
-                  university: doc.data().graduated.university,
-                  faculty: doc.data().graduated.faculty,
-                  major: doc.data().graduated.major,
-                },
-
-                role: doc.data().role,
-                studyHis: doc.data().studyHis,
-                commited: "นักเรียน",
-              };
-              this.profiles.push(profile);
-            });
-            this.$store.state.show = false;
-          });
-      } catch (err) {
-        console.log(err);
-        this.$store.state.show = false;
-      }
     },
 
     getReneval(stdProfile) {
@@ -3100,27 +1762,87 @@ export default {
       }
     },
 
+    getStudentData() {
+      try {
+        this.$store.state.show = true;
+        db.collection("studentData")
+          .orderBy("addProfileAt", "desc")
+          .onSnapshot((querySnapshot) => {
+            this.profiles = [];
+            querySnapshot.forEach((doc) => {
+              // console.log(doc.data());
+              let profile = {
+                userId: doc.id,
+                studentId: doc.data().studentId,
+                addProfileAt: moment(doc.data().addProfileAt).format(
+                  "DD/MM/YYYY HH:mm:ss"
+                ),
+                image: doc.data().image,
+
+                namePrefix: doc.data().namePrefix,
+                nickName: doc.data().nickName,
+                firstName: doc.data().firstName,
+                lastName: doc.data().lastName,
+                birthday: doc.data().birthday,
+                email: doc.data().email,
+                telephone: doc.data().telephone,
+                mobilephone: doc.data().mobilephone,
+
+                parentFirstName: doc.data().parentFirstName,
+                parentLastName: doc.data().parentLastName,
+                parentEmail: doc.data().parentEmail,
+                parentMobilephone: doc.data().parentMobilephone,
+                parentAbout: doc.data().parentAbout,
+
+                parentFirstName2: doc.data().parentFirstName2,
+                parentLastName2: doc.data().parentLastName2,
+                parentEmail2: doc.data().parentEmail2,
+                parentMobilephone2: doc.data().parentMobilephone2,
+                parentAbout2: doc.data().parentAbout2,
+                profileType: "student",
+
+                address: {
+                  addressNumber: doc.data().address.addressNumber,
+                  location: doc.data().address.location,
+                  soi: doc.data().address.soi,
+                  road: doc.data().address.road,
+                  district: doc.data().address.district,
+                  amphoe: doc.data().address.amphoe,
+                  province: doc.data().address.province,
+                  zipcode: doc.data().address.zipcode,
+                },
+
+                graduated: {
+                  degree: doc.data().graduated.degree,
+                  university: doc.data().graduated.university,
+                  faculty: doc.data().graduated.faculty,
+                  major: doc.data().graduated.major,
+                },
+
+                role: doc.data().role,
+                studyHis: doc.data().studyHis,
+                commited: "นักเรียน",
+              };
+              this.profiles.push(profile);
+            });
+            this.$store.state.show = false;
+          });
+      } catch (err) {
+        console.log(err);
+        this.$store.state.show = false;
+      }
+    },
+
     getClassroom() {
       try {
         this.$store.state.show = true;
         var date = moment().isoWeekday();
-
-        // let docRef ;
-        // if(connectCourse == true){
-        //   docRef = db.collection("classroom")
-        //   .where("day.dayNum", "==", date)
-        //   // .orderBy("createdAt", "desc")
-        // }
-        // console.log(date);
         db.collection("classroom")
           // .where("day.dayNum", "==", date)
           .orderBy("createdAt", "desc")
           .onSnapshot((querySnapshot) => {
             this.classrooms = [];
             querySnapshot.forEach((doc) => {
-              // if(!doc.data().role.isAdmin)
-              // {
-              // console.log(doc.data());
               let classroom = {
                 nowDate: moment().format("ll"),
                 classId: doc.id,
@@ -3154,82 +1876,67 @@ export default {
         this.$store.state.show = false;
       }
     },
-  },
 
-  mounted() {
-    window.scrollTo(0, 0);
+    async getProducts() {
+      try {
+        this.$store.state.show = true;
+        db.collection("products").onSnapshot((querySnapshot) => {
+          this.products = [];
+          querySnapshot.forEach((doc) => {
+            let product = {
+              pName: doc.data().pName,
+              pMode: doc.data().pMode,
+              pCode: doc.data().pCode,
+              cost: doc.data().cost,
+              price: doc.data().price,
+              quantity: doc.data().quantity,
+              buyAmount: 0,
+              pDiscount: 0,
+              pID: doc.id,
+            };
+            this.products.push(product);
+          });
+        });
+        this.$store.state.show = false;
+      } catch (err) {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาดที่ระบบ",
+          text: "ไม่สามารถดึงข้อมูลสินค้าได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "warning",
+          confirmButtonColor: "#FF0000",
+          confirmButtonText: "ตกลง",
+        });
+        this.$store.state.show = false;
+      }
+    },
   },
 
   created() {
     this.getStudentData();
-    // this.getCourseTemplate();
     this.getProducts();
-    // this.getClassroom();
   },
-  // ขั้นตอนการทำงาน submitInvoice() ->  getInvoiceId() ->
-  // activeCourse() -> ตัดสต็อค -> addInvoice()
+
+  computed: {
+    subTotal() {
+      var total = this.courseReserv.reduce((accumulator, item) => {
+        return accumulator + item.rate * item.classQty - item.classDiscount;
+      }, 0);
+      return total;
+    },
+
+    pSubtotal() {
+      var ptotal = this.carts.reduce((accumulator, item) => {
+        return accumulator + item.price * item.buyAmount - item.pDiscount;
+      }, 0);
+      return ptotal;
+    },
+
+    grandTotal() {
+      var total = this.subTotal + this.pSubtotal + parseInt(this.fee);
+      return total;
+    },
+  },
 };
 </script>
 
-<style lang="scss" scoped>
-#preview {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#preview img {
-  max-width: 100%;
-  max-height: 500px;
-}
-.btn-circle {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 12px;
-  line-height: 1.428571429;
-  border-radius: 15px;
-}
-.shipper-name {
-  border-top: 3px #000000 solid;
-}
-.text-center {
-  text-align: center;
-}
-table.table-border,
-table.table-border th,
-table.table-border td {
-  border-collapse: collapse;
-  border: 1px #000000 solid;
-}
-div.page {
-  background: white;
-  display: block;
-  margin: 0 auto;
-  // margin-bottom: 0.5 cm;
-  box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
-}
-div.page[size="A4"] {
-  width: 21cm;
-  height: 29.7cm;
-  // height: 14.85cm;
-}
-@media print {
-  div.page {
-    margin: 0;
-    box-shadow: 0;
-  }
-  .no-print,
-  .no-print * {
-    display: none !important;
-  }
-}
-.fullscreen {
-  margin: 0;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
-}
-</style>
+<style lang="scss" scoped></style>

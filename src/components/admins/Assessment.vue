@@ -226,7 +226,7 @@ export default {
         //   type: "text",
         // },
         {
-          label: "แบบประเมิน",
+          label: "Link ประเมิน",
           field: "servey",
           type: "text",
         },
@@ -293,9 +293,9 @@ export default {
         });
     },
     doCopy(courseId) {
-      // this.assesslink = `https://melodious-test.web.app/assess/${courseId}`;
+      this.assesslink = `https://melodious-test.web.app/assess/${courseId}`;
       // http://172.16.3.207:8080/
-      this.assesslink = `http://172.16.3.205:8080/assess/${courseId}`;
+      // this.assesslink = `http://172.16.3.205:8080/assess/${courseId}`;
       console.log(this.assesslink);
       this.$copyText(this.assesslink).then(
         function (e) {

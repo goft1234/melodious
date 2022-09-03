@@ -24,29 +24,17 @@
             <div class="card-deck text-center">
               <div class="card">
                 <div class="card-body">
-                  <div class="card-header bg-success shadow">
-                    <h5 class="text-light text-center">รายจ่าย</h5>
+                  <div class="card-header bg-danger shadow">
+                    <h5 class="text-light text-center">สรุปรายจ่าย / เดือน</h5>
                   </div>
-                  <h6 class="card-text mt-4 text-primary text-center">
-                    <h6 class="text-dark">รายรับช่วงวันที่</h6>
-                    {{ pickerDates.startDate | date }} -
-                    {{ pickerDates.endDate | date }}
-                  </h6>
-                  <h4 class="card-text my-4 text-primary text-center">
-                    จำนวน {{ incomeTotal }} บาท
+                  <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
+                  <h4 class="card-text my-4 text-danger text-center">
+                    จำนวน {{ expensesTotal }} บาท
                   </h4>
 
-                  <div class="bg- shadow">
-                    <button
-                      to="/user/withdrawWeb"
-                      class="btn btn-success btn-block text-light"
-                      data-toggle="modal"
-                      data-target="#incomeModal"
-                    >
-                      ดูข้อมูล
-                    </button>
+                  <div class="card-header bg-danger shadow">
+                    <h5 class="text-light text-center"></h5>
                   </div>
-                  <div></div>
                 </div>
               </div>
             </div>
@@ -73,8 +61,66 @@
         }"
         compactMode
       >
+      <template slot="table-row" slot-scope="props">
+        <span v-if="props.column.field == 'detail'">
+          <div
+            class="btn btn-success"
+            data-toggle="modal"
+            data-target="#detailModal"
+            @click="expensesDetail(props.row)"
+          >
+            <i class="fa-solid fa-file-circle-plus"></i>
+          </div>
+        </span>
+      </template>
       </vue-good-table>
     </div>
+
+    <!--Start Modal AddCourse -->
+    <div class="modal fade" id="detailModal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header text-center">
+            <h4 class="modal-title w-100 text-center text-success">รายจ่าย</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <vue-good-table
+              :columns="detailsColumns"
+              :rows="expenseLists"
+              :line-numbers="true"
+              styleClass="vgt-table striped bordered"
+              :search-options="{
+                enabled: true,
+                placeholder: 'ค้นหา',
+              }"
+              :pagination-options="{
+                enabled: true,
+              }"
+              compactMode
+            >
+            </vue-good-table>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--End Modal AddCourse -->
   </div>
 </template>
 
@@ -92,37 +138,7 @@ export default {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 6);
     return {
-        columns: [
-        {
-          label: "วันที่",
-          field: "docId",
-          type: "text",
-        },
-        {
-          label: "รวม",
-          field: "sumTotal",
-          type: "number",
-        },
-        {
-          label: "สาธารณูปโภค",
-          field: "utilities",
-          type: "number",
-        },
-        {
-          label: "เครื่องเขียน",
-          field: "device",
-          type: "number",
-        },
-        {
-          label: "อุปกรณ์การสอน",
-          field: "teaching",
-          type: "number",
-        },
-        {
-          label: "เครื่องใช้สำนักงาน",
-          field: "office",
-          type: "number",
-        },
+      detailsColumns: [
         {
           label: "โฆษณา",
           field: "advertise",
@@ -201,6 +217,43 @@ export default {
           type: "number",
         },
       ],
+      columns: [
+        {
+          label: "วันที่",
+          field: "docId",
+          type: "text",
+        },
+        {
+          label: "รวม",
+          field: "dayTotal",
+          type: "number",
+        },
+        {
+          label: "สาธารณูปโภค",
+          field: "utilities",
+          type: "number",
+        },
+        {
+          label: "เครื่องเขียน",
+          field: "device",
+          type: "number",
+        },
+        {
+          label: "อุปกรณ์การสอน",
+          field: "teaching",
+          type: "number",
+        },
+        {
+          label: "เครื่องใช้สำนักงาน",
+          field: "office",
+          type: "number",
+        },
+        {
+          label: "เพิ่มเติม",
+          field: "detail",
+          type: "number",
+        },
+      ],
       pickerDates: {
         startDate,
         endDate,
@@ -209,10 +262,22 @@ export default {
       monthSelect: null,
       expenseLists: [],
       expenseList: {},
+      
     };
   },
-  
+  computed: {
+    expensesTotal() {
+      var total = this.expenseLists.reduce((accumulator, item) => {
+        return accumulator + parseInt(item.dayTotal);
+      }, 0);
+      return Number(total).toLocaleString();
+    },
+  },
+
   methods: {
+    expensesDetail(docId) {
+      this.expenseList = docId;
+    },
     async getDatetest() {
       console.log(this.monthSelect);
       try {
@@ -250,9 +315,14 @@ export default {
                 invDayOfMonth: doc.data().invDayOfMonth,
                 invMonth: doc.data().invMonth,
                 invYear: doc.data().invYear,
-        
+
                 // sumTotal: doc.data().sumTotal,
               };
+              expenseList.dayTotal = expenseList.utilities + expenseList.device + expenseList.teaching + expenseList.office
+              + expenseList.advertise + expenseList.teachEarn + expenseList.employeeEarn + expenseList.welfare 
+              + expenseList.service + expenseList.bankfee + expenseList.otherfee + expenseList.security
+              + expenseList.forrent + expenseList.maintenance + expenseList.wagesWorker + expenseList.activity
+              + expenseList.travel + expenseList.test + expenseList.instrument 
               this.expenseLists.push(expenseList);
               // this.testTotal();
               console.log(this.expenseLists);
@@ -302,6 +372,11 @@ export default {
                 invMonth: doc.data().invMonth,
                 invYear: doc.data().invYear,
               };
+              expenseList.dayTotal = expenseList.utilities + expenseList.device + expenseList.teaching + expenseList.office
+              + expenseList.advertise + expenseList.teachEarn + expenseList.employeeEarn + expenseList.welfare 
+              + expenseList.service + expenseList.bankfee + expenseList.otherfee + expenseList.security
+              + expenseList.forrent + expenseList.maintenance + expenseList.wagesWorker + expenseList.activity
+              + expenseList.travel + expenseList.test + expenseList.instrument 
               this.expenseLists.push(expenseList);
             });
           });

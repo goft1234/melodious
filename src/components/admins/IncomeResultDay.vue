@@ -1,34 +1,38 @@
 <template>
-  <div id="transaction" class="shadow">
+  <div id="incomeDay" class="">
     <div class="container-fluid">
       <div class="">
-        <h5 class="text-center text-success mb-4 mt-3">
-          ภาพรวม รายรับ - รายจ่าย
-        </h5>
-        <div class="row">
-          <div class="col-md-12 mb-3">
-            <router-link
-              to="/admin/account/expense"
-              class="btn btn-success d-inline-block float-right px-3"
-              data-toggle="modal"
-              data-target="#modal1"
+        <h4 class="text-center text-success mb-4 mt-3">ข้อมูล Transaction</h4>
+        <div class="row transaction">
+          <div class="col-md-12">
+            <date-range-picker
+              :single-date-picker="singleDatePicker"
+              @update="getInvoiceDate"
+              :showDropdowns="showDropdowns"
+              v-model="pickerDates"
             >
-              บันทึกค่าใช้จ่าย
-            </router-link>
+              <template
+                v-slot:input="pickerDates"
+                style="min-width: 450px"
+                class="form-control"
+                >{{ pickerDates.startDate | date }} -
+                {{ pickerDates.endDate | date }}
+                <br />
+              </template>
+            </date-range-picker>
+            <br />
           </div>
         </div>
+
         <div class="row">
-          <div class="col-md-12">
-            <div class="card-deck">
+            <div class="col-md-12 text-center">
+                <div class="card-deck">
               <div class="card">
                 <div class="card-body">
                   <div class="card-header bg-success shadow">
-                    <h5 class="text-light text-center">รายรับทั้งหมด</h5>
+                    <h5 class="text-light text-center">สรุปรายรับ - รายวัน</h5>
                   </div>
-                  <i
-                    class="fas fa-file-invoice-dollar mt-4 text-success"
-                    style="font-size: 50px"
-                  ></i>
+                  <i class="fas fa-file-invoice-dollar mt-4  text-success" style="font-size:50px"></i>
                   <h4 class="card-text my-4 text-primary text-center">
                     จำนวน {{ incomeTotal }} บาท
                   </h4>
@@ -50,12 +54,9 @@
               <div class="card">
                 <div class="card-body">
                   <div class="card-header bg-danger shadow">
-                    <h5 class="text-light text-center">รายจ่ายทั้งหมด</h5>
+                    <h5 class="text-light text-center">สรุปรายจ่าย - รายวัน</h5>
                   </div>
-                  <i
-                    class="fas fa-wallet mt-4 text-danger"
-                    style="font-size: 50px"
-                  ></i>
+                  <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
                   <h4 class="card-text my-4 text-danger text-center">
                     จำนวน {{ expenseTotal }} บาท
                   </h4>
@@ -78,11 +79,8 @@
                   <div class="card-header bg-dark shadow">
                     <h5 class="text-light text-center">คงเหลือ</h5>
                   </div>
-                  <i
-                    class="fa-sharp fa-solid fa-sack-dollar mt-4 text-warning"
-                    style="font-size: 50px"
-                  ></i>
-                  <h4 class="card-text my-4 text-dark text-center">
+                 <i class="fa-sharp fa-solid fa-sack-dollar mt-4 text-warning" style="font-size:50px"></i>
+                  <h4 class="card-text my-4 text-dark text-center" >
                     จำนวน {{ balance }} บาท
                   </h4>
 
@@ -92,14 +90,57 @@
                 </div>
               </div>
             </div>
-          </div>
+            </div>
         </div>
       </div>
 
       <div class="mt-3 shadow"></div>
     </div>
 
-    <!--Start Income  Modal -->
+    <!-- <div class="mt-3 shadow">
+      <vue-good-table
+        :columns="columns"
+        :rows="invoiceData"
+        :line-numbers="true"
+        styleClass="vgt-table striped bordered"
+        :search-options="{
+          enabled: true,
+          placeholder: 'ค้นหา',
+        }"
+        :pagination-options="{
+          enabled: true,
+        }"
+        compactMode
+      >
+        <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field == 'detail'">
+            <div
+              class="btn btn-success"
+              data-toggle="modal"
+              data-target="#detailModal"
+              @click="invoiceDetail(props.row)"
+            >
+              <i class="fa-solid fa-file-circle-plus"></i>
+            </div>
+          </span>
+          <span v-else-if="props.column.field == 'delete'">
+            <div
+              class="btn btn-danger"
+              @click="editItem(props.row)"
+              data-toggle="modal"
+              data-target="#Item"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </div>
+          </span>
+          <span v-else>
+            {{ props.formattedRow[props.column.field] }}
+          </span>
+        </template>
+      </vue-good-table>
+    </div> -->
+
+        <!--Start Income  Modal -->
     <div class="modal fade" id="incomeModal">
       <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
@@ -164,22 +205,6 @@
               data-dismiss="modal"
             >
               Close
-            </button>
-            <button
-              @click="addProduct()"
-              type="button"
-              class="btn btn-success"
-              v-if="modal == 'new'"
-            >
-              บันทึกสินค้า
-            </button>
-            <button
-              @click="updateProduct(product.pID)"
-              type="button"
-              class="btn btn-warning"
-              v-if="modal == 'edit'"
-            >
-              แก้ไข
             </button>
           </div>
         </div>
@@ -262,7 +287,7 @@
           <!-- Modal Header -->
           <div class="modal-header text-center">
             <h4 class="modal-title w-100 text-center text-success">
-              รายละเอียดใบชำระเงิน
+              รายละเอียดรายรับ
             </h4>
             <button type="button" class="close" data-dismiss="modal">
               &times;
@@ -271,14 +296,13 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <!--Start แสดงเพื่อ ดูรายลเอียดอย่างเดียว set modal = null -->
-            <div>
+            <div id="modalNull">
               <div class="py-3" style="border: 1px solid green">
                 <h5 class="text-center text-success mt-3">วิชาเรียน</h5>
-                <h6 class="ml-3 mt-3 text-success float-left">
+                <h6 class="ml-3 mt-3 text-success">
                   เพื่อชำระค่าเรียน (Payment for tuition)
                 </h6>
-                <div class="form-check-inline ml-3 float-left">
+                <div class="form-check-inline ml-3">
                   <label class="form-check-label" for="">
                     <input
                       type="radio"
@@ -287,7 +311,7 @@
                       name=""
                       value="ลงทะเบียนใหม่"
                       checked
-                      v-model.trim="billingDetail.paymentType"
+                      v-model.trim="invoiceItem.paymentType"
                       disabled
                     />ลงทะเบียนใหม่
                   </label>
@@ -300,7 +324,7 @@
                       id=""
                       name=""
                       value="ต่อคอร์ส"
-                      v-model.trim="billingDetail.paymentType"
+                      v-model.trim="invoiceItem.paymentType"
                       disabled
                     />ต่อคอร์สเรียน
                   </label>
@@ -318,8 +342,8 @@
                     </thead>
                     <tbody>
                       <tr
-                        v-for="course in billingDetail.courseDetail"
-                        :key="course.docId"
+                        v-for="(course, index) in invoiceItem.courseDetail"
+                        :key="index"
                         class="text-center"
                       >
                         <td>{{ course.courseName }}</td>
@@ -348,7 +372,7 @@
                           type="checkbox"
                           class="form-check-input"
                           value="หนังสือเรียน"
-                          v-model.trim="billingDetail.paymentFor"
+                          v-model.trim="invoiceItem.paymentFor"
                           disabled
                         />หนังสือเรียน
                       </label>
@@ -361,7 +385,7 @@
                           type="checkbox"
                           class="form-check-input"
                           value="อุปกรณ์การเรียน"
-                          v-model.trim="billingDetail.paymentFor"
+                          v-model.trim="invoiceItem.paymentFor"
                           disabled
                         />อุปกรณ์การเรียน
                       </label>
@@ -374,7 +398,7 @@
                           <input
                             type="checkbox"
                             value="อื่นๆ"
-                            v-model.trim="billingDetail.paymentFor"
+                            v-model.trim="invoiceItem.paymentFor"
                             disabled
                           />
                         </div>
@@ -383,7 +407,7 @@
                         type="text"
                         class="form-control"
                         placeholder="กรอกรายการชำระ"
-                        v-model.trim="billingDetail.payforDetail"
+                        v-model.trim="invoiceItem.payforDetail"
                         disabled
                       />
                     </div>
@@ -402,14 +426,26 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(item, index) in carts" :key="index">
-                        <td>{{ item.pName }}</td>
-                        <td>{{ item.buyAmount }}</td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.pDiscount }}</td>
+                      <tr
+                        v-for="(Item, index) in invoiceItem.productDetail"
+                        :key="index"
+                      >
+                        <td>{{ Item.pName }}</td>
+                        <td>{{ Item.buyAmount }}</td>
+                        <td>{{ Item.price }}</td>
+                        <td>{{ Item.pDiscount }}</td>
                         <td>
-                          {{ item.buyAmount * item.price - item.pDiscount }}
+                          {{ Item.buyAmount * Item.price - Item.pDiscount }}
                         </td>
+                        <!-- <td v-if="modal == 'edit'">
+                            <button
+                              type="button"
+                              @click="deleteProduct(index, Item)"
+                              class="btn btn-danger btn-sm"
+                            >
+                              <i class="fas fa-times text-light"></i>
+                            </button>
+                          </td> -->
                       </tr>
                     </tbody>
                   </table>
@@ -429,7 +465,7 @@
                         class="form-control"
                         id="usr"
                         min="0"
-                        v-model.trim="billingDetail.fee"
+                        v-model.trim="invoiceItem.fee"
                         disabled
                       />
                     </div>
@@ -447,10 +483,10 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td>{{ subTotal }}</td>
-                        <td>{{ pSubtotal }}</td>
-                        <td>{{ billingDetail.fee }}</td>
-                        <td>{{ grandTotal }}</td>
+                        <td>{{ invoiceItem.subTotal }}</td>
+                        <td>{{ invoiceItem.pSubtotal }}</td>
+                        <td>{{ invoiceItem.fee }}</td>
+                        <td>{{ invoiceItem.grandTotal }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -465,7 +501,7 @@
                           type="checkbox"
                           class="form-check-input"
                           value="เงินสด"
-                          v-model.trim="billingDetail.payBy"
+                          v-model.trim="invoiceItem.payBy"
                           disabled
                         />เงินสด
                       </label>
@@ -478,7 +514,7 @@
                           type="checkbox"
                           class="form-check-input"
                           value="เครดิตการ์ด"
-                          v-model.trim="billingDetail.payBy"
+                          v-model.trim="invoiceItem.payBy"
                           disabled
                         />เครดิตการ์ด
                       </label>
@@ -492,7 +528,7 @@
                           <input
                             type="checkbox"
                             value="โอนผ่านธนาคาร"
-                            v-model.trim="billingDetail.payBy"
+                            v-model.trim="invoiceItem.payBy"
                             disabled
                           />
                         </div>
@@ -501,7 +537,7 @@
                         type="text"
                         class="form-control"
                         placeholder="โอนผ่านบัญชีธนาคาร"
-                        v-model.trim="billingDetail.bankDetail"
+                        v-model.trim="invoiceItem.bankDetail"
                         disabled
                       />
                     </div>
@@ -513,7 +549,7 @@
                         type="text"
                         class="form-control"
                         id="usr"
-                        v-model.trim="billingDetail.note"
+                        v-model.trim="invoiceItem.note"
                         disabled
                       />
                     </div>
@@ -526,32 +562,14 @@
                       <input
                         type="text"
                         class="form-control"
-                        v-model="billingDetail.transactionTime"
+                        v-model="invoiceItem.transactionTime"
                         disabled
                       />
                     </div>
-                    <!-- {{item.transactionTime}} -->
                   </div>
-                  <!-- v-if="modal == 'edit'" -->
-                  <!-- <div class="col-md-12">
-                      <div class="form-group">
-                        <label for="comment" class="text-danger"
-                          >***รายละเอียดการแก้ไข</label
-                        >
-                        <textarea
-                          disabled
-                          class="form-control"
-                          rows="5"
-                          id="comment"
-                          placeholder='ใส่รายละเอียดการแก้ "แก้ไขอะไรไปบ้าง" '
-                          v-model.trim="editDetail"
-                        ></textarea>
-                      </div>
-                    </div> -->
                 </div>
               </div>
             </div>
-            <!--End แสดงเพื่อ ดูรายลเอียดอย่างเดียว set modal = null -->
           </div>
 
           <!-- Modal footer -->
@@ -567,27 +585,50 @@
         </div>
       </div>
     </div>
+    <!-- End Detail Modal -->
   </div>
 </template>
 
 <script>
 import { db } from "../../firebase";
 import DateRangePicker from "vue2-daterange-picker";
-//you need to import the CSS manually
 import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import moment from "moment";
 
 export default {
-  name: "addProduct",
+  name: "incomeDay",
   components: { DateRangePicker },
   data() {
     const startDate = new Date();
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 6);
     return {
-      pickerDates: {
-        startDate,
-        endDate,
+      singleDatePicker: "range",
+      showDropdowns: true,
+      localeData: {
+        direction: "ltr",
+        format: "DD/MM/YYYY",
+        separator: " - ",
+        applyLabel: "Apply",
+        cancelLabel: "Cancel",
+        weekLabel: "W",
+        customRangeLabel: "Custom Range",
+        daysOfWeek: ["อา", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        monthNames: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        firstDay: 0,
       },
       expenseColumns: [
         {
@@ -645,7 +686,7 @@ export default {
         },
         {
           label: "วันที่",
-          field: "invoiceTime",
+          field: "transactionTime",
           type: "text",
         },
         {
@@ -659,34 +700,36 @@ export default {
           type: "text",
         },
       ],
-
-      products: [],
-      product: {
-        pName: null,
-        pCode: null,
-        cost: null,
-        price: null,
-        quantity: null,
+      pickerDates: {
+        startDate,
+        endDate,
       },
-
-      modal: null,
-      expenseLists: [],
       invoiceData: [],
-      billingDetail: {},
-      carts: [],
-      sumCourse: [],
+      invoiceItem: {},
+
+      expenseLists:[],
     };
+  },
+  filters: {
+    date(date) {
+      return new Intl.DateTimeFormat("th-TH").format(date);
+    },
+  },
+
+  created() {
+    this.getInvoiceData();
+    this.getExpenseLists()
   },
 
   methods: {
     invoiceDetail(detail) {
-      this.billingDetail = detail;
-      this.carts = detail.productDetail;
-      this.sumCourse = detail.courseDetail;
+      this.invoiceItem = detail;
+      console.log(this.invoiceItem);
     },
 
     getExpenseLists() {
-      db.collection("expenseTable").onSnapshot((querySnapshot) => {
+      let today = moment().add('543','year').format('DD/MM/YYYY')
+      db.collection("expenseTable").where('date','==',today).onSnapshot((querySnapshot) => {
         this.expenseLists = [];
         querySnapshot.forEach((doc) => {
           let expenseList = {
@@ -702,63 +745,122 @@ export default {
       });
     },
 
-    getData() {
+    getInvoiceData() {
+      var today = moment(Date.now()).format("DD/MM/YYYY");
+      // moment().toDate().getDate()
+      console.log(today);
       db.collection("invoiceData")
+        .where("invoiceTime", "==", today)
         .orderBy("invoiceNo", "desc")
         .onSnapshot((querySnapshot) => {
           this.invoiceData = [];
           querySnapshot.forEach((doc) => {
-            let billingDetail = {
-              uid: doc.data().uid,
+            let Item = {
+              userId: doc.data().userId,
+              docId: doc.id,
+
               bankDetail: doc.data().bankDetail,
-              studentId: doc.data().studentId,
+              canUpdate: doc.data().canUpdate,
+              courseDetail: doc.data().courseDetail,
+              fee: doc.data().fee,
               firstName: doc.data().firstName,
+              grandTotal: doc.data().grandTotal,
+              invDayOfMonth: doc.data().invDayOfMonth,
+              invDayOfWeek: doc.data().invDayOfWeek,
+              invMonth: doc.data().invMonth,
+              invYear: doc.data().invYear,
+
+              invoiceNo: doc.data().invoiceNo,
+              invoiceTime: doc.data().invoiceTime,
+              invoiceTimestamp: doc.data().invoiceTimestamp,
               lastName: doc.data().lastName,
               nickName: doc.data().nickName,
-              invoiceNo: doc.data().invoiceNo,
-              paymentType: doc.data().paymentType,
-              courseDetail: doc.data().courseDetail,
-              productDetail: doc.data().productDetail,
-
-              pSubtotal: doc.data().pSubtotal,
-              subTotal: doc.data().subTotal,
-              grandTotal: doc.data().grandTotal,
-              fee: doc.data().fee,
-              payforDetail: doc.data().payforDetail,
-              invoiceTime: doc.data().invoiceTime,
               note: doc.data().note,
-              payBy: doc.data().payBy,
-              paymentFor: doc.data().paymentFor,
-              transactionTime: moment(doc.data().transactionTime).format(
-                  "DD/MM/YY HH:mm"
-                ),
-
               other: doc.data().other,
-              docId: doc.id,
+              pSubtotal: doc.data().pSubtotal,
+              payBy: doc.data().payBy,
+              payforDetail: doc.data().payforDetail,
+
+              paymentFor: doc.data().paymentFor,
+              paymentType: doc.data().paymentType,
+              productDetail: doc.data().productDetail,
+              studentId: doc.data().studentId,
+              subTotal: doc.data().subTotal,
+              transactionTime: moment(doc.data().transactionTime).format(
+                "DD/MM/YY HH:mm"
+              ),
             };
-            this.invoiceData.push(billingDetail);
-            // console.log(this.products);
+            this.invoiceData.push(Item);
+            console.log(this.invoiceData);
           });
         });
+    },
+
+    async getInvoiceDate() {
+      try {
+        var startDateFormat = moment(this.pickerDates.startDate).format("x");
+        console.log(startDateFormat);
+        var endDateFormat = moment(this.pickerDates.endDate).format("x");
+        await db
+          .collection("invoiceData")
+          .where("invoiceTimestamp", ">=", startDateFormat)
+          .where("invoiceTimestamp", "<=", endDateFormat)
+          .onSnapshot((querySnapshot) => {
+            this.invoiceData = [];
+            querySnapshot.forEach((doc) => {
+              let Item = {
+                userId: doc.data().userId,
+                docId: doc.id,
+
+                bankDetail: doc.data().bankDetail,
+                canUpdate: doc.data().canUpdate,
+                courseDetail: doc.data().courseDetail,
+                fee: doc.data().fee,
+                firstName: doc.data().firstName,
+                grandTotal: doc.data().grandTotal,
+                invDayOfMonth: doc.data().invDayOfMonth,
+                invDayOfWeek: doc.data().invDayOfWeek,
+                invMonth: doc.data().invMonth,
+                invYear: doc.data().invYear,
+
+                invoiceNo: doc.data().invoiceNo,
+                invoiceTime: doc.data().invoiceTime,
+                invoiceTimestamp: doc.data().invoiceTimestamp,
+                lastName: doc.data().lastName,
+                nickName: doc.data().nickName,
+                note: doc.data().note,
+                other: doc.data().other,
+                pSubtotal: doc.data().pSubtotal,
+                payBy: doc.data().payBy,
+                payforDetail: doc.data().payforDetail,
+
+                paymentFor: doc.data().paymentFor,
+                paymentType: doc.data().paymentType,
+                productDetail: doc.data().productDetail,
+                studentId: doc.data().studentId,
+                subTotal: doc.data().subTotal,
+                transactionTime: moment(doc.data().transactionTime).format(
+                  "DD/MM/YY HH:mm"
+                ),
+              };
+              this.invoiceData.push(Item);
+            });
+          });
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
 
   mounted() {
-    this.getExpenseLists();
-    this.getData();
     window.scrollTo(0, 0);
-  },
-  filters: {
-    date(date) {
-      return new Intl.DateTimeFormat("th-TH").format(date);
-    },
   },
 
   computed: {
-    expenseTotal() {
-      var expense = this.expenseLists.reduce((accumulator, Item) => {
-        return accumulator + parseInt(Item.amount);
-      }, 0);
+    expenseTotal(){
+      var expense = this.expenseLists.reduce((accumulator, Item)=>{
+          return accumulator + Item.amount ;
+      },0)
       return Number(expense).toLocaleString();
     },
 
@@ -770,54 +872,32 @@ export default {
       return Number(total).toLocaleString();
     },
 
-    expenseTotal2() {
-      var expense = this.expenseLists.reduce((accumulator, Item) => {
-        return accumulator + parseInt(Item.amount);
-      }, 0);
+    expenseTotal2(){
+      var expense = this.expenseLists.reduce((accumulator, Item)=>{
+          return accumulator + Item.amount ;
+      },0)
       return expense;
     },
 
     incomeTotal2() {
       var total = this.invoiceData.reduce((accumulator, Item) => {
-        return accumulator + parseInt(Item.grandTotal);
+        return accumulator + Item.grandTotal;
       }, 0);
       // console.log(total);
       return total;
     },
 
-    balance() {
-      var balance = parseInt(this.incomeTotal2) - parseInt(this.expenseTotal2);
-      console.log(balance);
-      return Number(balance).toLocaleString();
-    },
-
-    subTotal() {
-      var total = this.sumCourse.reduce((accumulator, item) => {
-        return accumulator + (item.rate * item.classQty - item.classDiscount);
-      }, 0);
-      return total;
-    },
-
-    pSubtotal() {
-      var ptotal = this.carts.reduce((accumulator, item) => {
-        return accumulator + item.price * item.buyAmount - item.pDiscount;
-      }, 0);
-      return ptotal;
-    },
-
-    grandTotal() {
-      var total =
-        parseInt(this.subTotal) +
-        parseInt(this.pSubtotal) +
-        parseInt(this.billingDetail.fee);
-      return total;
-    },
+    balance(){
+     var balance =  parseInt(this.incomeTotal2) - parseInt(this.expenseTotal2) ;
+     console.log(balance);
+     return  Number(balance).toLocaleString();
+    }
   },
 };
 </script>
 
-<style scoped>
-#transaction {
+<style lang="scss" scoped>
+.transaction {
   text-align: center;
   color: #2c3e50;
 }

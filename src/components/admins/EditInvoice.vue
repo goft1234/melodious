@@ -8,16 +8,16 @@
           to="/admin/student"
           class="btn btn-info d-inline-block px-2"
         >
-          ย้อนกลับ
+         <i class="fas fa-arrow-alt-circle-left"></i> ย้อนกลับ
         </router-link>
-        <router-link
+        <!-- <router-link
           to="/admin/invoicehistory"
           class="btn btn-success d-inline-block float-right px-1"
           data-toggle="modal"
           data-target="#product"
         >
           ประวัติการแก้ไข
-        </router-link>
+        </router-link> -->
       </div>
 
       <div class="mt-3 shadow">

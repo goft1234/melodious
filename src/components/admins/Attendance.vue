@@ -1539,6 +1539,7 @@ export default {
       classroom.attendancePic =
         "https://media.istockphoto.com/vectors/attendance-concept-vector-flat-design-vector-id1198430065?k=20&m=1198430065&s=170667a&w=0&h=Ah8_cY025T_GPNeASpti9X95K7eAWBzq2IwWCA0oQtI=";
       classroom.commentClass = "";
+      classroom.chkOut = false;
       console.log(classroom);
       try {
         await db.collection("AttendanceHistory").add(classroom);

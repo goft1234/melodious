@@ -27,26 +27,17 @@
                   <div class="card-header bg-success shadow">
                     <h5 class="text-light text-center">รายรับ</h5>
                   </div>
-                  <h6 class="card-text mt-4 text-primary text-center">
-                    <h6 class="text-dark">รายรับช่วงวันที่</h6>
-                    {{ pickerDates.startDate | date }} -
-                    {{ pickerDates.endDate | date }}
-                  </h6>
+                  <i
+                    class="fas fa-file-invoice-dollar mt-4 text-success"
+                    style="font-size: 50px"
+                  ></i>
                   <h4 class="card-text my-4 text-primary text-center">
                     จำนวน {{ incomeTotal }} บาท
                   </h4>
 
-                  <div class="bg- shadow">
-                    <button
-                      to="/user/withdrawWeb"
-                      class="btn btn-success btn-block text-light"
-                      data-toggle="modal"
-                      data-target="#incomeModal"
-                    >
-                      ดูข้อมูล
-                    </button>
+                  <div class="card-header bg-success shadow">
+                    <h5 class="text-light text-center"></h5>
                   </div>
-                  <div></div>
                 </div>
               </div>
             </div>
@@ -878,9 +869,13 @@ export default {
     },
   },
 
-  mounted() {
+  created() {
     this.getData();
     window.scrollTo(0, 0);
+  },
+
+  computed:{
+
   },
 };
 </script>

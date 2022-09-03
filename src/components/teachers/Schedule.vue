@@ -1115,15 +1115,26 @@ export default {
 
   methods: {
     async sendData(classToday) {
-      console.log(classToday.docId);
+      console.log(classToday);
       // console.log(this.license.attendancePic);
       // console.log(this.commentClass);
       try {
         this.$store.state.show = true;
+        var batch = db.batch();
+
         await db.collection("AttendanceHistory").doc(classToday.docId).update({
           commentClass: this.commentClass,
           attendancePic: this.license.attendancePic,
+          chkOut : true,
         });
+
+        await db.collection("expenseTable").add({
+          amount: classToday.wages,
+          date: classToday.learningTime,
+          list: "ค่าสอนครู",
+          type: "ค่าสอนครู",
+        });
+
         Swal.fire({
           title: "SUCCESS",
           text: "ส่งข้อมูลเรียบร้อย",
@@ -1288,7 +1299,7 @@ export default {
                 .add(543, "year")
                 .format("LL"),
               startTime: doc.data().startTime,
-              remain : doc.data().remain,
+              remain: doc.data().remain,
             };
             this.stdInClass.push(detail);
           });
@@ -1552,22 +1563,27 @@ export default {
         .onSnapshot((querySnapshot) => {
           this.classToday = [];
           querySnapshot.forEach((doc) => {
-            let classHis = {
-              docId: doc.id,
-              studentAtClass: doc.data().studentAtClass,
-              learningTime: moment(doc.data().learningTime)
-                .add(543, "year")
-                .format("DD/MM/YYYY"),
-              commentThisTime: doc.data().commentThisTime,
-              teacherAtclass: doc.data().teacherAtclass,
-              studentYes: doc.data().studentYes,
-              courseName: doc.data().courseName,
-              classType: doc.data().classType,
-              level: doc.data().level,
-              commentClass: doc.data().commentClass,
-              attendancePic: doc.data().attendancePic,
-            };
-            this.classToday.push(classHis);
+            if (doc.data().chkOut == false) {
+              let classHis = {
+                docId: doc.id,
+                studentAtClass: doc.data().studentAtClass,
+                learningTime: moment(doc.data().learningTime)
+                  .add(543, "year")
+                  .format("DD/MM/YYYY"),
+                commentThisTime: doc.data().commentThisTime,
+                teacherAtclass: doc.data().teacherAtclass,
+                studentYes: doc.data().studentYes,
+                courseName: doc.data().courseName,
+                classType: doc.data().classType,
+                level: doc.data().level,
+                commentClass: doc.data().commentClass,
+                attendancePic: doc.data().attendancePic,
+                wages: doc.data().wages,
+                chkOut : doc.data().chkOut,
+              };
+              this.classToday.push(classHis);
+            }
+
             // this.classHistory.reverse();
           });
         });
@@ -1641,7 +1657,9 @@ export default {
                   studentAtClass: doc.data().student,
                   teacherAtclass: doc.data().teacherAtclass,
                   wages: doc.data().wages,
+                  chkOut: doc.data().chkOut,
                 };
+
                 this.classrooms.push(classroom);
                 console.log(this.classrooms);
               }
@@ -1684,7 +1702,7 @@ export default {
   },
   mounted() {
     this.getClassroom();
-    this.getCourseTemplate();
+    // this.getCourseTemplate();
     window.scrollTo(0, 0);
     // this.getData();
   },

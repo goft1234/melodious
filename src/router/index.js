@@ -84,6 +84,16 @@ const routes = [
         component: () => import('../components/admins/StudentData.vue')
       },
       {
+        path: 'studentcourse/:uid',
+        name: 'studentcourse',
+        component: () => import('../components/admins/StudentCourse.vue')
+      },
+      {
+        path: 'studentinvoice/:uid',
+        name: 'studentinvoice',
+        component: () => import('../components/admins/StudentInvoice.vue')
+      },
+      {
         path: 'editinvoice',
         name: 'editinvoice',
         component: () => import('../components/admins/EditInvoice.vue')
@@ -161,6 +171,16 @@ const routes = [
             path: 'expensemonth',
             name: 'expensemonth',
             component: () => import('../components/admins/ExpenseMonth.vue')
+          },
+          {
+            path: 'balanceday',
+            name: 'balanceday',
+            component: () => import('../components/admins/IncomeResultDay.vue')
+          },
+          {
+            path: 'balancemonth',
+            name: 'balancemonth',
+            component: () => import('../components/admins/IncomeResultMonth.vue')
           },
         ]
       },

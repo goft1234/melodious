@@ -18,8 +18,8 @@
             <option value="incomemonth">รายรับ - รายเดือน</option>
             <option value="expense">รายจ่าย - รายวัน</option>
             <option value="expensemonth">รายจ่าย - รายเดือน</option>
-            <option value="teacher">สรุปยอดรายวัน</option>
-            <option value="employee">สรุปยอดรายเดือน</option>
+            <option value="balanceday">สรุปยอดรายวัน</option>
+            <option value="balancemonth">สรุปยอดรายเดือน</option>
           </select>
         </div>
         <div class="col-md-3"></div>
@@ -59,6 +59,12 @@ export default {
       }
       else if(this.acccountPage == "expensemonth"){
         this.$router.replace("/admin/account/expensemonth");
+      }
+      else if(this.acccountPage == "balanceday"){
+        this.$router.replace("/admin/account/balanceday");
+      }
+      else if(this.acccountPage == "balancemonth"){
+        this.$router.replace("/admin/account/balancemonth");
       }
     },
   },

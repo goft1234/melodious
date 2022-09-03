@@ -3,6 +3,28 @@
     <div class="my-3">
       <h4 class="text-center text-success mb-4">บันทึกรายจ่าย</h4>
       <div class="row">
+          <div class="col-md-4"></div>
+          <div class="col-md-4">
+            <div class="card-deck text-center">
+              <div class="card">
+                <div class="card-body">
+                  <div class="card-header bg-danger shadow">
+                    <h5 class="text-light text-center">รายจ่ายทั้งหมด</h5>
+                  </div>
+                  <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
+                  <h4 class="card-text my-4 text-danger text-center">
+                    จำนวน {{ incomeTotal }} บาท
+                  </h4>
+                  <div class="card-header bg-danger shadow">
+                    <h5 class="text-light text-center"></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4"></div>
+        </div>
+      <div class="row">
         <div class="col-12">
           <button
             @click="addNew"
@@ -542,9 +564,19 @@ export default {
     },
   },
 
-  mounted() {
+  created() {
     this.getExpenseLists();
     window.scrollTo(0, 0);
+  },
+
+  computed: {
+    incomeTotal() {
+      var total = this.expenseLists.reduce((accumulator, Item) => {
+        return accumulator + parseInt(Item.amount);
+      }, 0);
+      console.log(total);
+      return Number(total).toLocaleString();
+    },
   },
 };
 </script>
