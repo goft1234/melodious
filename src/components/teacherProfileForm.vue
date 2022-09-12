@@ -259,7 +259,7 @@
         <div class="col-lg-6">
           <div class="form-group">
             <label for="email" class="text-success"
-              ><span class="text-danger">*</span>ตรอก/ซอย
+              >ตรอก/ซอย
             </label>
             <input
               type="email"
@@ -619,7 +619,6 @@ export default {
         this.profile.telephone != "" &&
         this.profile.mobilephone != "" &&
         this.profile.address.addressNumber != "" &&
-        this.profile.address.soi != "" &&
         this.profile.address.district != "" &&
         this.profile.address.amphoe != "" &&
         this.profile.address.province != "" &&

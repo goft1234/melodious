@@ -28,7 +28,7 @@
                   </div>
                   <i class="fas fa-file-invoice-dollar mt-4  text-success" style="font-size:50px"></i>
                   <h4 class="card-text my-4 text-primary text-center">
-                    จำนวน {{ sumTotal }} บาท
+                    จำนวน {{ sumTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="bg- shadow">
@@ -52,7 +52,7 @@
                   </div>
                   <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
                   <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ expenseTotal }} บาท
+                    จำนวน {{ expenseTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="bg- shadow">
@@ -75,7 +75,7 @@
                   </div>
                  <i class="fa-sharp fa-solid fa-sack-dollar mt-4 text-warning" style="font-size:50px"></i>
                   <h4 class="card-text my-4 text-dark text-center" >
-                    จำนวน {{ balance }} บาท
+                    จำนวน {{ balance | number("0,0") }} บาท
                   </h4>
 
                   <div class="card-header bg-dark shadow">
@@ -169,7 +169,7 @@
 
     <!--Start Expenses  Modal -->
     <div class="modal fade" id="expenseModal">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
@@ -448,133 +448,133 @@ export default {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.utilities
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     deviceTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.device
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     teachingTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.teaching
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     officeTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.office
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     advertiseTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.advertise
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     teachEarnTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.teachEarn
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
      employeeEarnTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.employeeEarn
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     teachEarnTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.teachEarn
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     welfareTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.welfare
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     bankfeeTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.bankfee
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     otherfeeTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.otherfee
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     securityTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.security
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     forrentTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.forrent
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     maintenanceTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.maintenance
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     wagesWorkerTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.wagesWorker
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     activityTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.activity
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     travelTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.travel
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     testTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.test
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     instrumentTotal() {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + item.instrument
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     // ------------------------------------- //
@@ -582,49 +582,49 @@ export default {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.classPriceTotal
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     bookTotal() {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.book
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     instrumentTotal() {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.instrumentTotal
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     equipmentTotal() {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.equipmentTotal
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     feeTotal() {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.fee
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     otherTotal() {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.otherTotal
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
 
     examTotal() {
       var total = this.Items.reduce((accumulator, item) => {
         return accumulator + item.examTotal
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
   }
 };

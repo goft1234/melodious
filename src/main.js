@@ -52,6 +52,11 @@ Vue.use(Vuelidate)
 import VueSingleSelect from "vue-single-select";
 Vue.component('vue-single-select', VueSingleSelect);
 
+import Vue2Filters from 'vue2-filters'
+Vue.use(Vue2Filters)
+
+import VueFilterDateFormat from 'vue-filter-date-format';
+ Vue.use(VueFilterDateFormat);
 
 const options = {
   name: '_blank',

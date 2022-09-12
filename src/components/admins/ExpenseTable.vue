@@ -65,7 +65,7 @@
             </div>
           </span>
           <span v-else-if="props.column.field == 'delete'">
-            <div class="btn btn-danger" @click="deleteExpense(props.row.docId)">
+            <div class="btn btn-danger" @click="deleteExpense(props.row)">
               <i class="fas fa-trash-alt"></i>
             </div>
           </span>
@@ -280,55 +280,56 @@ export default {
       ],
       expenseLists: [],
       expenseList: {
-        date: moment().add("543", "year").format("DD/MM/YYYY"),
+        date: moment().add("543", "year").format("DD/MM/YYYY HH:mm"),
         type: "",
         list: "",
         amount: null,
         docId: "",
+        timeStamp : moment().format('x'),
       },
     };
   },
   methods: {
-    getItemdataTemplate() {
-      const Ref = db.collection("expenseTemplate");
-      const unsub = Ref.onSnapshot(
-        (docSnapshot) => {
-          if (docSnapshot.empty) {
-            console.log("No matching documents.");
-            return;
-          }
-          docSnapshot.forEach((doc) => {
-            this.expenseTemplate = doc.data();
-            // console.log(doc.id, "=>", doc.data());
-          });
-        },
-        (err) => {
-          console.log(`Encountered error: ${err}`);
-        }
-      );
-    },
+    // getItemdataTemplate() {
+    //   const Ref = db.collection("expenseTemplate");
+    //   const unsub = Ref.onSnapshot(
+    //     (docSnapshot) => {
+    //       if (docSnapshot.empty) {
+    //         console.log("No matching documents.");
+    //         return;
+    //       }
+    //       docSnapshot.forEach((doc) => {
+    //         this.expenseTemplate = doc.data();
+    //         // console.log(doc.id, "=>", doc.data());
+    //       });
+    //     },
+    //     (err) => {
+    //       console.log(`Encountered error: ${err}`);
+    //     }
+    //   );
+    // },
 
-    updateKeyword() {
-      db.collection("expenseTemplate")
-        .doc("detail")
-        .set(this.expenseTemplate, { merge: true })
-        .then(
-          () => {
-            Swal.fire({
-              title: "อัพเดทเรียบร้อย",
-              text: "อัพเดท template เรียบร้อย",
-              icon: "success",
-              confirmButtonColor: "#30855c",
-              confirmButtonText: "ตกลง",
-            });
-            $("#expenseTemplate").modal("hide");
-          }
+    // updateKeyword() {
+    //   db.collection("expenseTemplate")
+    //     .doc("detail")
+    //     .set(this.expenseTemplate, { merge: true })
+    //     .then(
+    //       () => {
+    //         Swal.fire({
+    //           title: "อัพเดทเรียบร้อย",
+    //           text: "อัพเดท template เรียบร้อย",
+    //           icon: "success",
+    //           confirmButtonColor: "#30855c",
+    //           confirmButtonText: "ตกลง",
+    //         });
+    //         $("#expenseTemplate").modal("hide");
+    //       }
 
-          // { merge: true }
-        );
-    },
+    //       // { merge: true }
+    //     );
+    // },
 
-    deleteExpense(docId) {
+    deleteExpense(doc) {
       Swal.fire({
         title: "ต้องการลบ?",
         text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
@@ -341,7 +342,7 @@ export default {
         if (result.value) {
           // console.log(doc)
           db.collection("expenseTable")
-            .doc(docId)
+            .doc(doc.docId)
             .delete()
             .then(() => {
               Swal.fire({
@@ -352,6 +353,8 @@ export default {
                 confirmButtonText: "ตกลง",
               });
             });
+
+            this.minusExpense(doc)
         }
       });
     },
@@ -363,35 +366,163 @@ export default {
 
     reset() {
       this.expenseList = {
-        date: moment().add("543", "year").format("DD/MM/YYYY"),
+        date: moment().add("543", "year").format("DD/MM/YYYY HH:mm"),
         type: null,
         list: null,
         amount: null,
+        timeStamp : moment().format('x'),
       };
     },
 
-    editExpense(itemData) {
-      this.modal = "edit";
-      // console.log(couseId);
-      this.expenseList = itemData;
-    },
+    // editExpense(itemData) {
+    //   this.modal = "edit";
+    //   // console.log(couseId);
+    //   this.expenseList = itemData;
+    // },
 
-    updatecourse(docId) {
-      // alert(docId)
-      db.collection("courses")
-        .doc(docId)
-        .update(this.itemData)
-        .then(() => {
-          Swal.fire({
-            title: "อัพเดทข้อมูล",
-            text: "ได้ทำการupdateสินค้าเรียบร้อย",
-            icon: "success",
-            confirmButtonColor: "#30855c",
-            confirmButtonText: "ตกลง",
-          });
-          $("#course").modal("hide");
-          this.reset();
-        });
+    // updatecourse(docId) {
+    //   // alert(docId)
+    //   db.collection("courses")
+    //     .doc(docId)
+    //     .update(this.itemData)
+    //     .then(() => {
+    //       Swal.fire({
+    //         title: "อัพเดทข้อมูล",
+    //         text: "ได้ทำการupdateสินค้าเรียบร้อย",
+    //         icon: "success",
+    //         confirmButtonColor: "#30855c",
+    //         confirmButtonText: "ตกลง",
+    //       });
+    //       $("#course").modal("hide");
+    //       this.reset();
+    //     });
+    // },
+    async minusExpense(doc) {
+      // console.log(doc.date);
+      let docId = moment(doc.date,'DD/MM/YYYY HH:mm').format('DD-MM-YYYY')
+      let result = {
+            utilities : 0,
+            device : 0,
+            teaching  : 0,
+            office : 0,
+            advertise : 0,
+            teachEarn : 0,
+            employeeEarn : 0,
+            welfare : 0,
+            service : 0,
+            bankfee : 0,
+
+            otherfee : 0,
+            security : 0,
+            forrent : 0,
+            maintenance : 0,
+            wagesWorker : 0,
+            activity : 0,
+            travel : 0,
+            test : 0,
+            instrument : 0,
+
+            invDayOfMonth: moment().date(),
+            invMonth: moment().month() + 1,
+            invYear: moment().year(),
+          }
+          result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
+
+          if(doc.type == 'สาธารณูปโภค'){
+            result.utilities = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'เครื่องเขียน'){
+            result.device = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'อุปกรณ์การสอน'){
+            result.teaching = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'เครื่องใช้สำนักงาน'){
+            result.office = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'โฆษณา'){
+            result.advertise = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่าสอนครู'){
+            result.teachEarn = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'เงินเดือนเจ้าหน้าที่'){
+            result.employeeEarn = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'สวัสดิการครู/เจ้าหน้าที่'){
+            result.welfare = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่ารับรอง'){
+            result.service = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ธรรมเนียมธนาคาร'){
+            result.bankfee = parseInt(doc.amount) 
+          }
+
+          else if(doc.type == 'ธรรมเนียมอื่นๆ'){
+            result.otherfee = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'เงินประกัน'){
+            result.security = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่าเช่า'){
+            result.forrent = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่าซ่อมบำรุง'){
+            result.maintenance = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่าจ้างแรงงานทั่วไปรายครั้ง'){
+            result.wagesWorker = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'กิจกรรม/คอนเสิร์ต'){
+            result.activity = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่าเดินทาง'){
+            result.travel = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'สอบเกรด'){
+            result.test = parseInt(doc.amount) 
+          }
+          else if(doc.type == 'ค่าเครื่องดนตรี'){
+            result.instrument = parseInt(doc.amount) 
+          }
+
+          // console.log(doc);
+
+
+      try {
+        console.log(docId);
+        var ref = db.collection("summarizeExpense").doc(docId);
+        let doc = await ref.get();
+
+          let data = {
+            docId : doc.id,
+            utilities : doc.data().utilities - result.utilities,
+            device : doc.data().device - result.device,
+            teaching : doc.data().teaching - result.teaching,
+            office : doc.data().office - result.office,
+            advertise : doc.data().advertise - result.advertise,
+            teachEarn : doc.data().teachEarn - result.teachEarn,
+            employeeEarn : doc.data().employeeEarn - result.employeeEarn,
+            welfare : doc.data().welfare - result.welfare,
+            service : doc.data().service - result.service,
+            bankfee : doc.data().bankfee - result.bankfee,
+
+            otherfee : doc.data().otherfee - result.otherfee,
+            security : doc.data().security - result.security,
+            forrent : doc.data().forrent - result.forrent,
+            maintenance : doc.data().maintenance - result.maintenance,
+            wagesWorker : doc.data().wagesWorker - result.wagesWorker,
+            activity : doc.data().activity - result.activity,
+            travel : doc.data().wagesWorker - result.travel,
+            test : doc.data().activity - result.test,
+            instrument : doc.data().instrument - result.instrument,
+          }
+          await db.collection('summarizeExpense').doc(docId).update(data)
+        
+      } catch (err) {
+        console.log(err);
+      }
     },
 
     async summarizeExpense() {
@@ -525,6 +656,7 @@ export default {
 
     async addItemData() {
       try {
+        this.expenseList.timeStamp = moment().format('x');
         await db.collection("expenseTable").add(this.expenseList);
         Swal.fire({
           title: "เพิ่มข้อมูลเรียบร้อย",
@@ -547,10 +679,11 @@ export default {
     },
 
     getExpenseLists() {
-      db.collection("expenseTable").onSnapshot((querySnapshot) => {
+      db.collection("expenseTable").orderBy('timeStamp','desc').onSnapshot((querySnapshot) => {
         this.expenseLists = [];
         querySnapshot.forEach((doc) => {
           let expenseList = {
+            timeStamp : doc.data().timeStamp,
             date: doc.data().date,
             type: doc.data().type,
             list: doc.data().list,

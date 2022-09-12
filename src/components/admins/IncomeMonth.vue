@@ -32,7 +32,7 @@
                     style="font-size: 50px"
                   ></i>
                   <h4 class="card-text my-4 text-primary text-center">
-                    จำนวน {{ incomeTotal }} บาท
+                    จำนวน {{ incomeTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="card-header bg-success shadow">
@@ -739,52 +739,13 @@ export default {
       dayAsset8: [],
     };
   },
+  
   filters: {
     date(date) {
       return new Intl.DateTimeFormat("th-TH").format(date);
     },
   },
 
-  computed: {
-    incomeTotal() {
-      var total = this.Items.reduce((accumulator, item) => {
-        return accumulator + item.sumTotal;
-      }, 0);
-      console.log(total);
-      return Number(total).toLocaleString();
-    },
-
-    // testTotal() {
-    //   // console.log(moment(this.monthSelect).daysInMonth());
-    //   let amountDay = moment(this.monthSelect).daysInMonth();
-    //   for (var i = 1; i < amountDay + 1; i++) {
-    //     this.Items.forEach((item) => {
-    //       if (item.invDayOfMonth == i) {
-    //         // console.log(item.invDayOfMonth);
-    //         console.log(this.dayAsset.toString() + i.toString());
-    //       }
-    //     });
-    //   }
-    // },
-
-    // testSpread() {
-    //   const result = this.Items.reduce((carry, current) => {
-    //     const { day } = current;
-    //     let el = carry.find(
-    //       (item) => item.invDayOfMonth === invDayOfMonth
-    //     );
-
-    //     if (!el) {
-    //       el = {day};
-    //       carry.push(el);
-    //     }
-
-    //     el.other.push({ ...course });
-    //      console.log('ทดสอบ'+result);
-    //     return result;
-    //   }, []);
-    // },
-  },
   methods: {
     invoiceDetail(detail) {
       this.Item = detail;
@@ -874,8 +835,44 @@ export default {
     window.scrollTo(0, 0);
   },
 
-  computed:{
+  computed: {
+    incomeTotal() {
+      var total = this.Items.reduce((accumulator, item) => {
+        return accumulator + parseInt(item.sumTotal);
+      }, 0);
+      return total
+    },
 
+    // testTotal() {
+    //   // console.log(moment(this.monthSelect).daysInMonth());
+    //   let amountDay = moment(this.monthSelect).daysInMonth();
+    //   for (var i = 1; i < amountDay + 1; i++) {
+    //     this.Items.forEach((item) => {
+    //       if (item.invDayOfMonth == i) {
+    //         // console.log(item.invDayOfMonth);
+    //         console.log(this.dayAsset.toString() + i.toString());
+    //       }
+    //     });
+    //   }
+    // },
+
+    // testSpread() {
+    //   const result = this.Items.reduce((carry, current) => {
+    //     const { day } = current;
+    //     let el = carry.find(
+    //       (item) => item.invDayOfMonth === invDayOfMonth
+    //     );
+
+    //     if (!el) {
+    //       el = {day};
+    //       carry.push(el);
+    //     }
+
+    //     el.other.push({ ...course });
+    //      console.log('ทดสอบ'+result);
+    //     return result;
+    //   }, []);
+    // },
   },
 };
 </script>

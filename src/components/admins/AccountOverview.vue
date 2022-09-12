@@ -748,6 +748,7 @@ export default {
     this.getData();
     window.scrollTo(0, 0);
   },
+  
   filters: {
     date(date) {
       return new Intl.DateTimeFormat("th-TH").format(date);

@@ -29,7 +29,7 @@
                   </div>
                   <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
                   <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ expensesTotal }} บาท
+                    จำนวน {{ expensesTotal | number("0,0")  }} บาท
                   </h4>
 
                   <div class="card-header bg-danger shadow">
@@ -76,9 +76,9 @@
       </vue-good-table>
     </div>
 
-    <!--Start Modal AddCourse -->
+    <!--Start Modal expenseList -->
     <div class="modal fade" id="detailModal">
-      <div class="modal-dialog modal-xl">
+      <div class="modal-dialog modal-md">
         <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header text-center">
@@ -90,9 +90,9 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <vue-good-table
+            <!-- <vue-good-table
               :columns="detailsColumns"
-              :rows="expenseLists"
+              :rows="detailList"
               :line-numbers="true"
               styleClass="vgt-table striped bordered"
               :search-options="{
@@ -104,7 +104,82 @@
               }"
               compactMode
             >
-            </vue-good-table>
+            </vue-good-table> -->
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th class="text-center">รายการ</th>
+                    <th>จำนวน</th>
+                  </tr>
+                </thead>
+                <tbody class="text-success">
+                  <tr>
+                    <td>โฆษณา</td>
+                    <td>{{ detailList.advertise  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่าสอนครู</td>
+                    <td>{{ detailList.teachEarn  }}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      เงินเดือนเจ้าหน้าที่
+                    </td>
+                    <td>{{detailList.employeeEarn  }}</td>
+                  </tr>
+                  <tr>
+                    <td>สวัสดิการครู/เจ้าหน้าที่</td>
+                    <td>{{detailList.welfare  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่ารับรอง</td>
+                    <td>{{detailList.service  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ธรรมเนียมธนาคาร</td>
+                    <td>{{detailList.bankfee  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ธรรมเนียมอื่นๆ</td>
+                    <td>{{detailList.otherfee  }}</td>
+                  </tr>
+                  <tr>
+                    <td>เงินประกัน</td>
+                    <td>{{detailList.security }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่าเช่า</td>
+                    <td>{{detailList.forrent  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่าซ่อมบำรุง</td>
+                    <td>{{detailList.maintenance  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่าจ้างแรงงานทั่วไปรายครั้ง</td>
+                    <td>{{detailList.wagesWorker  }}</td>
+                  </tr>
+                  <tr>
+                    <td>กิจกรรม/คอนเสิร์ต</td>
+                    <td>{{detailList.activity }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่าเดินทาง</td>
+                    <td>{{detailList.travel  }}</td>
+                  </tr>
+                  <tr>
+                    <td>สอบเกรด</td>
+                    <td>{{detailList.test  }}</td>
+                  </tr>
+                  <tr>
+                    <td>ค่าเครื่องดนตรี</td>
+                    <td>{{detailList.instrument }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <hr class="text-success" />
+            </div>
           </div>
 
           <!-- Modal footer -->
@@ -262,6 +337,7 @@ export default {
       monthSelect: null,
       expenseLists: [],
       expenseList: {},
+      detailList :{},
       
     };
   },
@@ -270,13 +346,14 @@ export default {
       var total = this.expenseLists.reduce((accumulator, item) => {
         return accumulator + parseInt(item.dayTotal);
       }, 0);
-      return Number(total).toLocaleString();
+      return total;
     },
   },
 
   methods: {
-    expensesDetail(docId) {
-      this.expenseList = docId;
+    expensesDetail(doc) {
+      console.log(doc);
+      this.detailList = doc;
     },
     async getDatetest() {
       console.log(this.monthSelect);

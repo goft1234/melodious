@@ -44,7 +44,7 @@
                   ></i>
 
                   <h4 class="card-text my-4 text-primary text-center">
-                    จำนวน {{ incomeTotal }} บาท
+                    จำนวน {{ incomeTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="card-header bg-success shadow">
@@ -647,19 +647,18 @@ export default {
   },
 
   computed: {
-    expenseTotal(){
-      var expense = this.expenseLists.reduce((accumulator, Item)=>{
-          return accumulator + Item.amount ;
-      },0)
-      return Number(expense).toLocaleString();
-    },
+    // expenseTotal(){
+    //   var expense = this.expenseLists.reduce((accumulator, Item)=>{
+    //       return accumulator + Item.amount ;
+    //   },0)
+    //   return Number(expense).toLocaleString();
+    // },
 
     incomeTotal() {
       var total = this.invoiceData.reduce((accumulator, Item) => {
         return accumulator + Item.grandTotal;
       }, 0);
-      console.log(total);
-      return Number(total).toLocaleString();
+      return total;
     },
   },
 };

@@ -245,7 +245,7 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="email" class="text-success"><span class="text-danger">*</span>ตรอก/ซอย </label>
+            <label for="email" class="text-success">ตรอก/ซอย </label>
             <input
               type="email"
               class="form-control"
@@ -556,7 +556,6 @@ export default {
         this.profile.birthday != "" &&
         this.profile.mobilephone != "" &&
         this.profile.address.addressNumber != "" &&
-        this.profile.address.soi != "" &&
         this.profile.address.district != "" &&
         this.profile.address.amphoe != "" &&
         this.profile.address.province != "" &&

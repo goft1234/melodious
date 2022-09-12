@@ -1163,6 +1163,20 @@
                             </tr>
                           </tbody>
                         </table>
+
+                        <div class="col-md-6 mt-3">
+                          <div class="form-group">
+                            <label for="usr" class="text-success"
+                              >หมายเหตุ
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="กรอกรายการโปรโมชั่น"
+                              v-model.trim="note"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       <div class="row text-center">
@@ -1243,6 +1257,11 @@ export default {
         {
           label: "ระดับ",
           field: "level",
+          type: "text",
+        },
+        {
+          label: "วันเรียน",
+          field: "dayAttend.item",
           type: "text",
         },
         {
@@ -1438,6 +1457,7 @@ export default {
       products: [],
       courses: [],
       carts: [],
+      cartsInfo : [] ,
       courseReserv: [],
       classrooms: [],
 
@@ -1446,6 +1466,7 @@ export default {
       confirm: false,
       paymentType: "",
       other: null,
+      note: '',
     };
   },
 
@@ -1553,6 +1574,7 @@ export default {
           let data = {
             classId: item.classId,
             userId: this.stdProfile.userId,
+            invoiceNo: this.invoiceNo,
 
             image: this.stdProfile.image,
             studentId: this.stdProfile.studentId,
@@ -1564,6 +1586,7 @@ export default {
             amount: item.amount,
             classType: item.classType,
             dayAttend: item.dayAttend,
+
             classDiscount: item.classDiscount,
             endDate: moment(item.endDate).format("x"),
             finishTime: item.finishTime,
@@ -1574,11 +1597,29 @@ export default {
             startTime: item.startTime,
             wages: item.wages,
             teacherAtclass: item.teacherAtclass,
+            
             remain: remain,
           };
 
           this.courseInfo.push(data);
         });
+
+        this.cartsInfo = [];
+        this.carts.forEach((item)=>{
+        let  data = {
+            buyAmount : item.buyAmount,
+            cost : item.cost,
+            pCode : item.pCode,
+            pDiscount : item.pDiscount,
+            pID : item.pID,
+            pMode : item.pMode,
+            pName : item.pName,
+            price : item.price,
+            quantity : item.quantity,
+            invoiceNo: this.invoiceNo,
+          }
+          this.cartsInfo.push(data)
+        })
 
         let invoiceData = {
           userId: this.stdProfile.userId,
@@ -1594,7 +1635,7 @@ export default {
           paymentType: this.paymentType,
 
           courseDetail: this.courseInfo,
-          productDetail: this.carts,
+          productDetail: this.cartsInfo,
 
           pSubtotal: this.pSubtotal,
           subTotal: this.subTotal,
@@ -1603,7 +1644,7 @@ export default {
 
           paymentFor: this.selected,
           other: this.other,
-          note: "",
+          note: this.note,
           transactionTime: "",
           invoiceTime: moment().format("DD/MM/YYYY"),
           invoiceTimestamp: moment().format("x"),
@@ -1612,10 +1653,10 @@ export default {
           invMonth: moment().month() + 1,
           invYear: moment().year(),
 
-          canUpdate: true,
+          canUpdate: 0,
           paid: false,
           confirm: 0,
-          print: false,
+          print: true,
           summarize: false,
           stdMobile: this.stdProfile.mobilephone,
         };
@@ -1675,6 +1716,50 @@ export default {
       this.profileModal = null;
       this.profile = profile;
       this.disabled = 1;
+    },
+
+    deleteStudent(uid) {
+      Swal.fire({
+        title: "ต้องการลบ?",
+        text: "ทำการลบแล้วไม่สามารถย้อนกลับได้",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#30855c",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ตกลง ลบข้อมูล",
+      })
+        .then((result) => {
+          if (result.value) {
+            this.$store.state.show = true;
+            var del = functions.httpsCallable("deleteStudent");
+            var data = { uid: uid };
+             db.collection("studentData")
+            .doc(uid)
+            .delete()
+
+            del(data).then(() => {
+              Swal.fire({
+                title: "ทำการลบเรียบร้อย",
+                text: "ได้ทำการลบผู้ใช้งานนี้เรียบร้อย",
+                icon: "success",
+                confirmButtonColor: "#30855c",
+                confirmButtonText: "ตกลง",
+              });
+              this.$store.state.show = false;
+            });
+          }
+        })
+        .catch((error) => {
+          console.log("Transaction failed: ", error);
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+          this.$store.state.show = false;
+        });
     },
 
     addcourse(stdProfile) {
@@ -1766,7 +1851,7 @@ export default {
       try {
         this.$store.state.show = true;
         db.collection("studentData")
-          .orderBy("addProfileAt", "desc")
+          .orderBy("studentId", "desc")
           .onSnapshot((querySnapshot) => {
             this.profiles = [];
             querySnapshot.forEach((doc) => {

@@ -141,7 +141,7 @@
                     v-model="course.beginRate"
                   >
                     <option disabled value="">เลือกเรทราคา</option>
-                    <option v-for="(item, index) in courseTemplate.rate" :key="index" :value="item">
+                    <option v-for="(item, index) in sortRate" :key="index" :value="item">
                     {{ item }}
                   </option>
                   </select>
@@ -164,7 +164,7 @@
                     v-model="course.mediumRate"
                   >
                     <option disabled>เลือกเรทราคา</option>
-                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    <option v-for="(item, index) in sortRate" :key="index">
                     {{ item }}
                   </option>
                   </select>
@@ -187,7 +187,7 @@
                     v-model="course.topRate"
                   >
                     <option disabled>เลือกเรทราคา</option>
-                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    <option v-for="(item, index) in sortRate" :key="index">
                     {{ item }}
                   </option>
                   </select>
@@ -210,7 +210,7 @@
                     v-model="course.teacherRate"
                   >
                     <option disabled>เลือกเรทราคา</option>
-                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    <option v-for="(item, index) in sortRate" :key="index">
                     {{ item }}
                   </option>
                   </select>
@@ -233,7 +233,7 @@
                     v-model="course.entranceRate"
                   >
                     <option disabled>เลือกเรทราคา</option>
-                    <option v-for="(item, index) in courseTemplate.rate" :key="index">
+                    <option v-for="(item, index) in sortRate" :key="index">
                     {{ item }}
                   </option>
                   </select>
@@ -564,10 +564,10 @@ export default {
 
       modal: null,
       courseTemplate: {
-        // courseName: [],
-        // courseType: [],
-        // level: [],
-        // rate: [],
+        courseName: [],
+        courseType: [],
+        level: [],
+        rate: [],
       },
       courses: [],
       course: {
@@ -739,6 +739,13 @@ export default {
     this.getCoursetemplate();
     window.scrollTo(0, 0);
   },
+
+  computed :{
+    sortRate(){
+      var expense = this.courseTemplate.rate.sort((a, b) => a - b );
+      return expense
+    },
+  }
 };
 </script>
 

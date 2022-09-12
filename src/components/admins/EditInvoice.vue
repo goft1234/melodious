@@ -8,7 +8,7 @@
           to="/admin/student"
           class="btn btn-info d-inline-block px-2"
         >
-         <i class="fas fa-arrow-alt-circle-left"></i> ย้อนกลับ
+          <i class="fas fa-arrow-alt-circle-left"></i> ย้อนกลับ
         </router-link>
         <!-- <router-link
           to="/admin/invoicehistory"
@@ -46,9 +46,13 @@
                 <i class="fa-solid fa-file-circle-plus"></i>
               </div>
             </span>
+
             <span v-else-if="props.column.field == 'paid'">
+              <div v-if="props.row.canUpdate == 0" class="btn btn-danger">
+                <i class="fas fa-times-circle"></i>
+              </div>
               <div
-                v-if="props.row.canUpdate"
+                v-else-if="props.row.canUpdate == 1"
                 class="btn btn-info"
                 data-toggle="modal"
                 data-target="#paidModal"
@@ -64,6 +68,7 @@
                 <i class="fas fa-money-check-alt"></i>
               </div>
             </span>
+
             <span v-else-if="props.column.field == 'confirm'">
               <div v-if="props.row.confirm == 0" class="btn btn-danger">
                 <i class="fas fa-times-circle"></i>
@@ -85,7 +90,7 @@
               <div
                 v-if="props.row.print"
                 class="btn btn-info"
-                @click="summarizeInvoice(props.row)"
+                @click="printInvoice(props.row)"
               >
                 <i class="fas fa-print"></i>
               </div>
@@ -147,15 +152,13 @@
                 />
               </td>
               <td colspan="2" class="text-center">
-                <h4>โรงเรียนสอนดนตรี เมโลดิอุส</h4>
+                <h4>โรงเรียนดนตรี เมโลดิอุส</h4>
                 <h5>Melodious Music School</h5>
                 <p>
                   188/77-78 หมู่4 ชั้น2 ถ.หนามแดง-บางพลี ต.บางพลีใหญ่ อ.บางพลี
                   จ.สมุทราปราการ 10540
                 </p>
-                <p>
-                  Tel. 02-183-9700 , 087-022-0277 , 091-5588700 Fax. 02-183-7492
-                </p>
+                <p>Tel. 082-636-1947 , 063-532-6647</p>
                 <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
               </td>
               <td class="text-right">
@@ -226,7 +229,7 @@
                   >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
                 </span>
                 <span v-if="course.startDate">
-                  วันที่เริ่มเรียน-{{ course.startDate }} ,
+                  วันที่เริ่มเรียน-{{ course.startDate | formatDate }} ,
                 </span>
                 <br />
                 <span v-if="course.teacherAtclass.teacherName">
@@ -234,10 +237,13 @@
                 </span>
               </td>
               <td>{{ course.classQty }}</td>
-              <td>{{ course.rate }}</td>
-              <td>{{ course.classDiscount }}</td>
+              <td>{{ course.rate | number("0,0.00") }}</td>
+              <td>{{ course.classDiscount | number("0,0.00") }}</td>
               <td>
-                {{ course.classQty * course.rate - course.classDiscount }}
+                {{
+                  (course.classQty * course.rate - course.classDiscount)
+                    | number("0,0.00")
+                }}
               </td>
             </tr>
             <tr>
@@ -266,7 +272,7 @@
                   border-bottom: 6px black double;
                 "
               >
-                {{ invoiceToPrint.subTotal }}
+                {{ invoiceToPrint.subTotal | number("0,0.00") }}
               </td>
             </tr>
           </table>
@@ -308,9 +314,14 @@
               <td>{{ index + 1 }}</td>
               <td>{{ item.pName }}</td>
               <td>{{ item.buyAmount }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.pDiscount }}</td>
-              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
+              <td>{{ item.price | number("0,0.00") }}</td>
+              <td>{{ item.pDiscount | number("0,0.00") }}</td>
+              <td>
+                {{
+                  (item.buyAmount * item.price - item.pDiscount)
+                    | number("0,0.00")
+                }}
+              </td>
             </tr>
             <tr>
               <td
@@ -329,7 +340,7 @@
                 "
                 colspan="2"
               >
-                รวมค่าเรียนทั้งสิ้น <br />Totol
+                รวมทั้งสิ้น <br />Totol
               </td>
               <td
                 style="
@@ -338,7 +349,7 @@
                   border-bottom: 6px black double;
                 "
               >
-                {{ invoiceToPrint.pSubtotal }}
+                {{ invoiceToPrint.pSubtotal | number("0,0.00") }}
               </td>
             </tr>
           </table>
@@ -372,21 +383,21 @@
               <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
             </tr>
             <tr style="height: 50px">
-              <td>{{ invoiceToPrint.subTotal }}</td>
-              <td>{{ invoiceToPrint.pSubtotal }}</td>
-              <td>{{ invoiceToPrint.fee }}</td>
-              <td>{{ invoiceToPrint.grandTotal }}</td>
+              <td>{{ invoiceToPrint.subTotal | number("0,0.00") }}</td>
+              <td>{{ invoiceToPrint.pSubtotal | number("0,0.00") }}</td>
+              <td>{{ invoiceToPrint.fee | number("0,0.00") }}</td>
+              <td>{{ invoiceToPrint.grandTotal | number("0,0.00") }}</td>
             </tr>
           </table>
           <br />
-          <table width="100%" style="1px solid black">
+          <!-- <table width="100%" style="1px solid black">
             <tr class="text-left">
               <td colspan="4">
                 จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)
                 Baht.______________________________________________________
               </td>
             </tr>
-          </table>
+          </table> -->
           <br />
           <table width="100%" style="1px solid black">
             <tr class="text-left">
@@ -437,15 +448,13 @@
                 />
               </td>
               <td colspan="2" class="text-center">
-                <h4>โรงเรียนสอนดนตรี เมโลดิอุส</h4>
+                <h4>โรงเรียนดนตรี เมโลดิอุส</h4>
                 <h5>Melodious Music School</h5>
                 <p>
                   188/77-78 หมู่4 ชั้น2 ถ.หนามแดง-บางพลี ต.บางพลีใหญ่ อ.บางพลี
                   จ.สมุทราปราการ 10540
                 </p>
-                <p>
-                  Tel. 02-183-9700 , 087-022-0277 , 091-5588700 Fax. 02-183-7492
-                </p>
+                <p>Tel. 082-636-1947 , 063-532-6647</p>
                 <p>www.mmsmelodious.info , Email:mmsmelodious@gmail.com</p>
               </td>
               <td class="text-right">
@@ -516,7 +525,7 @@
                   >ชั้นเรียน-{{ course.classType }}({{ course.level }}) ,
                 </span>
                 <span v-if="course.startDate">
-                  วันที่เริ่มเรียน-{{ course.startDate }} ,
+                  วันที่เริ่มเรียน-{{ course.startDate | formatDate }} ,
                 </span>
                 <br />
                 <span v-if="course.teacherAtclass.teacherName">
@@ -524,10 +533,13 @@
                 </span>
               </td>
               <td>{{ course.classQty }}</td>
-              <td>{{ course.rate }}</td>
-              <td>{{ course.classDiscount }}</td>
+              <td>{{ course.rate | number("0,0.00") }}</td>
+              <td>{{ course.classDiscount | number("0,0.00") }}</td>
               <td>
-                {{ course.classQty * course.rate - course.classDiscount }}
+                {{
+                  (course.classQty * course.rate - course.classDiscount)
+                    | number("0,0.00")
+                }}
               </td>
             </tr>
             <tr>
@@ -556,7 +568,7 @@
                   border-bottom: 6px black double;
                 "
               >
-                {{ invoiceToPrint.subTotal }}
+                {{ invoiceToPrint.subTotal | number("0,0.00") }}
               </td>
             </tr>
           </table>
@@ -598,9 +610,14 @@
               <td>{{ index + 1 }}</td>
               <td>{{ item.pName }}</td>
               <td>{{ item.buyAmount }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.pDiscount }}</td>
-              <td>{{ item.buyAmount * item.price - item.pDiscount }}</td>
+              <td>{{ item.price | number("0,0.00") }}</td>
+              <td>{{ item.pDiscount | number("0,0.00") }}</td>
+              <td>
+                {{
+                  (item.buyAmount * item.price - item.pDiscount)
+                    | number("0,0.00")
+                }}
+              </td>
             </tr>
             <tr>
               <td
@@ -619,7 +636,7 @@
                 "
                 colspan="2"
               >
-                รวมค่าเรียนทั้งสิ้น <br />Totol
+                รวมทั้งสิ้น <br />Totol
               </td>
               <td
                 style="
@@ -628,7 +645,7 @@
                   border-bottom: 6px black double;
                 "
               >
-                {{ invoiceToPrint.pSubtotal }}
+                {{ invoiceToPrint.pSubtotal | number("0,0.00") }}
               </td>
             </tr>
           </table>
@@ -662,21 +679,21 @@
               <th style="width: 25%">รวมจำนวนเงินทั้งสิ้น<br />Net Amount</th>
             </tr>
             <tr style="height: 50px">
-              <td>{{ invoiceToPrint.subTotal }}</td>
-              <td>{{ invoiceToPrint.pSubtotal }}</td>
-              <td>{{ invoiceToPrint.fee }}</td>
-              <td>{{ invoiceToPrint.grandTotal }}</td>
+              <td>{{ invoiceToPrint.subTotal | number("0,0.00") }}</td>
+              <td>{{ invoiceToPrint.pSubtotal | number("0,0.00") }}</td>
+              <td>{{ invoiceToPrint.fee | number("0,0.00") }}</td>
+              <td>{{ invoiceToPrint.grandTotal | number("0,0.00") }}</td>
             </tr>
           </table>
           <br />
-          <table width="100%" style="1px solid black">
+          <!-- <table width="100%" style="1px solid black">
             <tr class="text-left">
               <td colspan="4">
                 จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)
                 Baht.______________________________________________________
               </td>
             </tr>
-          </table>
+          </table> -->
           <br />
           <table width="100%" style="1px solid black">
             <tr class="text-left">
@@ -1142,6 +1159,20 @@
                             </tr>
                           </tbody>
                         </table>
+
+                        <div class="col-md-6">
+                          <div class="form-group mt-2">
+                            <label for="usr" class="text-success"
+                              >หมายเหตุ
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="usr"
+                              v-model.trim="invoiceData.note"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       <!-- <h6 class="ml-3 text-success">ชำระเงินโดย (Pay By)</h6>
@@ -1645,7 +1676,7 @@
                     />
                   </div>
                 </div>
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                   <div class="form-group mt-2">
                     <label for="usr" class="text-success">หมายเหตุ </label>
                     <input
@@ -1656,7 +1687,7 @@
                       v-model.trim="invoiceData.note"
                     />
                   </div>
-                </div>
+                </div> -->
                 <div class="col-md-6">
                   <div class="form-group mt-2">
                     <label for="usr" class="text-success"
@@ -1856,6 +1887,11 @@ export default {
           type: "text",
         },
         {
+          label: "print",
+          field: "print",
+          type: "text",
+        },
+        {
           label: "ชำระ",
           field: "paid",
           type: "text",
@@ -1863,11 +1899,6 @@ export default {
         {
           label: "ยืนยัน",
           field: "confirm",
-          type: "text",
-        },
-        {
-          label: "print",
-          field: "print",
           type: "text",
         },
         {
@@ -1888,6 +1919,7 @@ export default {
       classrooms: [],
       editPass: "",
       invoiceToPrint: {},
+      invoiceNoFromEdit: "",
       // paymentDt: {
       //   note: "",
       //   payBy: [],
@@ -1909,6 +1941,8 @@ export default {
       let remain = data.amount * data.classQty;
       console.log(remain);
       let courseData = {
+        invoiceNo: this.invoiceNoFromEdit,
+
         amount: data.amount,
         classDiscount: data.classDiscount,
         classId: data.classId,
@@ -1919,6 +1953,7 @@ export default {
         endDate: moment(data.endDate).format("x"),
         finishTime: data.finishTime,
         level: data.level,
+
         nowDate: Date.now(),
         rate: data.rate,
         remain: remain,
@@ -1929,6 +1964,7 @@ export default {
         wages: data.wages,
         userId: this.stdProfile.userId,
         classId: data.classId,
+
         studentId: this.stdProfile.studentId,
         firstName: this.stdProfile.firstName,
         lastName: this.stdProfile.lastName,
@@ -1964,7 +2000,20 @@ export default {
 
     addProductToCart(product) {
       console.log(product);
-      this.carts.push(product);
+
+      let data = {
+        buyAmount: product.buyAmount,
+        cost: product.cost,
+        pCode: product.pCode,
+        pDiscount: product.pDiscount,
+        pID: product.pID,
+        pMode: product.pMode,
+        pName: product.pName,
+        price: product.price,
+        quantity: product.quantity,
+        invoiceNo: this.invoiceNoFromEdit,
+      };
+      this.carts.push(data);
       Swal.fire({
         title: "Add To Cart",
         text: "เพิ่มสินค้าลงตระกร้าเรียบร้อยแล้ว",
@@ -2048,10 +2097,14 @@ export default {
           );
         }, 0);
 
-      let sumTotal = parseInt(classPriceTotal)+parseInt(invoice.fee)
-      +parseInt(bookTotal)+parseInt(instrumentTotal)+parseInt(equipmentTotal)+parseInt(examTotal)
-      +parseInt(otherTotal);
-
+      let sumTotal =
+        parseInt(classPriceTotal) +
+        parseInt(invoice.fee) +
+        parseInt(bookTotal) +
+        parseInt(instrumentTotal) +
+        parseInt(equipmentTotal) +
+        parseInt(examTotal) +
+        parseInt(otherTotal);
 
       let result = {
         classPriceTotal: parseInt(classPriceTotal),
@@ -2062,7 +2115,7 @@ export default {
         equipmentTotal: parseInt(equipmentTotal),
         examTotal: parseInt(examTotal),
         otherTotal: parseInt(otherTotal),
-        sumTotal : parseInt(sumTotal),
+        sumTotal: parseInt(sumTotal),
         invDayOfMonth: moment().date(),
         invMonth: moment().month() + 1,
         invYear: moment().year(),
@@ -2089,38 +2142,52 @@ export default {
                 doc.data().instrumentTotal + result.instrumentTotal,
               equipmentTotal: doc.data().equipmentTotal + result.equipmentTotal,
               otherTotal: doc.data().otherTotal + result.otherTotal,
-              sumTotal : doc.data().sumTotal  + result.sumTotal,  
+              sumTotal: doc.data().sumTotal + result.sumTotal,
               invDayOfMonth: result.invDayOfMonth,
               invMonth: result.invMonth,
               invYear: result.invYear,
-              monthlyDay : result.monthlyDay,
+              monthlyDay: result.monthlyDay,
             };
 
             await ref.set(data);
           }
-          await db.collection('invoiceData').doc(invoice.docId).update({summarize : true})
-          this.print(invoice)
+          await db
+            .collection("invoiceData")
+            .doc(invoice.docId)
+            .update({ summarize: true });
+          
         } else {
-          this.print(invoice)
+          
         }
       } catch (error) {
         console.log("Transaction failed: ", error);
       }
     },
 
-    async print(invoice) {
+    async printInvoice(invoice) {
       this.invoiceToPrint = invoice;
       setTimeout(() => {
         this.$htmlToPaper("InvPckPrint");
       }, 1000);
+
+      let canUpdate;
+      invoice.canUpdate == 2 ? (canUpdate = 2) : (canUpdate = 1);
+
+      await db
+        .collection("invoiceData")
+        .doc(invoice.docId)
+        .update({ canUpdate: canUpdate });
     },
 
     // *** updateData *** //
     async updateInvoice(invoiceData) {
+      // console.log(invoiceData);
       invoiceData.subTotal = this.subTotal;
       invoiceData.pSubtotal = this.pSubtotal;
       invoiceData.grandTotal = this.grandTotal;
-      // console.log(invoiceData);
+      // console.log(invoiceData.courseDetail);
+
+      this.invoiceData = invoiceData;
       try {
         this.$store.state.show = true;
         await db
@@ -2138,6 +2205,7 @@ export default {
         });
         this.$store.state.show = false;
       } catch (err) {
+        console.log(err);
         Swal.fire({
           title: "เกิดข้อผิดพลาดที่ระบบ",
           text: "ไม่สามารถUpdateได้ กรุณาลองใหม่อีกครั้ง",
@@ -2161,12 +2229,11 @@ export default {
       // console.log(confirm);
       try {
         db.collection("invoiceData").doc(paymentDt.docId).update({
-          note: paymentDt.note,
           payBy: paymentDt.payBy,
           bankDetail: paymentDt.bankDetail,
           transactionTime: paymentDt.transactionTime,
           confirm: confirm,
-          canUpdate: false,
+          canUpdate: 2,
         });
         Swal.fire({
           title: "SUCCESS",
@@ -2209,7 +2276,7 @@ export default {
         var batch = db.batch();
 
         var invoiceDocRef = db.collection("invoiceData").doc(detail.docId);
-        batch.set(invoiceDocRef, { canUpdate: true }, { merge: true });
+        batch.set(invoiceDocRef, { canUpdate: 1 }, { merge: true });
 
         var invoiceHisRef = db.collection("invoiceHistory").doc();
         batch.set(invoiceHisRef, detail);
@@ -2299,6 +2366,25 @@ export default {
         });
 
         this.carts = invoiceData.productDetail;
+
+        this.carts.forEach((item) => {
+          let data = {
+            buyAmount: item.buyAmount,
+            cost: item.cost,
+            pCode: item.pCode,
+            pDiscount: item.pDiscount,
+            pID: item.pID,
+            pMode: item.pMode,
+            pName: item.pName,
+            price: item.price,
+            quantity: item.quantity,
+            invoiceNo: item.invoiceNo,
+            invDayOfMonth: moment().date(),
+            invMonth: moment().month() + 1,
+            invYear: moment().year(),
+          };
+          batch.set(db.collection("productSell").doc(), data);
+        });
         // console.log(this.carts);
         this.carts.forEach((item) => {
           var newQty = item.quantity - item.buyAmount;
@@ -2309,7 +2395,6 @@ export default {
 
         batch.update(db.collection("invoiceData").doc(invoiceData.docId), {
           confirm: 2,
-          print: true,
         });
 
         batch.commit();
@@ -2322,7 +2407,7 @@ export default {
         });
         console.log("เพิ่มคอร์สเรียนเรียบร้อย");
 
-        // this.addInvoice();
+        this.summarizeInvoice(invoiceData);
       } catch (err) {
         console.log(err);
       }
@@ -2349,6 +2434,24 @@ export default {
 
         this.carts = invoiceData.productDetail;
         this.carts.forEach((item) => {
+          let data = {
+            buyAmount: item.buyAmount,
+            cost: item.cost,
+            pCode: item.pCode,
+            pDiscount: item.pDiscount,
+            pID: item.pID,
+            pMode: item.pMode,
+            pName: item.pName,
+            price: item.price,
+            quantity: item.quantity,
+            invoiceNo: item.invoiceNo,
+            invDayOfMonth: moment().date(),
+            invMonth: moment().month() + 1,
+            invYear: moment().year(),
+          };
+          batch.set(db.collection("productSell").doc(), data);
+        });
+        this.carts.forEach((item) => {
           var newQty = item.quantity - item.buyAmount;
           batch.update(db.collection("products").doc(item.pID), {
             quantity: newQty,
@@ -2357,7 +2460,6 @@ export default {
 
         batch.update(db.collection("invoiceData").doc(invoiceData.docId), {
           confirm: 2,
-          print: true,
         });
 
         await batch.commit();
@@ -2369,20 +2471,36 @@ export default {
           confirmButtonText: "ตกลง",
         });
         console.log("เพิ่มคอร์สเรียนเรียบร้อย");
+        this.summarizeInvoice(invoiceData);
       } catch (err) {
         console.log(err);
       }
     },
 
     confirmMethods(invoiceData) {
+      Swal.fire({
+        title: "ยืนยัน",
+        text: "ยืนยันการลงคอร์สเรียน",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#30855c",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยัน",
+      }).then((result) => {
+        this.$store.state.show = true;
+        if (result.value) {
+          if (invoiceData.paymentType == "ต่อคอร์ส") {
+            // console.log("ต่อคอร์ส");
+            this.addToRenevalCourse(invoiceData);
+          } else {
+            this.addToActiveCourse(invoiceData);
+            // console.log("ลงทะเบียนใหม่");
+          }
+        } else {
+          this.$store.state.show = false;
+        }
+      });
       // console.log(paymentType);
-      if (invoiceData.paymentType == "ต่อคอร์ส") {
-        // console.log("ต่อคอร์ส");
-        this.addToRenevalCourse(invoiceData);
-      } else {
-        this.addToActiveCourse(invoiceData);
-        // console.log("ลงทะเบียนใหม่");
-      }
     },
 
     // *** ReadData *** //
@@ -2402,6 +2520,7 @@ export default {
       this.carts = detail.productDetail;
       this.coursesActive = detail.courseDetail;
       this.invoiceData = detail;
+      this.invoiceNoFromEdit = detail.invoiceNo;
       $("#invoiceModal").modal("show");
     },
 
@@ -2459,10 +2578,10 @@ export default {
               ),
               // transactionTime:doc.data().transactionTime,
             };
-            
+
             // console.log(Item);
             this.invoiceDetails.push(invoiceDetail);
-
+            
             console.log("From Itemdatas");
             console.log(this.invoiceDetails);
           });
@@ -2549,6 +2668,7 @@ export default {
         this.$store.state.show = false;
       }
     },
+
     getEditPassword() {
       db.collection("passEdit")
         .doc("detail")
@@ -2563,6 +2683,14 @@ export default {
     this.getProducts();
     this.getClassroom();
     this.getEditPassword();
+  },
+
+  filters: {
+    formatDate(value) {
+      if (value) {
+        return moment(value, "x").add("543", "year").format("DD/MM/YYYY");
+      }
+    },
   },
 
   computed: {

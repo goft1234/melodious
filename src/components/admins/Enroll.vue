@@ -57,7 +57,7 @@
       </div>
     </div>
     <!-- v-if="detailOpen" -->
-    <form v-on:submit.prevent  class="">
+    <form v-on:submit.prevent  class="" v-if="detailOpen">
       <div class="row mt-3">
         <div class="col-md-12">
           <div class="float-left">
@@ -92,8 +92,8 @@
               <option>เด็กชาย</option>
               <option>เด็กหญิง</option>
               <option>นาย</option>
-              <option>นางสาว</option>
               <option>นาง</option>
+              <option>นางสาว</option>
             </select>
             <!-- <span>courseSelected: {{ profile.namePrefix }}</span> -->
           </div>
@@ -196,7 +196,7 @@
                     list="year-list"
                     class="birthdayBox3"
                     v-model="yBirth"
-                    @change="testLog"
+                    @change="fullBirthday"
                   ></b-form-input>
 
                   <datalist id="year-list">
@@ -223,16 +223,15 @@
         <div class="col-lg-6">
           <div class="form-group">
             <label for="email" class="text-success"
-              ><span class="text-danger">***</span> อีเมล์
+              ><span class="text-danger">*</span>อีเมล์
             </label>
             <input
               type="email"
               class="form-control"
-              placeholder="ใช้เป็น User เพื่อเข้าระบบ"
+              placeholder="ไม่มีให้กรอกเป็น email ของผู้ปกครอง"
               id="อีเมล์"
               v-model.trim="profile.email"
             />
-            <!-- <span> : {{ profile.email }}</span> -->
           </div>
         </div>
       </div>
@@ -254,12 +253,12 @@
         <div class="col-lg-6">
           <div class="form-group">
             <label for="mobilephone" class="text-success"
-              ><span class="text-danger">***</span>โทรศัพท์มือถือ</label
+              ><span class="text-danger">*</span>โทรศัพท์มือถือ</label
             >
             <input
               type="text"
               class="form-control"
-              placeholder="ใช้เป็นรหัสผ่านเพื่อเข้าระบบ"
+              placeholder="ไม่มีให้กรอกเป็น เบอร์ ของผู้ปกครอง"
               id="mobilephone"
               v-model.trim="profile.mobilephone"
               maxlength="10"
@@ -276,6 +275,25 @@
         <h6 class="text-success">(ผู้ปกครองคนที่ 1)</h6>
       </div>
       <div class="row">
+        
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="namePrefix" class="text-success"
+              ><span class="text-danger">*</span>คำนำหน้า</label
+            >
+            <select
+              class="form-control"
+              id="namePrefix"
+              v-model="profile.parentNamePrefix"
+            >
+              <option disabled value="">เลือกคำนำหน้า</option>
+              <option>นาย</option>
+              <option>นาง</option>
+              <option>นางสาว</option>
+            </select>
+          </div>
+        </div>
+
         <div class="col-lg-6">
           <div class="form-group">
             <label for="firstName" class="text-success"
@@ -291,6 +309,7 @@
             <!-- <span> : {{ profile.firstName }}</span> -->
           </div>
         </div>
+
         <div class="col-lg-6">
           <div class="form-group">
             <label for="lastName" class="text-success"
@@ -306,43 +325,10 @@
             <!-- <span> : {{ profile.lastName }}</span> -->
           </div>
         </div>
-      </div>
 
-      <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="mobilephone" class="text-success"
-              ><span class="text-danger">*</span>โทรศัพท์มือถือ</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              placeholder="กรอกนามสกุล"
-              id="mobilephone"
-              v-model.trim="profile.parentMobilephone"
-              maxlength="10"
-            />
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="form-group">
-            <label for="email" class="text-success">อีเมล์ </label>
-            <input
-              type="email"
-              class="form-control"
-              placeholder="กรอกอีเมล์มี @"
-              id="อีเมล์"
-              v-model.trim="profile.parentEmail"
-            />
-            <!-- <span> : {{ profile.email }}</span> -->
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="form-group">
-            <label for="telephone" class="text-success">เกี่ยวข้องเป็น</label>
+            <label for="telephone" class="text-success"><span class="text-danger">*</span>เกี่ยวข้องเป็น</label>
             <input
               type="text"
               class="form-control"
@@ -352,27 +338,68 @@
             />
           </div>
         </div>
+
         <div class="col-lg-6">
-          <!-- <div class="form-group">
-            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+          <div class="form-group">
+            <label for="email" class="text-success"><span class="text-danger">
+              ***</span> อีเมล์ <span class="text-danger">(ใช้เป็น User เพื่อเข้าระบบ)</span>
+            </label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="ใช้เป็น User เพื่อเข้าระบบ"
+              id="อีเมล์"
+              v-model.trim="profile.parentEmail"
+            />
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="mobilephone" class="text-success"
+              ><span class="text-danger">***</span> เบอร์มือถือ<span class="text-danger">(ใช้เป็น Password เพื่อเข้าระบบ)</span></label
+            >
             <input
               type="text"
               class="form-control"
-              placeholder="กรอกนามสกุล"
+              placeholder="ใช้เป็น รหัสผ่าน เพื่อเข้าระบบ"
               id="mobilephone"
-              v-model.trim="profile.mobilephone"
+              v-model.trim="profile.parentMobilephone"
+              maxlength="10"
             />
-          </div> -->
+          </div>
         </div>
       </div>
+
       <hr />
       <div class="col-md-12 text-center mb-3">
         <h6 class="text-success">(ผู้ปกครองคนที่ 2)</h6>
       </div>
       <div class="row">
+        
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="firstName" class="text-success">ชื่อจริง</label>
+            <label for="namePrefix" class="text-success"
+              >คำนำหน้า</label
+            >
+            <select
+              class="form-control"
+              id="namePrefix"
+              v-model="profile.parentNamePrefix2"
+            >
+              <option disabled value="">เลือกคำนำหน้า</option>
+              <option>นาย</option>
+              <option>นาง</option>
+              <option>นางสาว</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="firstName" class="text-success"
+              >ชื่อจริง</label
+            >
             <input
               type="text"
               class="form-control"
@@ -383,9 +410,12 @@
             <!-- <span> : {{ profile.firstName }}</span> -->
           </div>
         </div>
+
         <div class="col-lg-6">
           <div class="form-group">
-            <label for="lastName" class="text-success">นามสกุล</label>
+            <label for="lastName" class="text-success"
+              >นามสกุล</label
+            >
             <input
               type="text"
               class="form-control"
@@ -396,38 +426,7 @@
             <!-- <span> : {{ profile.lastName }}</span> -->
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="form-group">
-            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="กรอกนามสกุล"
-              id="mobilephone"
-              v-model.trim="profile.parentMobilephone2"
-              maxlength="10"
-            />
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="form-group">
-            <label for="email" class="text-success">อีเมล์ </label>
-            <input
-              type="email"
-              class="form-control"
-              placeholder="กรอกอีเมล์มี @"
-              id="อีเมล์"
-              v-model.trim="profile.parentEmail2"
-            />
-            <!-- <span> : {{ profile.email }}</span> -->
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
         <div class="col-lg-6">
           <div class="form-group">
             <label for="telephone" class="text-success">เกี่ยวข้องเป็น</label>
@@ -440,17 +439,36 @@
             />
           </div>
         </div>
+
         <div class="col-lg-6">
-          <!-- <div class="form-group">
-            <label for="mobilephone" class="text-success">โทรศัพท์มือถือ</label>
+          <div class="form-group">
+            <label for="email" class="text-success">
+              อีเมล์
+            </label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="กรอก email มี @"
+              id="อีเมล์"
+              v-model.trim="profile.parentEmail2"
+            />
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="form-group">
+            <label for="mobilephone" class="text-success"
+              >เบอร์มือถือ</label
+            >
             <input
               type="text"
               class="form-control"
-              placeholder="กรอกนามสกุล"
+              placeholder="กรอกเบอร์มือถือ"
               id="mobilephone"
-              v-model.trim="profile.mobilephone"
+              v-model.trim="profile.parentMobilephone2"
+              maxlength="10"
             />
-          </div> -->
+          </div>
         </div>
       </div>
 
@@ -495,12 +513,12 @@
         <div class="col-lg-6">
           <div class="form-group">
             <label for="email" class="text-success"
-              ><span class="text-danger">*</span>ตรอก/ซอย
+              >ตรอก/ซอย
             </label>
             <input
               type="email"
               class="form-control"
-              placeholder="ตรอก/ซอย"
+              placeholder="ไม่มีปล่อยว่าง"
               id="อีเมล์"
               v-model.trim="profile.address.soi"
             />
@@ -723,17 +741,19 @@ export default {
         telephone: "",
         mobilephone: "",
 
+        parentNamePrefix: "",
         parentFirstName: "",
         parentLastName: "",
+        parentAbout: "",
         parentEmail: "",
         parentMobilephone: "",
-        parentAbout: "",
 
+        parentNamePrefix2: "",
         parentFirstName2: "",
         parentLastName2: "",
+        parentAbout2: "",
         parentEmail2: "",
         parentMobilephone2: "",
-        parentAbout2: "",
 
         address: {
           addressNumber: "",
@@ -761,10 +781,10 @@ export default {
   },
 
   methods: {
-    testLog()
+    fullBirthday()
     {
       this.profile.birthday = `${this.dBirth}/${this.mBirth}/${this.yBirth}`
-      console.log(this.profile.birthday);
+      // console.log(this.profile.birthday);
     },
     uploadImage() {
       if (this.imageName != null) {
@@ -865,21 +885,26 @@ export default {
       if (
         this.profile.studentId != "" &&
         this.profile.image != "" &&
+        
         this.profile.namePrefix != "" &&
         this.profile.nickName != "" &&
         this.profile.firstName != "" &&
         this.profile.lastName != "" &&
-        this.profile.email != "" &&
         this.dBirth != "" &&
         this.mBirth != "" &&
         this.yBirth != "" &&
         this.profile.birthday != "" &&
+        this.profile.email != "" &&
         this.profile.mobilephone != "" &&
+        
+        this.profile.parentNamePrefix != "" &&
         this.profile.parentFirstName != "" &&
         this.profile.parentLastName != "" &&
+        this.profile.parentAbout != "" &&
+        this.profile.parentEmail != "" &&
         this.profile.parentMobilephone != "" &&
+
         this.profile.address.addressNumber != "" &&
-        this.profile.address.soi != "" &&
         this.profile.address.district != "" &&
         this.profile.address.amphoe != "" &&
         this.profile.address.province != "" &&
@@ -906,8 +931,8 @@ export default {
         var data = await fb
           .auth()
           .createUserWithEmailAndPassword(
-            this.profile.email,
-            this.profile.mobilephone
+            this.profile.parentEmail,
+            this.profile.parentMobilephone,
           );
         // console.log(data.user.uid);
         // this.$store.state.show = false;
@@ -937,16 +962,52 @@ export default {
         });
         this.$router.push("/admin/student");
         this.$store.state.show = false;
-      } catch (err) {
-        console.log(err);
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
-          icon: "warning",
-          confirmButtonColor: "#FF0000",
-          confirmButtonText: "ตกลง",
-        });
-        this.$store.state.show = false;
+      } catch (error) {
+        let errorCode = error.code;
+        console.log(errorCode);
+
+        if (errorCode == "auth/email-already-in-use") {
+          Swal.fire({
+            title: "Email นี้ได้ทำการถูกลงทะเบียนไว้แล้ว",
+            text: 'ทำการตรวจสอบหรือสมัครด้วย "Email" อื่น',
+            icon: "error",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+        } else if (errorCode == "auth/weak-password") {
+          Swal.fire({
+            title: "กรอกรหัสผ่าน 10 ตัวอักษร",
+            text: "กรอกรหัสผ่าน 10 ตัวอักษร",
+            confirmButtonColor: "#FF0000",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        } else if (errorCode == "auth/network-request-failed") {
+          Swal.fire({
+            title: "ไม่มีการเชื่อมต่อ INTERNET",
+            text: "ทำการเชื่อมต่อ internet ของท่านให้เรียบร้อย",
+            confirmButtonColor: "#FF0000",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        } else if (errorCode == "auth/invalid-email") {
+          Swal.fire({
+            title: "E-mail ไม่ถูกต้อง",
+            text: "รูปแบบ email ไม่ถูกต้อง",
+            confirmButtonColor: "#FF0000",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+          });
+        } else {
+          Swal.fire({
+            title: "คุณใส่ข้อมูลไม่ถูกต้อง",
+            text: "ทำการตรวจสอบอีกครั้ง",
+            icon: "error",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+        }
+        this.$store.state.show = false
       }
 
       // var addFunctions = functions.httpsCallable("StudentData");
