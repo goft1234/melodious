@@ -11,14 +11,14 @@
               :showDropdowns="showDropdowns"
               v-model="pickerDates"
             >
-              <template
+              <!-- <template
                 v-slot:input="pickerDates"
                 style="min-width: 450px"
                 class="form-control"
                 >{{ pickerDates.startDate | date }} -
                 {{ pickerDates.endDate | date }}
                 <br />
-              </template>
+              </template> -->
             </date-range-picker>
             <br />
           </div>
@@ -501,11 +501,11 @@ export default {
           field: "detail",
           type: "text",
         },
-        {
-          label: "ลบ",
-          field: "delete",
-          type: "text",
-        },
+        // {
+        //   label: "ลบ",
+        //   field: "delete",
+        //   type: "text",
+        // },
       ],
       pickerDates: {
         startDate,
@@ -525,7 +525,6 @@ export default {
 
   created() {
     this.getInvoiceData();
-    this.getExpenseLists()
   },
 
   methods: {
@@ -561,7 +560,9 @@ export default {
               invYear: doc.data().invYear,
 
               invoiceNo: doc.data().invoiceNo,
-              invoiceTime: doc.data().invoiceTime,
+              invoiceTime: moment(doc.data().invoiceTime)
+                .add("543", "year")
+                .format("DD/MM/YYYY"),
               invoiceTimestamp: doc.data().invoiceTimestamp,
               lastName: doc.data().lastName,
               nickName: doc.data().nickName,
@@ -576,9 +577,10 @@ export default {
               productDetail: doc.data().productDetail,
               studentId: doc.data().studentId,
               subTotal: doc.data().subTotal,
-              transactionTime: moment(doc.data().transactionTime).format(
-                "DD/MM/YY HH:mm"
-              ),
+              transactionTime: moment(doc.data().transactionTime)
+                .add("543", "year")
+                .format("DD/MM/YYYY HH:mm"),
+
             };
             this.invoiceData.push(Item);
             console.log(this.invoiceData);
@@ -586,19 +588,21 @@ export default {
         });
     },
 
-    async getInvoiceDate() {
+    getInvoiceDate() {
       try {
-        var startDateFormat = moment(this.pickerDates.startDate).format("x");
+        var startDateFormat = moment(this.pickerDates.startDate).format("DD/MM/YYYY");
         console.log(startDateFormat);
-        var endDateFormat = moment(this.pickerDates.endDate).format("x");
-        await db
-          .collection("invoiceData")
-          .where("invoiceTimestamp", ">=", startDateFormat)
-          .where("invoiceTimestamp", "<=", endDateFormat)
+        var endDateFormat = moment(this.pickerDates.endDate).format("DD/MM/YYYY");
+        console.log(endDateFormat);
+        
+        db.collection("invoiceData")
+          .where("invoiceTime", ">=", startDateFormat)
+          .where("invoiceTime", "<=", endDateFormat)
           .onSnapshot((querySnapshot) => {
             this.invoiceData = [];
             querySnapshot.forEach((doc) => {
-              let Item = {
+              // if(doc.data().invoiceTime >= startDateFormat && doc.data().invoiceTime <= endDateFormat ){
+                let Item = {
                 userId: doc.data().userId,
                 docId: doc.id,
 
@@ -614,7 +618,9 @@ export default {
                 invYear: doc.data().invYear,
 
                 invoiceNo: doc.data().invoiceNo,
-                invoiceTime: doc.data().invoiceTime,
+                invoiceTime: moment(doc.data().invoiceTime)
+                .add("543", "year")
+                .format("DD/MM/YYYY"),
                 invoiceTimestamp: doc.data().invoiceTimestamp,
                 lastName: doc.data().lastName,
                 nickName: doc.data().nickName,
@@ -629,11 +635,13 @@ export default {
                 productDetail: doc.data().productDetail,
                 studentId: doc.data().studentId,
                 subTotal: doc.data().subTotal,
-                transactionTime: moment(doc.data().transactionTime).format(
-                  "DD/MM/YY HH:mm"
-                ),
+                transactionTime: moment(doc.data().transactionTime)
+                .add("543", "year")
+                .format("DD/MM/YYYY HH:mm"),
+
               };
               this.invoiceData.push(Item);
+              // }
             });
           });
       } catch (err) {
@@ -647,13 +655,6 @@ export default {
   },
 
   computed: {
-    // expenseTotal(){
-    //   var expense = this.expenseLists.reduce((accumulator, Item)=>{
-    //       return accumulator + Item.amount ;
-    //   },0)
-    //   return Number(expense).toLocaleString();
-    // },
-
     incomeTotal() {
       var total = this.invoiceData.reduce((accumulator, Item) => {
         return accumulator + Item.grandTotal;

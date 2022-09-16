@@ -1467,6 +1467,8 @@ export default {
       paymentType: "",
       other: null,
       note: '',
+      
+      userStatus : null,
     };
   },
 
@@ -1796,6 +1798,7 @@ export default {
             confirmButtonColor: "#FF0000",
             confirmButtonText: "ตกลง",
           });
+          this.$store.state.show = false;
         });
     },
 
@@ -1994,11 +1997,29 @@ export default {
         this.$store.state.show = false;
       }
     },
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
+    }
   },
 
   created() {
     this.getStudentData();
     this.getProducts();
+    this.chkStatus();
   },
 
   computed: {

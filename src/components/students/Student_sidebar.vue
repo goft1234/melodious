@@ -32,7 +32,7 @@
               <div class="sidebar-menu">
                 <ul class="mt-3">
                   <li class="bottom-line">
-                    <router-link to="/student/profil">
+                    <router-link to="/student/schedule">
                       <i class="fas fa-arrow-circle-right"></i>
                       <span @click="hide">บันทึกการเข้าเรียน</span>
                     </router-link>

@@ -39,6 +39,7 @@
 <script>
 import ApproveTeacher from "@/components/admins/ApproveTeacher.vue";
 import ApproveEmployee from "@/components/admins/ApproveEmployee.vue";
+import { fb, db } from "../../firebase";
 
 export default {
   name:'approve',
@@ -49,13 +50,36 @@ export default {
   
   data(){
     return {
-     
+     userStatus : null,
+    }
+  },
+
+  methods:{
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
     }
   },
 
   mounted(){
     window.scrollTo(0, 0);
-  }
+  },
+  created(){
+    this.chkStatus();
+  },
 
 
 };

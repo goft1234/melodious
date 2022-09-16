@@ -508,7 +508,7 @@
 </template>
 
 <script>
-import { db } from "../../firebase";
+import {fb, db } from "../../firebase";
 export default {
   name: "addcourse",
 
@@ -579,6 +579,8 @@ export default {
         teacherRate: "",
         entranceRate: "",
       },
+
+      userStatus: null,
     };
   },
   methods: {
@@ -732,6 +734,27 @@ export default {
         });
       });
     },
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
+    }
+  },
+
+  created(){
+    this.chkStatus()
   },
 
   mounted() {

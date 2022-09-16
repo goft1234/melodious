@@ -9,6 +9,7 @@ export default new Vuex.Store({
     page:'',
     show:false,
     carts:null,
+    webRole : null,
   },
   getters: {
   },

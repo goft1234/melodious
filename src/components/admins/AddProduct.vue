@@ -222,7 +222,7 @@
 </template>
 
 <script>
-import { db } from "../../firebase";
+import { fb,db } from "../../firebase";
 export default {
   name: "addProduct",
 
@@ -276,6 +276,8 @@ export default {
       products: [],
       product: {},
       productMode: ["หนังสือ","อุปกรณ์ดนตรี","อุปกรณ์การเรียน","ค่าสอบ","อื่นๆ"],
+
+      userStatus : null,
     };
   },
   methods: {
@@ -387,12 +389,34 @@ export default {
         });
       });
     },
+
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
+    }
   },
 
   mounted() {
     this.getProducts();
     window.scrollTo(0, 0);
   },
+
+  created(){
+    this.chkStatus();
+  }
 };
 </script>
 

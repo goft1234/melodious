@@ -31,6 +31,21 @@ const routes = [
     component: () => import('../components/admins/AssessClipboard.vue')
   },
   {
+    path: '/assess2/:uid',
+    name: 'assess2',
+    component: () => import('../components/admins/AssessClipboard2.vue')
+  },
+  {
+    path: '/assessresult1/:uid',
+    name: 'assessresult',
+    component: () => import('../components/admins/AsssessResult1.vue')
+  },
+  {
+    path: '/assessresult2/:uid',
+    name: 'assessresul2',
+    component: () => import('../components/admins/AsssessResult2.vue')
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: () => import('../views/Profile'),
@@ -127,6 +142,16 @@ const routes = [
         path: 'attendance',
         name: 'attendance',
         component: () => import('../components/admins/Attendance.vue')
+      },
+      {
+        path: 'attendanceday',
+        name: 'attendanceday',
+        component: () => import('../components/admins/AttendanceDay.vue')
+      },
+      {
+        path: 'attendanceresult',
+        name: 'attendanceresult',
+        component: () => import('../components/admins/AttendanceResult.vue')
       },
       {
         path: 'assessment',

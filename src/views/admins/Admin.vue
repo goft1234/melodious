@@ -18,14 +18,30 @@ export default {
     adminSidebar,
   },
   data() {
-    return {};
+    return {
+      userStatus : null,
+    };
   },
 
   mounted() {
     // this.$store.state.namePrefix = "fsefsefsef" ;
   },
 
-  methods: {},
+  methods: {
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      } 
+      console.log(claims);
+    }
+  },
+
+  created(){
+    this.chkStatus();
+  },
 };
 </script>
 

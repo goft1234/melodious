@@ -1007,17 +1007,12 @@ export default {
         },
         {
           label: "เวลาเรียน",
-          field: "startTime",
+          field: "classTime",
           type: "text",
         },
         {
           label: "ข้อมูล",
           field: "attendance",
-          type: "text",
-        },
-        {
-          label: "delete",
-          field: "delete",
           type: "text",
         },
       ],
@@ -1120,13 +1115,22 @@ export default {
       // console.log(this.commentClass);
       try {
         this.$store.state.show = true;
-        var batch = db.batch();
-
-        await db.collection("AttendanceHistory").doc(classToday.docId).update({
-          commentClass: this.commentClass,
-          attendancePic: this.license.attendancePic,
-          chkOut : true,
-        });
+        
+        let year = moment().year();
+        let month = moment().month() + 1
+        let monthlyDay = `${year}-0${month}`;
+        await db
+          .collection("AttendanceHistory")
+          .doc(classToday.docId)
+          .update({
+            commentClass: this.commentClass,
+            attendancePic: this.license.attendancePic,
+            chkOut: true,
+            dayOfMonth: moment().date(),
+            month: moment().month() + 1,
+            year: moment().year(),
+            monthlyDay : monthlyDay,
+          });
 
         await db.collection("expenseTable").add({
           amount: classToday.wages,
@@ -1257,6 +1261,7 @@ export default {
                 teacherAtclass: doc.data().teacherAtclass,
                 wages: doc.data().wages,
               };
+              classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
               this.classrooms.push(classroom);
               console.log(this.classrooms);
             }
@@ -1579,7 +1584,7 @@ export default {
                 commentClass: doc.data().commentClass,
                 attendancePic: doc.data().attendancePic,
                 wages: doc.data().wages,
-                chkOut : doc.data().chkOut,
+                chkOut: doc.data().chkOut,
               };
               this.classToday.push(classHis);
             }
@@ -1659,7 +1664,7 @@ export default {
                   wages: doc.data().wages,
                   chkOut: doc.data().chkOut,
                 };
-
+                classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
                 this.classrooms.push(classroom);
                 console.log(this.classrooms);
               }

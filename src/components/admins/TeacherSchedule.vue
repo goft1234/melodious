@@ -1007,7 +1007,7 @@ export default {
         },
         {
           label: "เวลาเรียน",
-          field: "startTime",
+          field: "classTime",
           type: "text",
         },
         {
@@ -1015,11 +1015,11 @@ export default {
           field: "attendance",
           type: "text",
         },
-        {
-          label: "delete",
-          field: "delete",
-          type: "text",
-        },
+        // {
+        //   label: "delete",
+        //   field: "delete",
+        //   type: "text",
+        // },
       ],
       profiles: [],
       courseNameTemplate: [],
@@ -1246,6 +1246,7 @@ export default {
                 teacherAtclass: doc.data().teacherAtclass,
                 wages: doc.data().wages,
               };
+              classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
               this.classrooms.push(classroom);
               console.log(this.classrooms);
             }
@@ -1290,6 +1291,7 @@ export default {
               startTime: doc.data().startTime,
               remain : doc.data().remain,
             };
+            // detail.classTime = `${detail.startTime} - ${detail.finishTime}`;
             this.stdInClass.push(detail);
           });
         })
@@ -1567,6 +1569,7 @@ export default {
               commentClass: doc.data().commentClass,
               attendancePic: doc.data().attendancePic,
             };
+            // classHis.classTime = `${courseActive.startTime} - ${courseActive.finishTime}`;
             this.classToday.push(classHis);
             // this.classHistory.reverse();
           });
@@ -1642,6 +1645,7 @@ export default {
                   teacherAtclass: doc.data().teacherAtclass,
                   wages: doc.data().wages,
                 };
+                classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
                 this.classrooms.push(classroom);
                 console.log(this.classrooms);
               }

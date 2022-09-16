@@ -92,10 +92,21 @@
                 <h6>{{ item.studentId }}</h6>
               </div>
             </span>
-            <span v-else-if="props.column.field == 'check'">
-              <div class="btn btn-success" @click="stdAttend(props.row)">
-                <i class="fas fa-check-circle"></i>
-              </div>
+            <span v-else-if="props.column.field == 'classStatus'">
+              <select
+                @change="changeClassStatus(props.row.classId, $event)"
+                class="custom-select"
+              >
+                <option :selected="props.row.classStatus.isOpen" value="isOpen">
+                  เปิดสอน
+                </option>
+                <option
+                  :selected="props.row.classStatus.isClose"
+                  value="isClose"
+                >
+                  จบคอร์ส
+                </option>
+              </select>
             </span>
             <span v-else-if="props.column.field == 'delete'">
               <div class="btn btn-danger" @click="deleteTeacher(props.row.uid)">
@@ -1272,15 +1283,15 @@ export default {
           type: "text",
         },
         {
+          label: "สถานะ",
+          field: "classStatus",
+          type: "text",
+        },
+        {
           label: "บันทึก",
           field: "attendance",
           type: "text",
         },
-        // {
-        //   label: "เช็คชื่อเข้าเรียน",
-        //   field: "check",
-        //   type: "text",
-        // },
         {
           label: "delete",
           field: "delete",
@@ -1327,7 +1338,7 @@ export default {
         amount: 12,
         classType: "",
         courseName: "",
-        createdAt: "",
+        createdAt: Date.now(),
         dayAttend: "",
         endDate: "",
         finishTime: "",
@@ -1338,6 +1349,8 @@ export default {
         studentAtClass: [],
         teacherAtclass: "",
         wages: 0,
+
+        classStatus: false,
 
         nowDate: Date.now(),
       },
@@ -1368,6 +1381,8 @@ export default {
       setDaySelect: "",
       // https://via.placeholder.com/300x200
       attendancePic: "https://via.placeholder.com/300x200",
+
+      userStatus:null,
     };
   },
 
@@ -1379,9 +1394,10 @@ export default {
         let day = parseInt(this.setDaySelect);
         let refDay;
         if (day == 0) {
-          refDay = db
-            .collection("classroom")
-            .orderBy("dayAttend.dayNum", "desc");
+          location.reload();
+          // refDay = db
+          //   .collection("classroom")
+          //   .orderBy("dayAttend.dayNum", "desc");
         } else {
           refDay = db
             .collection("classroom")
@@ -1394,33 +1410,35 @@ export default {
         refDay.onSnapshot((querySnapshot) => {
           this.classrooms = [];
           querySnapshot.forEach((doc) => {
-            // if(!doc.data().role.isAdmin)
-            // {
-            // console.log(doc.data());
-            let classroom = {
-              nowDate: moment().format("ll"),
-              classId: doc.id,
+            if (doc.data().classStatus.isOpen) {
+              let classroom = {
+                nowDate: moment().format("ll"),
+                classId: doc.id,
 
-              amount: doc.data().amount,
-              classType: doc.data().classType,
-              courseName: doc.data().courseName,
-              createdAt: doc.data().createdAt,
-              dayAttend: doc.data().dayAttend,
-              endDate: doc.data().endDate,
-              finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
-                "HH:mm"
-              ),
-              level: doc.data().level,
-              rate: doc.data().rate,
-              startDate: doc.data().startDate,
-              startTime: moment(doc.data().startTime, "HH:mm:ss").format(
-                "HH:mm"
-              ),
-              studentAtClass: doc.data().student,
-              teacherAtclass: doc.data().teacherAtclass,
-              wages: doc.data().wages,
-            };
-            this.classrooms.push(classroom);
+                amount: doc.data().amount,
+                classType: doc.data().classType,
+                courseName: doc.data().courseName,
+                createdAt: doc.data().createdAt,
+                dayAttend: doc.data().dayAttend,
+                endDate: doc.data().endDate,
+                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
+                level: doc.data().level,
+                rate: doc.data().rate,
+                startDate: doc.data().startDate,
+                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
+                  "HH:mm"
+                ),
+                studentAtClass: doc.data().student,
+                teacherAtclass: doc.data().teacherAtclass,
+                wages: doc.data().wages,
+                classStatus: doc.data().classStatus,
+              };
+              classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
+              this.classrooms.push(classroom);
+            }
+
             console.log(this.classrooms);
             this.$store.state.show = false;
           });
@@ -1462,7 +1480,7 @@ export default {
                 .add(543, "year")
                 .format("LL"),
               startTime: doc.data().startTime,
-              remain : doc.data().remain,
+              remain: doc.data().remain,
             };
             this.stdInClass.push(detail);
           });
@@ -1632,7 +1650,7 @@ export default {
         amount: 12,
         classType: "",
         courseName: "",
-        createdAt: "",
+        createdAt: moment().format("x"),
         dayAttend: "",
         endDate: "",
         finishTime: "",
@@ -1715,6 +1733,36 @@ export default {
         });
     },
 
+    changeClassStatus(classId, event) {
+      // console.log(event.target.value);
+      // console.log(classId);
+      // db.collection("classroom")
+      //   .doc(docId)
+      //   .update({ classStatus: event.target.value });
+      try{
+        db.collection("classroom")
+        .doc(classId)
+        .update({classStatus : {[event.target.value]: true}});
+
+         Swal.fire({
+              title: "ทำการปรับสถานะเรียบร้อย",
+              text: "Admin ได้ทำการปรับสถานะ แล้วเรียบร้อย",
+              icon: "success",
+              confirmButtonColor: "#30855c",
+              confirmButtonText: "ตกลง",
+            });
+            this.$store.state.show = false;
+      }catch(err){
+        Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "เกิดข้อผิดพลาดที่ระบบ กรุณาลองใหม่อีกครั้ง",
+            icon: "warning",
+            confirmButtonColor: "#FF0000",
+            confirmButtonText: "ตกลง",
+          });
+      }
+    },
+
     fullProfile(detail) {
       // alert(profile.firstName);
       // console.log(detail.classId);
@@ -1784,6 +1832,7 @@ export default {
         var date = moment().isoWeekday();
         // console.log(date);
         db.collection("classroom")
+          .orderBy("createdAt", "asc")
           // .where("day.dayNum", "==", date)
           // .where("amount", ">=", 1)
           .onSnapshot((querySnapshot) => {
@@ -1792,32 +1841,36 @@ export default {
               // if(!doc.data().role.isAdmin)
               // {
               // console.log(doc.data());
-              let classroom = {
-                nowDate: moment().format("ll"),
-                classId: doc.id,
+              // if (doc.data().classStatus.isOpen) {
+                let classroom = {
+                  nowDate: moment().format("ll"),
+                  classId: doc.id,
 
-                amount: doc.data().amount,
-                classType: doc.data().classType,
-                courseName: doc.data().courseName,
-                createdAt: doc.data().createdAt,
-                dayAttend: doc.data().dayAttend,
-                endDate: doc.data().endDate,
-                finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
-                  "HH:mm"
-                ),
-                level: doc.data().level,
-                rate: doc.data().rate,
-                startDate: doc.data().startDate,
-                startTime: moment(doc.data().startTime, "HH:mm:ss").format(
-                  "HH:mm"
-                ),
-                studentAtClass: doc.data().student,
-                teacherAtclass: doc.data().teacherAtclass,
-                wages: doc.data().wages,
-              };
-              classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
-              this.classrooms.push(classroom);
+                  amount: doc.data().amount,
+                  classType: doc.data().classType,
+                  courseName: doc.data().courseName,
+                  createdAt: doc.data().createdAt,
+                  dayAttend: doc.data().dayAttend,
+                  endDate: doc.data().endDate,
+                  finishTime: moment(doc.data().finishTime, "HH:mm:ss").format(
+                    "HH:mm"
+                  ),
+                  level: doc.data().level,
+                  rate: doc.data().rate,
+                  startDate: doc.data().startDate,
+                  startTime: moment(doc.data().startTime, "HH:mm:ss").format(
+                    "HH:mm"
+                  ),
+                  studentAtClass: doc.data().student,
+                  teacherAtclass: doc.data().teacherAtclass,
+                  wages: doc.data().wages,
+                  classStatus: doc.data().classStatus,
+                };
+                classroom.classTime = `${classroom.startTime} - ${classroom.finishTime}`;
+                this.classrooms.push(classroom);
+              // }
               console.log(this.classrooms);
+              this.$store.state.show = false;
             });
             this.$store.state.show = false;
           });
@@ -1826,6 +1879,24 @@ export default {
         this.$store.state.show = false;
       }
     },
+
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
+    }
   },
 
   // computed: {
@@ -1849,6 +1920,10 @@ export default {
     this.getClassroom();
     window.scrollTo(0, 0);
     // this.getData();
+  },
+
+  created(){
+    this.chkStatus();
   },
 };
 </script>

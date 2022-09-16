@@ -11,7 +11,7 @@
                 type="month"
                 class="form-control"
                 v-model="monthSelect"
-                @change="getDatetest()"
+                @change="getDateFormMonth()"
               />
             </div>
           </div>
@@ -115,37 +115,37 @@
                     <tbody>
                       <tr>
                         <td>ค่าคอร์สเรียน</td>
-                        <td><h5 class="text-success">{{ classPriceTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ classPriceTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าหนังสือ</td>
-                        <td><h5 class="text-success">{{ bookTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ bookTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าอุปกรณ์ดนตรี</td>
-                        <td><h5 class="text-success">{{ instrumentTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ instrumentTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าอุปกรณ์ดนตรี</td>
-                        <td><h5 class="text-success">{{ equipmentTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ equipmentTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าแรกเข้า</td>
-                        <td><h5 class="text-success">{{ feeTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ feeTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>รายได้อื่นๆ</td>
-                        <td><h5 class="text-success">{{ otherTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ otherTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าสอบ</td>
-                        <td><h5 class="text-success">{{ examTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ examTotal | number("0,0") }}</h5> </td>
                       </tr>
                     </tbody>
                   </table>
@@ -191,92 +191,92 @@
                     <tbody>
                       <tr>
                         <td>สาธารณูปโภค</td>
-                        <td><h5 class="text-success">{{ utilitiesTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ utilitiesTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าเครื่องเขียน</td>
-                        <td><h5 class="text-success">{{ deviceTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ deviceTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าอุปกรณ์การสอน</td>
-                        <td><h5 class="text-success">{{ teachingTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ teachingTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าเครื่องใช้สำนักงาน</td>
-                        <td><h5 class="text-success">{{ officeTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ officeTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าโฆษณา</td>
-                        <td><h5 class="text-success">{{ advertiseTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ advertiseTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าสอนครู</td>
-                        <td><h5 class="text-success">{{ teachEarnTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ teachEarnTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>เงินเดือนเจ้าหน้าที่</td>
-                        <td><h5 class="text-success">{{ employeeEarnTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ employeeEarnTotal | number("0,0") }}</h5> </td>
                       </tr>
                         <!--  -->
                       <tr>
                         <td>ค่าสวัสดิการครู/เจ้าหน้าที่</td>
-                        <td><h5 class="text-success">{{ welfareTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ welfareTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าธรรมเนียมธนาคาร</td>
-                        <td><h5 class="text-success">{{ bankfeeTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ bankfeeTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าธรรมเนียมอื่นๆ</td>
-                        <td><h5 class="text-success">{{ otherfeeTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ otherfeeTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าเงินประกัน</td>
-                        <td><h5 class="text-success">{{ securityTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ securityTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าค่าเช่า</td>
-                        <td><h5 class="text-success">{{ forrentTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ forrentTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าซ่อมบำรุง</td>
-                        <td><h5 class="text-success">{{ maintenanceTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ maintenanceTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าจ้างแรงงานทั่วไปรายครั้ง</td>
-                        <td><h5 class="text-success">{{ wagesWorkerTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ wagesWorkerTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่ากิจกรรม/คอนเสิร์ต</td>
-                        <td><h5 class="text-success">{{ activityTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ activityTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าเดินทาง</td>
-                        <td><h5 class="text-success">{{ travelTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ travelTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าสอบเกรด</td>
-                        <td><h5 class="text-success">{{ testTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ testTotal | number("0,0") }}</h5> </td>
                       </tr>
 
                       <tr>
                         <td>ค่าเครื่องดนตรี</td>
-                        <td><h5 class="text-success">{{ instrumentTotal }}</h5> </td>
+                        <td><h5 class="text-success">{{ instrumentTotal | number("0,0") }}</h5> </td>
                       </tr>
                     </tbody>
                   </table>
@@ -321,6 +321,94 @@ export default {
   },
 
   methods: {
+    getDateFormMonth(){
+      // console.log(this.monthSelect);
+      this.getIncomeFromMonth()
+      this.getExpenseFromMonth()
+    },
+
+    getIncomeFromMonth(){
+      try {
+          db.collection("summarize")
+          .where("monthlyDay", "==", this.monthSelect)
+          .onSnapshot((querySnapshot) => {
+            this.Items = [];
+            querySnapshot.forEach((doc) => {
+              let Item = {
+                docId: doc.id,
+                book: doc.data().book,
+                classPriceTotal: doc.data().classPriceTotal,
+                courseTotal: doc.data().courseTotal,
+                equipmentTotal: doc.data().equipmentTotal,
+                examTotal: doc.data().examTotal,
+                fee: doc.data().fee,
+                instrumentTotal: doc.data().instrumentTotal,
+                invDayOfMonth: doc.data().invDayOfMonth,
+                invMonth: doc.data().invMonth,
+                invYear: doc.data().invYear,
+                otherTotal: doc.data().otherTotal,
+                sumTotal: doc.data().sumTotal,
+              };
+              // Item.fullDate = `${invDayOfMonth}/${invMonth}/${invYear}`
+              this.Items.push(Item);
+              // console.log(this.Items);
+              this.summarizeInvoice(this.Items)
+            });
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    getExpenseFromMonth(){
+      try {
+         db.collection("summarizeExpense")
+          .where("monthlyDay", "==", this.monthSelect)
+          .onSnapshot((querySnapshot) => {
+            this.expenseLists = [];
+            querySnapshot.forEach((doc) => {
+              let expenseList = {
+                docId: doc.id,
+
+                utilities: doc.data().utilities,
+                device: doc.data().device,
+                teaching: doc.data().teaching,
+                office: doc.data().office,
+                advertise: doc.data().advertise,
+                teachEarn: doc.data().teachEarn,
+                employeeEarn: doc.data().employeeEarn,
+                welfare: doc.data().welfare,
+                service: doc.data().service,
+                bankfee: doc.data().bankfee,
+
+                otherfee: doc.data().otherfee,
+                security: doc.data().security,
+                forrent: doc.data().forrent,
+                maintenance: doc.data().maintenance,
+                wagesWorker: doc.data().wagesWorker,
+                activity: doc.data().activity,
+                travel: doc.data().travel,
+                test: doc.data().test,
+                instrument: doc.data().instrument,
+
+                invDayOfMonth: doc.data().invDayOfMonth,
+                invMonth: doc.data().invMonth,
+                invYear: doc.data().invYear,
+              };
+              expenseList.dayTotal = expenseList.utilities + expenseList.device + expenseList.teaching + expenseList.office
+              + expenseList.advertise + expenseList.teachEarn + expenseList.employeeEarn + expenseList.welfare 
+              + expenseList.service + expenseList.bankfee + expenseList.otherfee + expenseList.security
+              + expenseList.forrent + expenseList.maintenance + expenseList.wagesWorker + expenseList.activity
+              + expenseList.travel + expenseList.test + expenseList.instrument 
+              this.expenseLists.push(expenseList);
+              this.summarizeExpenses(this.expenseLists)
+            });
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     async getIncomeData() {
       try {
         let myYear = moment().year();
@@ -362,8 +450,7 @@ export default {
         try {
         let myYear = moment().year();
         let myMonth = moment().month() + 1;
-        await db
-          .collection("summarizeExpense")
+          db.collection("summarizeExpense")
           .where("invMonth", "==", myMonth)
           .where("invYear", "==", myYear)
           .onSnapshot((querySnapshot) => {
@@ -410,6 +497,7 @@ export default {
         console.log(err);
       }
     },
+    
     summarizeExpenses(expenseLists){
         var expenseTotal = expenseLists.reduce((acc, item) => {
         return (

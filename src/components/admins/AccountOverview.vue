@@ -1,9 +1,9 @@
 <template>
-  <div id="transaction" class="shadow">
+  <div id="transaction" class="">
     <div class="container-fluid">
       <div class="">
         <h5 class="text-center text-success mb-4 mt-3">
-          ภาพรวม รายรับ - รายจ่าย
+         สรุป รายรับ - รายจ่าย ทั้งหมด
         </h5>
         <div class="row">
           <div class="col-md-12 mb-3">
@@ -30,12 +30,11 @@
                     style="font-size: 50px"
                   ></i>
                   <h4 class="card-text my-4 text-primary text-center">
-                    จำนวน {{ incomeTotal }} บาท
+                    จำนวน {{ incomeTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="bg- shadow">
                     <button
-                      to="/user/withdrawWeb"
                       class="btn btn-success btn-block text-light"
                       data-toggle="modal"
                       data-target="#incomeModal"
@@ -57,7 +56,7 @@
                     style="font-size: 50px"
                   ></i>
                   <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ expenseTotal }} บาท
+                    จำนวน {{ expenseTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="bg- shadow">
@@ -83,7 +82,7 @@
                     style="font-size: 50px"
                   ></i>
                   <h4 class="card-text my-4 text-dark text-center">
-                    จำนวน {{ balance }} บาท
+                    จำนวน {{ balance | number("0,0") }} บาท
                   </h4>
 
                   <div class="card-header bg-dark shadow">
@@ -571,7 +570,7 @@
 </template>
 
 <script>
-import { db } from "../../firebase";
+import { fb, db } from "../../firebase";
 import DateRangePicker from "vue2-daterange-picker";
 //you need to import the CSS manually
 import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
@@ -591,8 +590,8 @@ export default {
       },
       expenseColumns: [
         {
-          label: "วันที่",
-          field: "date",
+          label: "วันที่ - เวลา",
+          field: "datetime",
           type: "text",
         },
         {
@@ -675,6 +674,8 @@ export default {
       billingDetail: {},
       carts: [],
       sumCourse: [],
+
+      userStatus: null,
     };
   },
 
@@ -686,20 +687,23 @@ export default {
     },
 
     getExpenseLists() {
-      db.collection("expenseTable").onSnapshot((querySnapshot) => {
-        this.expenseLists = [];
-        querySnapshot.forEach((doc) => {
-          let expenseList = {
-            date: doc.data().date,
-            type: doc.data().type,
-            list: doc.data().list,
-            amount: doc.data().amount,
-            docId: doc.id,
-          };
-          this.expenseLists.push(expenseList);
-          console.log(this.expenseLists);
+      db.collection("expenseTable")
+        .orderBy("timeStamp", "desc")
+        .onSnapshot((querySnapshot) => {
+          this.expenseLists = [];
+          querySnapshot.forEach((doc) => {
+            let expenseList = {
+              date: doc.data().date,
+              datetime: doc.data().datetime,
+              type: doc.data().type,
+              list: doc.data().list,
+              amount: doc.data().amount,
+              docId: doc.id,
+            };
+            this.expenseLists.push(expenseList);
+            console.log(this.expenseLists);
+          });
         });
-      });
     },
 
     getData() {
@@ -725,13 +729,15 @@ export default {
               grandTotal: doc.data().grandTotal,
               fee: doc.data().fee,
               payforDetail: doc.data().payforDetail,
-              invoiceTime: doc.data().invoiceTime,
+              invoiceTime: moment(doc.data().invoiceTime)
+                .add("543", "year")
+                .format("DD/MM/YYYY"),
               note: doc.data().note,
               payBy: doc.data().payBy,
               paymentFor: doc.data().paymentFor,
-              transactionTime: moment(doc.data().transactionTime).format(
-                  "DD/MM/YY HH:mm"
-                ),
+              transactionTime: moment(doc.data().transactionTime)
+                .add("543", "year")
+                .format("DD/MM/YYYY HH:mm"),
 
               other: doc.data().other,
               docId: doc.id,
@@ -741,6 +747,26 @@ export default {
           });
         });
     },
+
+    async chkStatus() {
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if (claims.isAdmin) {
+        this.userStatus = "isAdmin";
+      } else if (claims.isAssistant) {
+        this.$router.replace("/admin/approve");
+      } else if (claims.isRegisted) {
+        this.$router.replace("/");
+      } else if (claims.isProfile) {
+        this.$router.replace("/");
+      } else if (claims.isTeacher) {
+        this.$router.replace("/");
+      } else if (claims.isStudent) {
+        this.$router.replace("/");
+      }
+      console.log(claims);
+    },
   },
 
   mounted() {
@@ -748,7 +774,11 @@ export default {
     this.getData();
     window.scrollTo(0, 0);
   },
-  
+
+  created() {
+    this.chkStatus();
+  },
+
   filters: {
     date(date) {
       return new Intl.DateTimeFormat("th-TH").format(date);
@@ -760,36 +790,21 @@ export default {
       var expense = this.expenseLists.reduce((accumulator, Item) => {
         return accumulator + parseInt(Item.amount);
       }, 0);
-      return Number(expense).toLocaleString();
-    },
-
-    incomeTotal() {
-      var total = this.invoiceData.reduce((accumulator, Item) => {
-        return accumulator + Item.grandTotal;
-      }, 0);
-      // console.log(total);
-      return Number(total).toLocaleString();
-    },
-
-    expenseTotal2() {
-      var expense = this.expenseLists.reduce((accumulator, Item) => {
-        return accumulator + parseInt(Item.amount);
-      }, 0);
       return expense;
     },
 
-    incomeTotal2() {
-      var total = this.invoiceData.reduce((accumulator, Item) => {
+    incomeTotal() {
+      var income = this.invoiceData.reduce((accumulator, Item) => {
         return accumulator + parseInt(Item.grandTotal);
       }, 0);
       // console.log(total);
-      return total;
+      return income;
     },
 
     balance() {
-      var balance = parseInt(this.incomeTotal2) - parseInt(this.expenseTotal2);
-      console.log(balance);
-      return Number(balance).toLocaleString();
+      var balance = parseInt(this.incomeTotal) - parseInt(this.expenseTotal);
+      // console.log(balance);
+      return balance;
     },
 
     subTotal() {

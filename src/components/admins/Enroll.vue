@@ -1035,6 +1035,23 @@ export default {
       //     this.$store.state.show = false;
       //   });
     },
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        let userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
+    }
   },
 
   mounted() {
@@ -1043,6 +1060,7 @@ export default {
 
   created() {
     this.getStudentId();
+    this.chkStatus();
   },
 };
 </script>

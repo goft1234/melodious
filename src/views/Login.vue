@@ -124,12 +124,17 @@ export default {
             // alert('isProfile')
           } else if (claims.isAdmin) {
             this.$router.replace("/admin/approve");
-            // alert('admin')
+            // this.$store.state.webRole = 'isAdmin'
+            // alert(this.$store.state.webRole)
+          } else if (claims.isAssistant) {
+            this.$router.replace("/admin/approve");
+            // this.$store.state.webRole = 'isAssistant'
+            // alert(this.$store.state.webRole)
           }else if (claims.isTeacher) {
             this.$router.replace("/teacher/schedule");
             // alert('admin')
           }else if (claims.isStudent) {
-            this.$router.replace("/student/profile");
+            this.$router.replace("/student/schedule");
             // alert('student')
           }
           else{

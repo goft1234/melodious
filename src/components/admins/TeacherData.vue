@@ -40,11 +40,33 @@
             </span>
             <span v-else-if="props.column.field == 'status'">
               <select
+                v-if="userStatus != 'isAdmin'"
                 @change="changeStatus(props.row.uid, $event)"
                 class="custom-select"
+                disabled
               >
                 <option :selected="props.row.role.isTeacher" value="isTeacher">
                   ครู - อาจารย์
+                </option>
+                <option :selected="props.row.role.isAssistant" value="isAssistant">
+                  Assistant-(ผู้ช่วยแอ็ดมิน)
+                </option>
+                <option :selected="props.row.role.isAdmin" value="isAdmin">
+                  Admin-(แอ็ดมิน)
+                </option>
+              </select>
+
+              <select
+                v-else
+                @change="changeStatus(props.row.uid, $event)"
+                class="custom-select"
+                
+              >
+                <option :selected="props.row.role.isTeacher" value="isTeacher">
+                  ครู - อาจารย์
+                </option>
+                <option :selected="props.row.role.isAssistant" value="isAssistant">
+                  Assistant-(ผู้ช่วยแอ็ดมิน)
                 </option>
                 <option :selected="props.row.role.isAdmin" value="isAdmin">
                   Admin-(แอ็ดมิน)
@@ -588,6 +610,7 @@ export default {
       disabled: 0,
       editPass: "123456",
       allow: false,
+      userStatus : null,
     };
   },
 
@@ -595,7 +618,6 @@ export default {
     changeStatus(uid, event) {
       var addMessage = functions.httpsCallable("changeTeacherToAdmin");
       var data = { uid: uid, role: { [event.target.value]: true } };
-      // console.log(data);
       addMessage(data)
         .then((result) => {
           console.log(result);
@@ -718,7 +740,7 @@ export default {
               // if(!doc.data().role.isAdmin)
               // {
               // console.log(doc.data());
-              if(doc.data().role.isAdmin || doc.data().role.isTeacher)
+              if(doc.data().role.isAdmin || doc.data().role.isTeacher || doc.data().role.isAssistant)
               {
                 let profile = {
                 uid: doc.id,
@@ -818,12 +840,34 @@ export default {
           this.editPass = doc.data().password;
         });
     },
+
+    async chkStatus(){
+      await fb.auth().onAuthStateChanged;
+      var { claims } = await fb.auth().currentUser.getIdTokenResult();
+
+      if(claims.isAdmin){
+        this.userStatus = 'isAdmin'
+      }else if(claims.isRegisted){
+        this.$router.replace("/");
+      }else if(claims.isProfile){
+        this.$router.replace("/");
+      }else if(claims.isTeacher){
+        this.$router.replace("/");
+      }else if(claims.isStudent){
+        this.$router.replace("/");
+      }   
+      console.log(claims);
+    }
   },
 
   mounted() {
     window.scrollTo(0, 0);
     this.getData();
     this.getEditPassword();
+  },
+
+  created(){
+    this.chkStatus();
   },
 };
 </script>

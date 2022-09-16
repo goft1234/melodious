@@ -12,7 +12,7 @@
             @change="setPage()"
           >
             <option disabled value="">เลือกเพื่อดูข้อมูลบัญชี</option>
-            <option value="expense">ระบบบันทึกค่าใช้จ่าย</option>
+            <!-- <option value="expense">ระบบบันทึกค่าใช้จ่าย</option> -->
             <option value="overview">ภาพรวมทั้งหมด</option>
             <option value="incomeday">รายรับ - รายวัน</option>
             <option value="incomemonth">รายรับ - รายเดือน</option>

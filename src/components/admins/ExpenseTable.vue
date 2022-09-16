@@ -2,28 +2,52 @@
   <div id="addcourse">
     <div class="my-3">
       <h4 class="text-center text-success mb-4">บันทึกรายจ่าย</h4>
+      <div class="row transaction">
+        <div class="col-md-12">
+          <date-range-picker
+            :single-date-picker="singleDatePicker"
+            @update="getExpenseDate"
+            :showDropdowns="showDropdowns"
+            v-model="pickerDates"
+          >
+            <!-- <template
+                v-slot:input="pickerDates"
+                style="min-width: 450px"
+                class="form-control"
+                >{{ pickerDates.startDate | date }} -
+                {{ pickerDates.endDate | date }}
+                <br />
+              </template> -->
+          </date-range-picker>
+          <br />
+        </div>
+      </div>
+      
       <div class="row">
-          <div class="col-md-4"></div>
-          <div class="col-md-4">
-            <div class="card-deck text-center">
-              <div class="card">
-                <div class="card-body">
-                  <div class="card-header bg-danger shadow">
-                    <h5 class="text-light text-center">รายจ่ายทั้งหมด</h5>
-                  </div>
-                  <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
-                  <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ incomeTotal }} บาท
-                  </h4>
-                  <div class="card-header bg-danger shadow">
-                    <h5 class="text-light text-center"></h5>
-                  </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <div class="card-deck text-center">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-header bg-danger shadow">
+                  <h5 class="text-light text-center">รายจ่ายทั้งหมด</h5>
+                </div>
+                <i
+                  class="fas fa-wallet mt-4 text-danger"
+                  style="font-size: 50px"
+                ></i>
+                <h4 class="card-text my-4 text-danger text-center">
+                  จำนวน {{ expenseTotal | number("0,0") }} บาท
+                </h4>
+                <div class="card-header bg-danger shadow">
+                  <h5 class="text-light text-center"></h5>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-md-4"></div>
         </div>
+        <div class="col-md-4"></div>
+      </div>
       <div class="row">
         <div class="col-12">
           <button
@@ -214,18 +238,54 @@
 </template>
 
 <script>
-import { db } from "../../firebase";
+import {fb, db } from "../../firebase";
+import DateRangePicker from "vue2-daterange-picker";
+import "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import moment from "moment";
 
 export default {
   name: "addcourse",
-
+  components: { DateRangePicker },
   data() {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 6);
     return {
+      singleDatePicker: "range",
+      showDropdowns: true,
+      localeData: {
+        direction: "ltr",
+        format: "DD/MM/YYYY",
+        separator: " - ",
+        applyLabel: "Apply",
+        cancelLabel: "Cancel",
+        weekLabel: "W",
+        customRangeLabel: "Custom Range",
+        daysOfWeek: ["อา", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        monthNames: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        firstDay: 0,
+      },
+      pickerDates: {
+        startDate,
+        endDate,
+      },
       columns: [
         {
-          label: "วันที่",
-          field: "date",
+          label: "วันที่ - เวลา",
+          field: "datetime",
           type: "text",
         },
         {
@@ -280,14 +340,20 @@ export default {
       ],
       expenseLists: [],
       expenseList: {
-        date: moment().add("543", "year").format("DD/MM/YYYY HH:mm"),
+        date: moment().add("543", "year").format("DD/MM/YYYY"),
+        datetime: moment().add("543", "year").format("DD/MM/YYYY HH:mm"),
         type: "",
         list: "",
         amount: null,
         docId: "",
-        timeStamp : moment().format('x'),
+        timeStamp: moment().format("x"),
       },
     };
+  },
+  filters: {
+    date(date) {
+      return new Intl.DateTimeFormat("th-TH").format(date);
+    },
   },
   methods: {
     // getItemdataTemplate() {
@@ -328,6 +394,37 @@ export default {
     //       // { merge: true }
     //     );
     // },
+    async getExpenseDate(){
+      try {
+        var startDateFormat = moment(this.pickerDates.startDate).add('543','year').format("DD/MM/YYYY");
+        console.log(startDateFormat);
+        var endDateFormat = moment(this.pickerDates.endDate).add('543','year').format("DD/MM/YYYY");
+        console.log(endDateFormat);
+        await db
+          .collection("expenseTable")
+          .where("date", ">=", startDateFormat)
+          .where("date", "<=", endDateFormat)
+          .onSnapshot((querySnapshot) => {
+            this.expenseLists = [];
+            querySnapshot.forEach((doc) => {
+              // if(doc.data().invoiceTime >= startDateFormat && doc.data().invoiceTime <= endDateFormat ){
+                let expenseList = {
+              timeStamp: doc.data().timeStamp,
+              date: doc.data().date,
+              datetime: doc.data().datetime,
+              type: doc.data().type,
+              list: doc.data().list,
+              amount: doc.data().amount,
+              docId: doc.id,
+            };
+            this.expenseLists.push(expenseList);
+            console.log(this.expenseLists);
+            });
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    },
 
     deleteExpense(doc) {
       Swal.fire({
@@ -354,7 +451,7 @@ export default {
               });
             });
 
-            this.minusExpense(doc)
+          this.minusExpense(doc);
         }
       });
     },
@@ -366,11 +463,12 @@ export default {
 
     reset() {
       this.expenseList = {
-        date: moment().add("543", "year").format("DD/MM/YYYY HH:mm"),
+        date: moment().add("543", "year").format("DD/MM/YYYY"),
+        datetime: moment().add("543", "year").format("DD/MM/YYYY HH:mm"),
         type: null,
         list: null,
         amount: null,
-        timeStamp : moment().format('x'),
+        timeStamp: moment().format("x"),
       };
     },
 
@@ -399,127 +497,107 @@ export default {
     // },
     async minusExpense(doc) {
       // console.log(doc.date);
-      let docId = moment(doc.date,'DD/MM/YYYY HH:mm').format('DD-MM-YYYY')
+      let docId = moment(doc.date, "DD/MM/YYYY").format("DD-MM-YYYY");
+
       let result = {
-            utilities : 0,
-            device : 0,
-            teaching  : 0,
-            office : 0,
-            advertise : 0,
-            teachEarn : 0,
-            employeeEarn : 0,
-            welfare : 0,
-            service : 0,
-            bankfee : 0,
+        utilities: 0,
+        device: 0,
+        teaching: 0,
+        office: 0,
+        advertise: 0,
+        teachEarn: 0,
+        employeeEarn: 0,
+        welfare: 0,
+        service: 0,
+        bankfee: 0,
 
-            otherfee : 0,
-            security : 0,
-            forrent : 0,
-            maintenance : 0,
-            wagesWorker : 0,
-            activity : 0,
-            travel : 0,
-            test : 0,
-            instrument : 0,
+        otherfee: 0,
+        security: 0,
+        forrent: 0,
+        maintenance: 0,
+        wagesWorker: 0,
+        activity: 0,
+        travel: 0,
+        test: 0,
+        instrument: 0,
 
-            invDayOfMonth: moment().date(),
-            invMonth: moment().month() + 1,
-            invYear: moment().year(),
-          }
-          result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
+        invDayOfMonth: moment().date(),
+        invMonth: moment().month() + 1,
+        invYear: moment().year(),
+      };
+      result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
 
-          if(doc.type == 'สาธารณูปโภค'){
-            result.utilities = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'เครื่องเขียน'){
-            result.device = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'อุปกรณ์การสอน'){
-            result.teaching = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'เครื่องใช้สำนักงาน'){
-            result.office = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'โฆษณา'){
-            result.advertise = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่าสอนครู'){
-            result.teachEarn = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'เงินเดือนเจ้าหน้าที่'){
-            result.employeeEarn = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'สวัสดิการครู/เจ้าหน้าที่'){
-            result.welfare = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่ารับรอง'){
-            result.service = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ธรรมเนียมธนาคาร'){
-            result.bankfee = parseInt(doc.amount) 
-          }
+      if (doc.type == "สาธารณูปโภค") {
+        result.utilities = parseInt(doc.amount);
+      } else if (doc.type == "เครื่องเขียน") {
+        result.device = parseInt(doc.amount);
+      } else if (doc.type == "อุปกรณ์การสอน") {
+        result.teaching = parseInt(doc.amount);
+      } else if (doc.type == "เครื่องใช้สำนักงาน") {
+        result.office = parseInt(doc.amount);
+      } else if (doc.type == "โฆษณา") {
+        result.advertise = parseInt(doc.amount);
+      } else if (doc.type == "ค่าสอนครู") {
+        result.teachEarn = parseInt(doc.amount);
+      } else if (doc.type == "เงินเดือนเจ้าหน้าที่") {
+        result.employeeEarn = parseInt(doc.amount);
+      } else if (doc.type == "สวัสดิการครู/เจ้าหน้าที่") {
+        result.welfare = parseInt(doc.amount);
+      } else if (doc.type == "ค่ารับรอง") {
+        result.service = parseInt(doc.amount);
+      } else if (doc.type == "ธรรมเนียมธนาคาร") {
+        result.bankfee = parseInt(doc.amount);
+      } else if (doc.type == "ธรรมเนียมอื่นๆ") {
+        result.otherfee = parseInt(doc.amount);
+      } else if (doc.type == "เงินประกัน") {
+        result.security = parseInt(doc.amount);
+      } else if (doc.type == "ค่าเช่า") {
+        result.forrent = parseInt(doc.amount);
+      } else if (doc.type == "ค่าซ่อมบำรุง") {
+        result.maintenance = parseInt(doc.amount);
+      } else if (doc.type == "ค่าจ้างแรงงานทั่วไปรายครั้ง") {
+        result.wagesWorker = parseInt(doc.amount);
+      } else if (doc.type == "กิจกรรม/คอนเสิร์ต") {
+        result.activity = parseInt(doc.amount);
+      } else if (doc.type == "ค่าเดินทาง") {
+        result.travel = parseInt(doc.amount);
+      } else if (doc.type == "สอบเกรด") {
+        result.test = parseInt(doc.amount);
+      } else if (doc.type == "ค่าเครื่องดนตรี") {
+        result.instrument = parseInt(doc.amount);
+      }
 
-          else if(doc.type == 'ธรรมเนียมอื่นๆ'){
-            result.otherfee = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'เงินประกัน'){
-            result.security = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่าเช่า'){
-            result.forrent = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่าซ่อมบำรุง'){
-            result.maintenance = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่าจ้างแรงงานทั่วไปรายครั้ง'){
-            result.wagesWorker = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'กิจกรรม/คอนเสิร์ต'){
-            result.activity = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่าเดินทาง'){
-            result.travel = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'สอบเกรด'){
-            result.test = parseInt(doc.amount) 
-          }
-          else if(doc.type == 'ค่าเครื่องดนตรี'){
-            result.instrument = parseInt(doc.amount) 
-          }
-
-          // console.log(doc);
-
+      // console.log(doc);
 
       try {
         console.log(docId);
         var ref = db.collection("summarizeExpense").doc(docId);
         let doc = await ref.get();
 
-          let data = {
-            docId : doc.id,
-            utilities : doc.data().utilities - result.utilities,
-            device : doc.data().device - result.device,
-            teaching : doc.data().teaching - result.teaching,
-            office : doc.data().office - result.office,
-            advertise : doc.data().advertise - result.advertise,
-            teachEarn : doc.data().teachEarn - result.teachEarn,
-            employeeEarn : doc.data().employeeEarn - result.employeeEarn,
-            welfare : doc.data().welfare - result.welfare,
-            service : doc.data().service - result.service,
-            bankfee : doc.data().bankfee - result.bankfee,
+        let data = {
+          docId: doc.id,
+          utilities: doc.data().utilities - result.utilities,
+          device: doc.data().device - result.device,
+          teaching: doc.data().teaching - result.teaching,
+          office: doc.data().office - result.office,
+          advertise: doc.data().advertise - result.advertise,
+          teachEarn: doc.data().teachEarn - result.teachEarn,
+          employeeEarn: doc.data().employeeEarn - result.employeeEarn,
+          welfare: doc.data().welfare - result.welfare,
+          service: doc.data().service - result.service,
+          bankfee: doc.data().bankfee - result.bankfee,
 
-            otherfee : doc.data().otherfee - result.otherfee,
-            security : doc.data().security - result.security,
-            forrent : doc.data().forrent - result.forrent,
-            maintenance : doc.data().maintenance - result.maintenance,
-            wagesWorker : doc.data().wagesWorker - result.wagesWorker,
-            activity : doc.data().activity - result.activity,
-            travel : doc.data().wagesWorker - result.travel,
-            test : doc.data().activity - result.test,
-            instrument : doc.data().instrument - result.instrument,
-          }
-          await db.collection('summarizeExpense').doc(docId).update(data)
-        
+          otherfee: doc.data().otherfee - result.otherfee,
+          security: doc.data().security - result.security,
+          forrent: doc.data().forrent - result.forrent,
+          maintenance: doc.data().maintenance - result.maintenance,
+          wagesWorker: doc.data().wagesWorker - result.wagesWorker,
+          activity: doc.data().activity - result.activity,
+          travel: doc.data().wagesWorker - result.travel,
+          test: doc.data().activity - result.test,
+          instrument: doc.data().instrument - result.instrument,
+        };
+        await db.collection("summarizeExpense").doc(docId).update(data);
       } catch (err) {
         console.log(err);
       }
@@ -527,92 +605,71 @@ export default {
 
     async summarizeExpense() {
       let result = {
-            utilities : 0,
-            device : 0,
-            teaching  : 0,
-            office : 0,
-            advertise : 0,
-            teachEarn : 0,
-            employeeEarn : 0,
-            welfare : 0,
-            service : 0,
-            bankfee : 0,
+        utilities: 0,
+        device: 0,
+        teaching: 0,
+        office: 0,
+        advertise: 0,
+        teachEarn: 0,
+        employeeEarn: 0,
+        welfare: 0,
+        service: 0,
+        bankfee: 0,
 
-            otherfee : 0,
-            security : 0,
-            forrent : 0,
-            maintenance : 0,
-            wagesWorker : 0,
-            activity : 0,
-            travel : 0,
-            test : 0,
-            instrument : 0,
-            invDayOfMonth: moment().date(),
-            invMonth: moment().month() + 1,
-            invYear: moment().year(),
-          }
-          result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
+        otherfee: 0,
+        security: 0,
+        forrent: 0,
+        maintenance: 0,
+        wagesWorker: 0,
+        activity: 0,
+        travel: 0,
+        test: 0,
+        instrument: 0,
+        invDayOfMonth: moment().date(),
+        invMonth: moment().month() + 1,
+        invYear: moment().year(),
+      };
+      result.monthlyDay = `${result.invYear}-0${result.invMonth}`;
 
-          if(this.expenseList.type == 'สาธารณูปโภค'){
-            result.utilities = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'เครื่องเขียน'){
-            result.device = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'อุปกรณ์การสอน'){
-            result.teaching = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'เครื่องใช้สำนักงาน'){
-            result.office = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'โฆษณา'){
-            result.advertise = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่าสอนครู'){
-            result.teachEarn = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'เงินเดือนเจ้าหน้าที่'){
-            result.employeeEarn = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'สวัสดิการครู/เจ้าหน้าที่'){
-            result.welfare = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่ารับรอง'){
-            result.service = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ธรรมเนียมธนาคาร'){
-            result.bankfee = parseInt(this.expenseList.amount) 
-          }
-
-          else if(this.expenseList.type == 'ธรรมเนียมอื่นๆ'){
-            result.otherfee = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'เงินประกัน'){
-            result.security = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่าเช่า'){
-            result.forrent = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่าซ่อมบำรุง'){
-            result.maintenance = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่าจ้างแรงงานทั่วไปรายครั้ง'){
-            result.wagesWorker = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'กิจกรรม/คอนเสิร์ต'){
-            result.activity = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่าเดินทาง'){
-            result.travel = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'สอบเกรด'){
-            result.test = parseInt(this.expenseList.amount) 
-          }
-          else if(this.expenseList.type == 'ค่าเครื่องดนตรี'){
-            result.instrument = parseInt(this.expenseList.amount) 
-          }
-
-
+      if (this.expenseList.type == "สาธารณูปโภค") {
+        result.utilities = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "เครื่องเขียน") {
+        result.device = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "อุปกรณ์การสอน") {
+        result.teaching = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "เครื่องใช้สำนักงาน") {
+        result.office = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "โฆษณา") {
+        result.advertise = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่าสอนครู") {
+        result.teachEarn = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "เงินเดือนเจ้าหน้าที่") {
+        result.employeeEarn = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "สวัสดิการครู/เจ้าหน้าที่") {
+        result.welfare = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่ารับรอง") {
+        result.service = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ธรรมเนียมธนาคาร") {
+        result.bankfee = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ธรรมเนียมอื่นๆ") {
+        result.otherfee = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "เงินประกัน") {
+        result.security = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่าเช่า") {
+        result.forrent = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่าซ่อมบำรุง") {
+        result.maintenance = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่าจ้างแรงงานทั่วไปรายครั้ง") {
+        result.wagesWorker = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "กิจกรรม/คอนเสิร์ต") {
+        result.activity = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่าเดินทาง") {
+        result.travel = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "สอบเกรด") {
+        result.test = parseInt(this.expenseList.amount);
+      } else if (this.expenseList.type == "ค่าเครื่องดนตรี") {
+        result.instrument = parseInt(this.expenseList.amount);
+      }
 
       try {
         let today = moment().add("543", "year").format("DD-MM-YYYY");
@@ -621,33 +678,33 @@ export default {
         if (!doc.exists) {
           // console.log(result);
           await ref.set(result, { merge: true });
-          this.addItemData() 
+          this.addItemData();
         } else {
           let data = {
-            docId : doc.id,
-            utilities : doc.data().utilities + result.utilities,
-            device : doc.data().device + result.device,
-            teaching : doc.data().teaching + result.teaching,
-            office : doc.data().office + result.office,
-            advertise : doc.data().advertise + result.advertise,
-            teachEarn : doc.data().teachEarn + result.teachEarn,
-            employeeEarn : doc.data().employeeEarn + result.employeeEarn,
-            welfare : doc.data().welfare + result.welfare,
-            service : doc.data().service + result.service,
-            bankfee : doc.data().bankfee + result.bankfee,
+            docId: doc.id,
+            utilities: doc.data().utilities + result.utilities,
+            device: doc.data().device + result.device,
+            teaching: doc.data().teaching + result.teaching,
+            office: doc.data().office + result.office,
+            advertise: doc.data().advertise + result.advertise,
+            teachEarn: doc.data().teachEarn + result.teachEarn,
+            employeeEarn: doc.data().employeeEarn + result.employeeEarn,
+            welfare: doc.data().welfare + result.welfare,
+            service: doc.data().service + result.service,
+            bankfee: doc.data().bankfee + result.bankfee,
 
-            otherfee : doc.data().otherfee + result.otherfee,
-            security : doc.data().security + result.security,
-            forrent : doc.data().forrent + result.forrent,
-            maintenance : doc.data().maintenance + result.maintenance,
-            wagesWorker : doc.data().wagesWorker + result.wagesWorker,
-            activity : doc.data().activity + result.activity,
-            travel : doc.data().wagesWorker + result.travel,
-            test : doc.data().activity + result.test,
-            instrument : doc.data().instrument + result.instrument,
-          }
-          await db.collection('summarizeExpense').doc(today).update(data)
-          this.addItemData() 
+            otherfee: doc.data().otherfee + result.otherfee,
+            security: doc.data().security + result.security,
+            forrent: doc.data().forrent + result.forrent,
+            maintenance: doc.data().maintenance + result.maintenance,
+            wagesWorker: doc.data().wagesWorker + result.wagesWorker,
+            activity: doc.data().activity + result.activity,
+            travel: doc.data().wagesWorker + result.travel,
+            test: doc.data().activity + result.test,
+            instrument: doc.data().instrument + result.instrument,
+          };
+          await db.collection("summarizeExpense").doc(today).update(data);
+          this.addItemData();
         }
       } catch (err) {
         console.log(err);
@@ -656,7 +713,13 @@ export default {
 
     async addItemData() {
       try {
-        this.expenseList.timeStamp = moment().format('x');
+        this.expenseList.timeStamp = moment().format("x");
+        this.expenseList.date = moment()
+          .add("543", "year")
+          .format("DD/MM/YYYY");
+        this.expenseList.datetime = moment()
+          .add("543", "year")
+          .format("DD/MM/YYYY HH:mm");
         await db.collection("expenseTable").add(this.expenseList);
         Swal.fire({
           title: "เพิ่มข้อมูลเรียบร้อย",
@@ -679,21 +742,24 @@ export default {
     },
 
     getExpenseLists() {
-      db.collection("expenseTable").orderBy('timeStamp','desc').onSnapshot((querySnapshot) => {
-        this.expenseLists = [];
-        querySnapshot.forEach((doc) => {
-          let expenseList = {
-            timeStamp : doc.data().timeStamp,
-            date: doc.data().date,
-            type: doc.data().type,
-            list: doc.data().list,
-            amount: doc.data().amount,
-            docId: doc.id,
-          };
-          this.expenseLists.push(expenseList);
-          console.log(this.expenseLists);
+      db.collection("expenseTable")
+        .orderBy("timeStamp", "desc")
+        .onSnapshot((querySnapshot) => {
+          this.expenseLists = [];
+          querySnapshot.forEach((doc) => {
+            let expenseList = {
+              timeStamp: doc.data().timeStamp,
+              date: doc.data().date,
+              datetime: doc.data().datetime,
+              type: doc.data().type,
+              list: doc.data().list,
+              amount: doc.data().amount,
+              docId: doc.id,
+            };
+            this.expenseLists.push(expenseList);
+            console.log(this.expenseLists);
+          });
         });
-      });
     },
   },
 
@@ -703,15 +769,20 @@ export default {
   },
 
   computed: {
-    incomeTotal() {
-      var total = this.expenseLists.reduce((accumulator, Item) => {
+    expenseTotal() {
+      var expense = this.expenseLists.reduce((accumulator, Item) => {
         return accumulator + parseInt(Item.amount);
       }, 0);
-      console.log(total);
-      return Number(total).toLocaleString();
+      // console.log(total);
+      return expense;
     },
   },
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.transaction {
+  text-align: center;
+  color: #2c3e50;
+}
+</style>

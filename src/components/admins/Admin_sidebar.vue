@@ -86,24 +86,110 @@
                       <span @click="hide">ระบบประเมินต่างๆ</span>
                     </router-link>
                   </li>
-                  <li class="bottom-line">
+                  <!-- <li class="bottom-line">
                     <router-link to="/admin">
                       <i class="fas fa-paste"></i>
                       <span @click="hide">รายงาน (Report)</span>
                     </router-link>
+                  </li> -->
+
+                  <li class="sidebar-dropdown bottom-line">
+                    <a v-b-toggle href="#example-collapse" @click.prevent>
+                      <i class="fas fa-chart-line"></i>
+                      <span class="text-center fb">รายงาน (Report)</span>
+                    </a>
+                    <b-collapse
+                      class=""
+                      id="example-collapse"
+                      style="background-color: #04522d"
+                    >
+                      <ul>
+                        <li @click="hide">
+                          <router-link to="/admin/attendanceday">
+                            <i class="fa-solid fa-music ml-3"></i>
+                            <span class="fb text-center">เข้าสอน - รายวัน</span>
+                          </router-link>
+                        </li>
+                        <li @click="hide">
+                          <router-link to="/admin/attendanceresult">
+                            <i class="fa-solid fa-music ml-3"></i>
+                            <span class="fb text-center">เข้าสอน - ทั้งหมด</span>
+                          </router-link>
+                        </li>
+                        <li @click="hide">
+                          <router-link to="/admin/account/incomeday">
+                            <i class="fa-solid fa-file-invoice-dollar ml-3"></i>
+                            <span class="fb text-center">รายรับ - รายวัน</span>
+                          </router-link>
+                        </li>
+                        <li @click="hide">
+                          <router-link to="/admin/account/expense">
+                            <i class="fa-solid fa-file-invoice-dollar ml-3"></i>
+                            <span class="fb text-center">รายจ่าย - รายวัน</span>
+                          </router-link>
+                        </li>
+                        <!-- <li @click="hide">
+                          <router-link to="">
+                            <span class="fb text-center">เว็บที่พักและการท่องเที่ยว</span>
+                          </router-link>
+                        </li>
+                        <li @click="hide">
+                          <router-link to="">
+                            <span class="fb text-center">เว็บธุรกิจ</span>
+                          </router-link>
+                        </li> -->
+                      </ul>
+                    </b-collapse>
                   </li>
+
                   <!-- <li class="bottom-line">
                     <router-link to="/admin/managetable">
                       <i class="fas fa-calendar-alt"></i>
                       <span @click="hide">ระบบจัดการหน้าปฏิทิน</span>
                     </router-link>
                   </li> -->
-                  <li class="bottom-line">
+                  <li class="sidebar-dropdown bottom-line">
+                    <a v-b-toggle href="#account-collapse" @click.prevent>
+                      <i class="fas fa-university"></i>
+                      <span class="text-center fb">ระบบบัญชี</span>
+                    </a>
+                    <b-collapse
+                      class=""
+                      id="account-collapse"
+                      style="background-color: #04522d"
+                    >
+                      <ul>
+                        <li @click="hide">
+                          <router-link to="/admin/account/expense">
+                            <i class="fas fa-wallet ml-3"></i>
+                            <span class="fb text-center">บันทึกรายจ่าย</span>
+                          </router-link>
+                        </li>
+                        <li @click="hide">
+                          <router-link to="/admin/account/overview">
+                            <i class="fa-solid fa-file-invoice-dollar ml-3"></i>
+                            <span class="fb text-center">สรุปบัญชี</span>
+                          </router-link>
+                        </li>
+                        <!-- <li @click="hide">
+                          <router-link to="">
+                            <span class="fb text-center">เว็บที่พักและการท่องเที่ยว</span>
+                          </router-link>
+                        </li>
+                        <li @click="hide">
+                          <router-link to="">
+                            <span class="fb text-center">เว็บธุรกิจ</span>
+                          </router-link>
+                        </li> -->
+                      </ul>
+                    </b-collapse>
+                  </li>
+                  <!-- <li class="bottom-line">
                     <router-link to="/admin/account/overview">
                       <i class="fas fa-university"></i>
                       <span @click="hide">ระบบบัญชี</span>
                     </router-link>
-                  </li>
+                  </li> -->
                   <li class="bottom-line">
                     <router-link to="/" @click="signOut()">
                       <i class="fa fa-power-off"></i>
@@ -372,6 +458,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import { fb, db } from "../../firebase";
 
 export default {
   data() {
@@ -398,7 +485,6 @@ export default {
   },
 
   mounted() {},
-  created() {},
 };
 </script>
 

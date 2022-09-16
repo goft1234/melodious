@@ -11,30 +11,33 @@
               :showDropdowns="showDropdowns"
               v-model="pickerDates"
             >
-              <template
+              <!-- <template
                 v-slot:input="pickerDates"
                 style="min-width: 450px"
                 class="form-control"
                 >{{ pickerDates.startDate | date }} -
                 {{ pickerDates.endDate | date }}
                 <br />
-              </template>
+              </template> -->
             </date-range-picker>
             <br />
           </div>
         </div>
 
         <div class="row">
-            <div class="col-md-12 text-center">
-                <div class="card-deck">
+          <div class="col-md-12 text-center">
+            <div class="card-deck">
               <div class="card">
                 <div class="card-body">
                   <div class="card-header bg-success shadow">
                     <h5 class="text-light text-center">สรุปรายรับ - รายวัน</h5>
                   </div>
-                  <i class="fas fa-file-invoice-dollar mt-4  text-success" style="font-size:50px"></i>
+                  <i
+                    class="fas fa-file-invoice-dollar mt-4 text-success"
+                    style="font-size: 50px"
+                  ></i>
                   <h4 class="card-text my-4 text-primary text-center">
-                    จำนวน {{ incomeTotal }} บาท
+                    จำนวน {{ incomeTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="bg- shadow">
@@ -56,9 +59,12 @@
                   <div class="card-header bg-danger shadow">
                     <h5 class="text-light text-center">สรุปรายจ่าย - รายวัน</h5>
                   </div>
-                  <i class="fas fa-wallet mt-4 text-danger" style="font-size:50px"></i>
+                  <i
+                    class="fas fa-wallet mt-4 text-danger"
+                    style="font-size: 50px"
+                  ></i>
                   <h4 class="card-text my-4 text-danger text-center">
-                    จำนวน {{ expenseTotal }} บาท
+                    จำนวน {{ expenseTotal | number("0,0") }} บาท
                   </h4>
 
                   <div class="bg- shadow">
@@ -79,9 +85,12 @@
                   <div class="card-header bg-dark shadow">
                     <h5 class="text-light text-center">คงเหลือ</h5>
                   </div>
-                 <i class="fa-sharp fa-solid fa-sack-dollar mt-4 text-warning" style="font-size:50px"></i>
-                  <h4 class="card-text my-4 text-dark text-center" >
-                    จำนวน {{ balance }} บาท
+                  <i
+                    class="fa-sharp fa-solid fa-sack-dollar mt-4 text-warning"
+                    style="font-size: 50px"
+                  ></i>
+                  <h4 class="card-text my-4 text-dark text-center">
+                    จำนวน {{ balance | number("0,0") }} บาท
                   </h4>
 
                   <div class="card-header bg-dark shadow">
@@ -90,7 +99,7 @@
                 </div>
               </div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
 
@@ -140,7 +149,7 @@
       </vue-good-table>
     </div> -->
 
-        <!--Start Income  Modal -->
+    <!--Start Income  Modal -->
     <div class="modal fade" id="incomeModal">
       <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
@@ -632,8 +641,8 @@ export default {
       },
       expenseColumns: [
         {
-          label: "วันที่",
-          field: "date",
+          label: "วันที่ - เวลา",
+          field: "datetime",
           type: "text",
         },
         {
@@ -707,18 +716,8 @@ export default {
       invoiceData: [],
       invoiceItem: {},
 
-      expenseLists:[],
+      expenseLists: [],
     };
-  },
-  filters: {
-    date(date) {
-      return new Intl.DateTimeFormat("th-TH").format(date);
-    },
-  },
-
-  created() {
-    this.getInvoiceData();
-    this.getExpenseLists()
   },
 
   methods: {
@@ -728,25 +727,28 @@ export default {
     },
 
     getExpenseLists() {
-      let today = moment().add('543','year').format('DD/MM/YYYY')
-      db.collection("expenseTable").where('date','==',today).onSnapshot((querySnapshot) => {
-        this.expenseLists = [];
-        querySnapshot.forEach((doc) => {
-          let expenseList = {
-            date: doc.data().date,
-            type: doc.data().type,
-            list: doc.data().list,
-            amount: doc.data().amount,
-            docId: doc.id,
-          };
-          this.expenseLists.push(expenseList);
-          console.log(this.expenseLists);
+      let today = moment().add("543", "year").format("DD/MM/YYYY");
+      db.collection("expenseTable")
+        .where("date", "==", today)
+        .onSnapshot((querySnapshot) => {
+          this.expenseLists = [];
+          querySnapshot.forEach((doc) => {
+            let expenseList = {
+              date: doc.data().date,
+              datetime: doc.data().datetime,
+              type: doc.data().type,
+              list: doc.data().list,
+              amount: doc.data().amount,
+              docId: doc.id,
+            };
+            this.expenseLists.push(expenseList);
+            console.log(this.expenseLists);
+          });
         });
-      });
     },
 
     getInvoiceData() {
-      var today = moment(Date.now()).format("DD/MM/YYYY");
+      var today = moment().format("DD/MM/YYYY");
       // moment().toDate().getDate()
       console.log(today);
       db.collection("invoiceData")
@@ -796,18 +798,53 @@ export default {
         });
     },
 
+    getExpenseListsDate() {
+      var startDateFormat = moment(this.pickerDates.startDate)
+        .add("543", "year")
+        .format("DD/MM/YYYY");
+      console.log(startDateFormat);
+      var endDateFormat = moment(this.pickerDates.endDate)
+        .add("543", "year")
+        .format("DD/MM/YYYY");
+      console.log(endDateFormat);
+      db.collection("expenseTable")
+        .where("date", ">=", startDateFormat)
+        .where("date", "<=", endDateFormat)
+        .onSnapshot((querySnapshot) => {
+          this.expenseLists = [];
+          querySnapshot.forEach((doc) => {
+            let expenseList = {
+              date: doc.data().date,
+              datetime: doc.data().datetime,
+              type: doc.data().type,
+              list: doc.data().list,
+              amount: doc.data().amount,
+              docId: doc.id,
+            };
+            this.expenseLists.push(expenseList);
+            console.log(this.expenseLists);
+          });
+        });
+    },
+
     async getInvoiceDate() {
       try {
-        var startDateFormat = moment(this.pickerDates.startDate).format("x");
-        console.log(startDateFormat);
-        var endDateFormat = moment(this.pickerDates.endDate).format("x");
+        var startDateFormat = moment(this.pickerDates.startDate).format(
+          "DD/MM/YYYY"
+        );
+        // console.log(startDateFormat);
+        var endDateFormat = moment(this.pickerDates.endDate).format(
+          "DD/MM/YYYY"
+        );
+        // console.log(endDateFormat);
         await db
           .collection("invoiceData")
-          .where("invoiceTimestamp", ">=", startDateFormat)
-          .where("invoiceTimestamp", "<=", endDateFormat)
+          .where("invoiceTime", ">=", startDateFormat)
+          .where("invoiceTime", "<=", endDateFormat)
           .onSnapshot((querySnapshot) => {
             this.invoiceData = [];
             querySnapshot.forEach((doc) => {
+              // if(doc.data().invoiceTime >= startDateFormat && doc.data().invoiceTime <= endDateFormat ){
               let Item = {
                 userId: doc.data().userId,
                 docId: doc.id,
@@ -844,7 +881,9 @@ export default {
                 ),
               };
               this.invoiceData.push(Item);
+              // }
             });
+            this.getExpenseListsDate()
           });
       } catch (err) {
         console.log(err);
@@ -852,46 +891,40 @@ export default {
     },
   },
 
+  computed: {
+    expenseTotal() {
+      var expense = this.expenseLists.reduce((accumulator, Item) => {
+        return accumulator + parseInt(Item.amount);
+      }, 0);
+      return expense;
+    },
+
+    incomeTotal() {
+      var income = this.invoiceData.reduce((accumulator, Item) => {
+        return accumulator + parseInt(Item.grandTotal);
+      }, 0);
+      return income;
+    },
+
+    balance() {
+      var balance = parseInt(this.incomeTotal) - parseInt(this.expenseTotal);
+      return balance;
+    },
+  },
+
   mounted() {
     window.scrollTo(0, 0);
   },
 
-  computed: {
-    expenseTotal(){
-      var expense = this.expenseLists.reduce((accumulator, Item)=>{
-          return accumulator + Item.amount ;
-      },0)
-      return Number(expense).toLocaleString();
+  filters: {
+    date(date) {
+      return new Intl.DateTimeFormat("th-TH").format(date);
     },
+  },
 
-    incomeTotal() {
-      var total = this.invoiceData.reduce((accumulator, Item) => {
-        return accumulator + Item.grandTotal;
-      }, 0);
-      // console.log(total);
-      return Number(total).toLocaleString();
-    },
-
-    expenseTotal2(){
-      var expense = this.expenseLists.reduce((accumulator, Item)=>{
-          return accumulator + Item.amount ;
-      },0)
-      return expense;
-    },
-
-    incomeTotal2() {
-      var total = this.invoiceData.reduce((accumulator, Item) => {
-        return accumulator + Item.grandTotal;
-      }, 0);
-      // console.log(total);
-      return total;
-    },
-
-    balance(){
-     var balance =  parseInt(this.incomeTotal2) - parseInt(this.expenseTotal2) ;
-     console.log(balance);
-     return  Number(balance).toLocaleString();
-    }
+  created() {
+    this.getInvoiceData();
+    this.getExpenseLists();
   },
 };
 </script>
